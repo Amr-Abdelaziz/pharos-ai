@@ -41,8 +41,8 @@ export function MarketRow({ market, rank, isExpanded, onToggle }: Props) {
       <CollapsibleTrigger asChild>
         <Button
           variant="ghost"
-          className="grid w-full h-[44px] p-0 rounded-none border-b border-b-[var(--bd)]"
-          style={{ gridTemplateColumns: COL, gap: 0, background: isExpanded ? 'var(--bg-2)' : 'transparent' }}
+          className="grid gap-0 w-full h-[44px] p-0 rounded-none border-b border-b-[var(--bd)]"
+          style={{ gridTemplateColumns: COL, background: isExpanded ? 'var(--bg-2)' : 'transparent' }}
         >
           {/* Rank */}
           <span className="mono flex items-center pl-3.5 text-[var(--t4)] font-bold">
@@ -57,7 +57,7 @@ export function MarketRow({ market, rank, isExpanded, onToggle }: Props) {
             {isGroup && (
               <Badge
                 variant="outline"
-                className="shrink-0 text-[8px] px-[5px] py-px text-[var(--blue-l)] border-[rgba(76,144,240,0.25)] bg-[var(--blue-dim)]"
+                className="shrink-0 text-[8px] px-[5px] py-px text-[var(--blue-l)] border-[var(--info-bd)] bg-[var(--blue-dim)]"
               >
                 {market.subMarkets.length}
               </Badge>
@@ -154,7 +154,7 @@ export function MarketRow({ market, rank, isExpanded, onToggle }: Props) {
                 asChild
                 variant="outline"
                 size="sm"
-                className="mono text-[9px] tracking-[0.08em] text-[var(--blue-l)] border-[rgba(76,144,240,0.3)] bg-[var(--blue-dim)]"
+                className="mono text-[9px] tracking-[0.08em] text-[var(--blue-l)] border-[var(--info-bd)] bg-[var(--blue-dim)]"
               >
                 <a href={market.polyUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                   <ExternalLink size={10} /> POLYMARKET ↗

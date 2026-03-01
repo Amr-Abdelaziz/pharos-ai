@@ -17,16 +17,9 @@ export function SummaryBar() {
       {CHIPS.map(chip => (
         <div
           key={chip.label}
-          className="flex items-center shrink-0 px-2 py-0.5"
-          style={{
-            background: chip.danger ? 'var(--danger-dim)' : 'var(--bg-2)',
-            border: `1px solid ${chip.danger ? 'rgba(231,106,110,.3)' : 'var(--bd)'}`,
-          }}
+          className={`flex items-center shrink-0 px-2 py-0.5 border ${chip.danger ? 'bg-[var(--danger-dim)] border-[var(--danger-bd)]' : 'bg-[var(--bg-2)] border-[var(--bd)]'}`}
         >
-          <span
-            className="mono text-[9px] font-bold tracking-[0.06em]"
-            style={{ color: chip.danger ? 'var(--danger)' : 'var(--t2)' }}
-          >
+          <span className={`mono text-[9px] font-bold tracking-[0.06em] ${chip.danger ? 'text-[var(--danger)]' : 'text-[var(--t2)]'}`}>
             {chip.label}
           </span>
         </div>

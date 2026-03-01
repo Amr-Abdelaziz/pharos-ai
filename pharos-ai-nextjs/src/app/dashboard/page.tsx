@@ -42,7 +42,7 @@ export default function OverviewPage() {
       <div className="flex flex-1 min-h-0 overflow-hidden">
 
         {/* ── LEFT ~60% ── */}
-        <div className="flex flex-col overflow-hidden min-w-0 border-r border-[var(--bd)]" style={{ flex: 3 }}>
+        <div className="flex flex-col overflow-hidden min-w-0 border-r border-[var(--bd)] [flex:3]">
 
           {/* Situation Summary */}
           <div className="shrink-0 border-b border-[var(--bd)]">
@@ -119,8 +119,7 @@ export default function OverviewPage() {
 
         {/* ── RIGHT ~40% ── */}
         <div
-          className="flex flex-col min-w-0 overflow-hidden"
-          style={{ flex: 2, borderRight: wideScreen ? '1px solid var(--bd)' : undefined }}
+          className={`flex flex-col min-w-0 overflow-hidden [flex:2]${wideScreen ? ' border-r border-[var(--bd)]' : ''}`}
         >
 
           {/* Actor Positions */}
@@ -195,7 +194,7 @@ export default function OverviewPage() {
 
         {/* ── INTEL MAP (≥1500px) ── */}
         {wideScreen && (
-          <div className="flex flex-col min-w-0 border-l border-[var(--bd)] overflow-hidden" style={{ flex: 2 }}>
+          <div className="flex flex-col min-w-0 border-l border-[var(--bd)] overflow-hidden [flex:2]">
             <IntelMap />
           </div>
         )}

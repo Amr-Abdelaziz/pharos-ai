@@ -137,13 +137,7 @@ export default function PredictionsPage() {
             <ToggleGroupItem
               key={col.key}
               value={col.key}
-              className="mono bg-transparent border-none h-[30px] rounded-none p-0 flex items-center text-[8px] tracking-[0.08em]"
-              style={{
-                paddingRight: col.key === 'probability' ? 0 : 12,
-                justifyContent: col.key === 'probability' ? 'flex-start' : 'flex-end',
-                fontWeight: sortBy === col.key ? 700 : 400,
-                color: sortBy === col.key ? 'var(--blue-l)' : 'var(--t4)',
-              }}
+              className={`mono bg-transparent border-none h-[30px] rounded-none p-0 flex items-center text-[8px] tracking-[0.08em] ${col.key === 'probability' ? 'justify-start pr-0' : 'justify-end pr-3'} ${sortBy === col.key ? 'font-bold text-[var(--blue-l)]' : 'font-normal text-[var(--t4)]'}`}
             >
               {col.label}{sortBy === col.key ? ' ▼' : ''}
             </ToggleGroupItem>
@@ -178,7 +172,7 @@ export default function PredictionsPage() {
           </div>
         ) : error ? (
           <div className="p-6">
-            <Alert variant="destructive" className="bg-[var(--danger-dim)] border-[rgba(231,106,110,0.3)] text-[var(--danger)]">
+            <Alert variant="destructive" className="bg-[var(--danger-dim)] border-[var(--danger-bd)] text-[var(--danger)]">
               <AlertCircle size={14} />
               <AlertDescription className="mono text-[11px] text-[var(--danger)]">
                 {error}

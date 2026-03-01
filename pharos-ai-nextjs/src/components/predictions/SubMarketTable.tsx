@@ -45,7 +45,7 @@ export function SubMarketTable({ subMarkets, selectedId, onSelect }: Props) {
             <TableRow
               key={sm.id}
               onClick={() => onSelect(sm.id)}
-              className={`h-[30px] border-b border-b-[var(--bd)] cursor-pointer transition-colors ${isSelected ? 'bg-[rgba(45,114,210,0.1)]' : 'hover:bg-[var(--bg-3)]'}`}
+              className={`h-[30px] border-b border-b-[var(--bd)] cursor-pointer transition-colors ${isSelected ? 'bg-[var(--blue-sel)]' : 'hover:bg-[var(--bg-3)]'}`}
               style={{
                 borderLeft: isSelected ? '2px solid var(--blue)' : '2px solid transparent',
               }}

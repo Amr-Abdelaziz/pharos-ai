@@ -91,7 +91,7 @@ export function EventDetail({ event, tab, onTabChange }: Props) {
                 <SectionDivider label="INTELLIGENCE REPORT" />
                 <div className="text-[12.5px] text-[var(--t1)] leading-relaxed">
                   {event.fullContent.split('\n\n').map((p, i) => (
-                    <p key={i} className="mb-3" style={{ color: i === 0 ? 'var(--t1)' : 'var(--t2)' }}>{p}</p>
+                    <p key={i} className={`mb-3 ${i === 0 ? 'text-[var(--t1)]' : 'text-[var(--t2)]'}`}>{p}</p>
                   ))}
                 </div>
               </div>
@@ -110,11 +110,14 @@ export function EventDetail({ event, tab, onTabChange }: Props) {
                       <span className="text-[11px] text-[var(--t1)] flex-1">{src.name}</span>
                       <div className="flex items-center gap-1.5">
                         <div className="w-[50px] h-[3px] bg-[var(--bd)]">
-                          <div style={{
-                            width: `${src.reliability}%`, height: '100%',
-                            background: src.reliability > 90 ? 'var(--success)'
-                              : src.reliability > 75 ? 'var(--warning)' : 'var(--danger)',
-                          }} />
+                          <div
+                            className="h-full"
+                            style={{
+                              width: `${src.reliability}%`,
+                              background: src.reliability > 90 ? 'var(--success)'
+                                : src.reliability > 75 ? 'var(--warning)' : 'var(--danger)',
+                            }}
+                          />
                         </div>
                         <span className="mono text-[9px] text-[var(--t3)] min-w-[26px]">
                           {src.reliability}%

@@ -22,8 +22,8 @@ export function CheckboxRow({
       <Checkbox
         checked={checked}
         onCheckedChange={onChange}
+        className="w-[11px] h-[11px] shrink-0 rounded-[1px]"
         style={{
-          width: 11, height: 11, flexShrink: 0, borderRadius: 1,
           borderColor: checked ? color : 'var(--bd)',
           backgroundColor: checked ? color : 'transparent',
         }}

@@ -1,8 +1,4 @@
 'use client';
-/**
- * Pharos tab bar — uses shadcn Tabs (Radix UI) under the hood but
- * styled with the Blueprint dark-theme design system vars.
- */
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 export interface TabItem<T extends string> {

@@ -12,7 +12,7 @@ const ACCT: Record<string, { bg: string; text: string; label: string }> = {
   military:   { bg: 'var(--danger-dim)',  text: 'var(--danger)',  label: 'MILITARY' },
   government: { bg: 'var(--success-dim)', text: 'var(--success)', label: 'GOVT'     },
   official:   { bg: 'var(--blue-dim)',    text: 'var(--blue-l)',  label: 'OFFICIAL' },
-  journalist: { bg: 'rgba(162,139,224,0.15)', text: 'var(--cyber)', label: 'PRESS' },
+  journalist: { bg: 'var(--cyber-dim)',        text: 'var(--cyber)', label: 'PRESS' },
   analyst:    { bg: 'var(--info-dim)',    text: 'var(--info)',    label: 'ANALYST'  },
 };
 
@@ -66,7 +66,7 @@ export default function XPostCard({ post, compact }: Props) {
       {isHigh && !isBreaking && (
         <div
           className="px-3 py-0.5 border-b"
-          style={{ background: 'var(--warning-dim)', borderColor: 'rgba(236,154,60,0.2)' }}
+          style={{ background: 'var(--warning-dim)', borderColor: 'var(--warning-bd)' }}
         >
           <span className="text-[9px] font-bold tracking-[0.08em] uppercase text-[var(--warning)]">
             High Significance
@@ -77,8 +77,8 @@ export default function XPostCard({ post, compact }: Props) {
       {/* ── HEADER ── */}
       <div className="card-header px-3 py-[9px]">
         <Avatar
-          className="shrink-0"
-          style={{ width: 32, height: 32, background: post.avatarColor }}
+          className="w-8 h-8 shrink-0"
+          style={{ background: post.avatarColor }}
         >
           <AvatarFallback
             className="text-[10px] font-bold text-white rounded-full"
@@ -112,11 +112,8 @@ export default function XPostCard({ post, compact }: Props) {
       {/* ── BODY ── */}
       <div className="card-body">
         <p
-          className="leading-snug whitespace-pre-wrap text-[var(--t1)]"
-          style={{
-            fontSize: compact ? 11.5 : 12.5,
-            ...(compact ? { display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' } : {}),
-          }}
+          className={`leading-snug whitespace-pre-wrap text-[var(--t1)]${compact ? ' line-clamp-3' : ''}`}
+          style={{ fontSize: compact ? 11.5 : 12.5 }}
         >
           {post.content}
         </p>
@@ -124,11 +121,8 @@ export default function XPostCard({ post, compact }: Props) {
         {/* Images */}
         {!compact && post.images && post.images.length > 0 && (
           <div
-            className="mt-2.5 gap-[3px]"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: post.images.length === 1 ? '1fr' : '1fr 1fr',
-            }}
+            className="mt-2.5 gap-[3px] grid"
+            style={{ gridTemplateColumns: post.images.length === 1 ? '1fr' : '1fr 1fr' }}
           >
             {post.images.map((img: string) => (
               <div
@@ -139,10 +133,7 @@ export default function XPostCard({ post, compact }: Props) {
                   background: IMG_BG[img] ?? 'var(--bg-app)',
                 }}
               >
-                <div
-                  className="absolute inset-0"
-                  style={{ background: 'linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.65))' }}
-                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[rgba(0,0,0,0.65)]" />
                 <span className="label relative uppercase text-[rgba(255,255,255,0.55)]">
                   {IMG_LBL[img] ?? img}
                 </span>
@@ -156,10 +147,7 @@ export default function XPostCard({ post, compact }: Props) {
           <div
             className="flex items-center justify-center relative mt-3 h-[90px] border border-[var(--bd)] bg-[var(--bg-app)]"
           >
-            <div
-              className="flex items-center justify-center border border-[var(--bd)]"
-              style={{ width: 36, height: 36, background: 'rgba(255,255,255,0.06)' }}
-            >
+            <div className="w-9 h-9 flex items-center justify-center border border-[var(--bd)] bg-white/[0.06]">
               <div
                 style={{
                   width: 0, height: 0,
@@ -176,7 +164,7 @@ export default function XPostCard({ post, compact }: Props) {
       </div>
 
       {/* ── FOOTER: engagement metrics ── */}
-      <Separator style={{ background: 'var(--bd-s)' }} />
+      <Separator className="bg-[var(--bd-s)]" />
       <div className="card-footer">
         <EngStat icon={<Heart   size={10} strokeWidth={1.5} />} val={fmt(post.likes)}    />
         <EngStat icon={<Repeat2 size={10} strokeWidth={1.5} />} val={fmt(post.retweets)} />
@@ -209,7 +197,7 @@ function PharosNote({ note }: { note: string }) {
   const isWarning = note.startsWith('⚠️');
   const color     = isWarning ? 'var(--warning)' : 'var(--success)';
   const bg        = isWarning ? 'var(--warning-dim)' : 'var(--success-dim)';
-  const border    = isWarning ? 'rgba(236,154,60,.25)' : 'rgba(35,162,109,.25)';
+  const border    = isWarning ? 'var(--warning-bd)' : 'var(--success-bd)';
   const text      = note.replace('⚠️ ', '');
   const Icon      = isWarning ? AlertTriangle : CheckCircle;
 

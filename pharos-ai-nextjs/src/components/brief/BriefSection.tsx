@@ -13,7 +13,7 @@ export function BriefSection({ number, title, children }: {
         <h2 className="text-xs font-bold text-[var(--t1)] tracking-[0.10em] uppercase">
           {title}
         </h2>
-        <Separator className="flex-1" style={{ background: 'var(--bd)' }} />
+        <Separator className="flex-1 bg-[var(--bd)]" />
       </div>
       {children}
     </div>

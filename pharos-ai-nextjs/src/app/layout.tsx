@@ -12,9 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+        <div className="flex flex-col h-screen overflow-hidden">
           <Header />
-          <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
+          <div className="flex flex-1 min-h-0 overflow-hidden">
             {children}
           </div>
         </div>

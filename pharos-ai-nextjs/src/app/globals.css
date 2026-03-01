@@ -39,11 +39,16 @@
 
   /* Dim variants for backgrounds */
   --danger-dim:  rgba(231, 106, 110, 0.12);
-  --danger-bd:   rgba(231, 106, 110, 0.35);
+  --danger-bd:   rgba(231, 106, 110, 0.30);
+  --warning-bd:  rgba(236, 154,  60, 0.25);
+  --success-bd:  rgba( 35, 162, 109, 0.25);
+  --info-bd:     rgba( 76, 144, 240, 0.25);
+  --blue-sel:    rgba( 45, 114, 210, 0.10);
   --warning-dim: rgba(236, 154, 60,  0.12);
   --success-dim: rgba(35,  162, 109, 0.12);
   --info-dim:    rgba(76,  144, 240, 0.12);
   --teal-dim:    rgba(50,  200, 200, 0.12);
+  --cyber-dim:   rgba(162, 139, 224, 0.15);
 }
 
 /* ── shadcn/Tailwind CSS-var bridge ── */

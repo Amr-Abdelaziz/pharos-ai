@@ -109,8 +109,7 @@ export function ActorDossier({ actor, tab, onTabChange }: Props) {
                     return (
                       <div
                         key={i}
-                        className="grid py-1.5 border-b border-[var(--bd-s)]"
-                        style={{ gridTemplateColumns: '86px 64px 1fr' }}
+                        className="grid grid-cols-[86px_64px_1fr] py-1.5 border-b border-[var(--bd-s)]"
                       >
                         <span className="mono text-[10px] text-[var(--t3)] self-start pt-px">
                           {action.date}

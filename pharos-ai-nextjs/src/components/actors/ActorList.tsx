@@ -22,10 +22,7 @@ export function ActorList({ selectedId, onSelect }: Props) {
       </div>
 
       {/* Column headers */}
-      <div
-        className="grid px-3 py-1 border-b border-[var(--bd)] bg-[var(--bg-2)] shrink-0"
-        style={{ gridTemplateColumns: '1fr 60px 30px' }}
-      >
+      <div className="grid grid-cols-[1fr_60px_30px] px-3 py-1 border-b border-[var(--bd)] bg-[var(--bg-2)] shrink-0">
         {['ACTOR', 'ACTIVITY', ''].map(h => <span key={h} className="label text-[8px]">{h}</span>)}
       </div>
 
@@ -40,10 +37,8 @@ export function ActorList({ selectedId, onSelect }: Props) {
               key={actor.id}
               variant="ghost"
               onClick={() => onSelect(isOn ? null : actor.id)}
-              className="grid w-full h-auto px-3 py-2 rounded-none justify-start items-center border-b border-[var(--bd-s)]"
+              className="grid grid-cols-[1fr_60px_30px] gap-0 w-full h-auto px-3 py-2 rounded-none justify-start items-center border-b border-[var(--bd-s)]"
               style={{
-                gridTemplateColumns: '1fr 60px 30px',
-                gap: 0,
                 borderLeft: `3px solid ${isOn ? actC : 'transparent'}`,
                 background: isOn ? 'var(--bg-sel)' : 'transparent',
               }}
@@ -72,7 +67,7 @@ export function ActorList({ selectedId, onSelect }: Props) {
               <div className="flex flex-col justify-center gap-[3px]">
                 <Progress
                   value={actor.activityScore}
-                  style={{ height: 3, borderRadius: 1, background: 'var(--bd)' }}
+                  className="h-[3px] rounded-[1px] bg-[var(--bd)]"
                   indicatorStyle={{ background: actC }}
                 />
                 <span className="mono text-[8px]" style={{ color: actC }}>{actor.activityScore}</span>

@@ -11,7 +11,7 @@ const SEV_C: Record<string, string> = {
   CRITICAL: 'var(--danger)', HIGH: 'var(--warning)', STANDARD: 'var(--info)',
 };
 const SEV_BG: Record<string, string> = {
-  CRITICAL: 'rgba(231,106,110,0.12)', HIGH: 'rgba(236,154,60,0.12)', STANDARD: 'rgba(76,144,240,0.1)',
+  CRITICAL: 'var(--danger-dim)', HIGH: 'var(--warning-dim)', STANDARD: 'var(--info-dim)',
 };
 
 function groupByDate(events: IntelEvent[]) {
@@ -41,10 +41,7 @@ export function EventLog({ events, selectedId, onSelect }: Props) {
       </div>
 
       {/* Column headers */}
-      <div
-        className="grid px-3 py-1 border-b border-[var(--bd)] bg-[var(--bg-2)] shrink-0"
-        style={{ gridTemplateColumns: '40px 50px 1fr 24px' }}
-      >
+      <div className="grid grid-cols-[40px_50px_1fr_24px] px-3 py-1 border-b border-[var(--bd)] bg-[var(--bg-2)] shrink-0">
         {['TIME', 'SEV', 'TITLE', ''].map(h => <span key={h} className="label text-[8px]">{h}</span>)}
       </div>
 
@@ -62,16 +59,15 @@ export function EventLog({ events, selectedId, onSelect }: Props) {
             {dayEvents.map(evt => {
               const isOn = selectedId === evt.id;
               const sc   = SEV_C[evt.severity] ?? 'var(--info)';
-              const sbg  = SEV_BG[evt.severity] ?? 'rgba(76,144,240,0.1)';
+              const sbg  = SEV_BG[evt.severity] ?? 'var(--info-dim)';
               const xc   = getPostsForEvent(evt.id).length;
               return (
                 <Button
                   key={evt.id}
                   variant="ghost"
                   onClick={() => onSelect(isOn ? null : evt.id)}
-                  className="grid gap-0 w-full h-auto px-3 py-1.5 rounded-none justify-start items-start border-b border-[var(--bd-s)]"
+                  className="grid grid-cols-[40px_50px_1fr_24px] gap-0 w-full h-auto px-3 py-1.5 rounded-none justify-start items-start border-b border-[var(--bd-s)]"
                   style={{
-                    gridTemplateColumns: '40px 50px 1fr 24px',
                     borderLeft: `3px solid ${isOn ? sc : 'transparent'}`,
                     background: isOn ? 'var(--bg-sel)' : 'transparent',
                   }}
