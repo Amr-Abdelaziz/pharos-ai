@@ -149,12 +149,12 @@ export default function XPostCard({ post, compact }: Props) {
           >
             <div className="w-9 h-9 flex items-center justify-center border border-[var(--bd)] bg-white/[0.06]">
               <div
+                className="ml-[2px]"
                 style={{
                   width: 0, height: 0,
                   borderTop: '7px solid transparent',
                   borderBottom: '7px solid transparent',
                   borderLeft: '12px solid var(--t3)',
-                  marginLeft: 2,
                 }}
               />
             </div>
