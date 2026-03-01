@@ -21,8 +21,8 @@ const STANCE_C: Record<string, string> = {
 function MetaChip({ label, val }: { label: string; val: string }) {
   return (
     <div>
-      <div className="label" style={{ fontSize: 8, marginBottom: 1 }}>{label}</div>
-      <span className="mono" style={{ fontSize: 10, color: 'var(--t1)' }}>{val}</span>
+      <div className="label text-[8px] mb-px">{label}</div>
+      <span className="mono text-[10px] text-[var(--t1)]">{val}</span>
     </div>
   );
 }
@@ -43,34 +43,31 @@ export function EventDetail({ event, tab, onTabChange }: Props) {
   ];
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
-      <div style={{
-        padding: '10px 20px', borderBottom: '1px solid var(--bd)',
-        background: 'var(--bg-2)', flexShrink: 0,
-      }}>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            padding: '2px 8px', border: `1px solid ${sc}`, background: sc + '18',
-          }}>
-            <div style={{ width: 5, height: 5, borderRadius: '50%', background: sc }} />
-            <span style={{ fontSize: 9, fontWeight: 700, color: sc, letterSpacing: '0.08em' }}>
+      <div className="px-5 py-2.5 border-b border-[var(--bd)] bg-[var(--bg-2)] shrink-0">
+        <div className="flex gap-2 mb-2 flex-wrap items-center">
+          <div
+            className="flex items-center gap-[5px] px-2 py-0.5"
+            style={{ border: `1px solid ${sc}`, background: sc + '18' }}
+          >
+            <div className="w-[5px] h-[5px] rounded-full" style={{ background: sc }} />
+            <span className="text-[9px] font-bold tracking-[0.08em]" style={{ color: sc }}>
               {event.severity}
             </span>
           </div>
-          <span className="label" style={{ color: 'var(--t3)', fontSize: 8 }}>{event.type}</span>
+          <span className="label text-[8px] text-[var(--t3)]">{event.type}</span>
           {event.verified && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-              <CheckCircle size={9} style={{ color: 'var(--success)' }} strokeWidth={2} />
-              <span className="label" style={{ fontSize: 8, color: 'var(--success)' }}>VERIFIED</span>
+            <div className="flex items-center gap-[3px]">
+              <CheckCircle size={9} className="text-[var(--success)]" strokeWidth={2} />
+              <span className="label text-[8px] text-[var(--success)]">VERIFIED</span>
             </div>
           )}
         </div>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', lineHeight: 1.25, marginBottom: 8 }}>
+        <h1 className="text-[15px] font-bold text-[var(--t1)] leading-[1.25] mb-2">
           {event.title}
         </h1>
-        <div style={{ display: 'flex', gap: 20 }}>
+        <div className="flex gap-5">
           <MetaChip label="TIMESTAMP"
             val={new Date(event.timestamp).toISOString().replace('T', ' ').slice(0, 19) + ' UTC'} />
           <MetaChip label="LOCATION" val={event.location} />
@@ -80,49 +77,46 @@ export function EventDetail({ event, tab, onTabChange }: Props) {
 
       {/* Tabs */}
       <IntelTabBar value={tab} onValueChange={onTabChange} tabs={tabs}>
-        <TabsContent value="report" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          <ScrollArea style={{ height: '100%' }}>
-            <div style={{ padding: '20px 24px' }}>
-              <div style={{ marginBottom: 22 }}>
+        <TabsContent value="report" className="flex-1 min-h-0 overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="px-6 py-5">
+              <div className="mb-[22px]">
                 <SectionDivider label="EXECUTIVE SUMMARY" />
-                <div style={{ borderLeft: `3px solid ${sc}`, paddingLeft: 14 }}>
-                  <p style={{ fontSize: 13, color: 'var(--t1)', lineHeight: 1.7 }}>{event.summary}</p>
+                <div className="pl-[14px]" style={{ borderLeft: `3px solid ${sc}` }}>
+                  <p className="text-[13px] text-[var(--t1)] leading-relaxed">{event.summary}</p>
                 </div>
               </div>
 
-              <div style={{ marginBottom: 22 }}>
+              <div className="mb-[22px]">
                 <SectionDivider label="INTELLIGENCE REPORT" />
-                <div style={{ fontSize: 12.5, color: 'var(--t1)', lineHeight: 1.7 }}>
+                <div className="text-[12.5px] text-[var(--t1)] leading-relaxed">
                   {event.fullContent.split('\n\n').map((p, i) => (
-                    <p key={i} style={{ marginBottom: 12, color: i === 0 ? 'var(--t1)' : 'var(--t2)' }}>{p}</p>
+                    <p key={i} className="mb-3" style={{ color: i === 0 ? 'var(--t1)' : 'var(--t2)' }}>{p}</p>
                   ))}
                 </div>
               </div>
 
-              <div style={{ marginBottom: 22 }}>
+              <div className="mb-[22px]">
                 <SectionDivider label={`SOURCES (${event.sources.length})`} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div className="flex flex-col gap-1">
                   {event.sources.map((src, i) => (
-                    <div key={i} style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      padding: '6px 10px', border: '1px solid var(--bd)',
-                    }}>
-                      <span style={{
-                        fontSize: 8, fontWeight: 700, padding: '1px 5px',
-                        background: TIER_C[src.tier] + '22', color: TIER_C[src.tier],
-                      }}>
+                    <div key={i} className="flex items-center gap-2.5 px-2.5 py-1.5 border border-[var(--bd)]">
+                      <span
+                        className="text-[8px] font-bold px-[5px] py-px"
+                        style={{ background: TIER_C[src.tier] + '22', color: TIER_C[src.tier] }}
+                      >
                         {TIER_L[src.tier]}
                       </span>
-                      <span style={{ fontSize: 11, color: 'var(--t1)', flex: 1 }}>{src.name}</span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ width: 50, height: 3, background: 'var(--bd)' }}>
+                      <span className="text-[11px] text-[var(--t1)] flex-1">{src.name}</span>
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-[50px] h-[3px] bg-[var(--bd)]">
                           <div style={{
                             width: `${src.reliability}%`, height: '100%',
                             background: src.reliability > 90 ? 'var(--success)'
                               : src.reliability > 75 ? 'var(--warning)' : 'var(--danger)',
                           }} />
                         </div>
-                        <span className="mono" style={{ fontSize: 9, color: 'var(--t3)', minWidth: 26 }}>
+                        <span className="mono text-[9px] text-[var(--t3)] min-w-[26px]">
                           {src.reliability}%
                         </span>
                       </div>
@@ -132,32 +126,28 @@ export function EventDetail({ event, tab, onTabChange }: Props) {
               </div>
 
               {event.actorResponses.length > 0 && (
-                <div style={{ marginBottom: 22 }}>
+                <div className="mb-[22px]">
                   <SectionDivider label="ACTOR RESPONSES" />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div className="flex flex-col gap-1.5">
                     {event.actorResponses.map((r, i) => {
                       const stC = STANCE_C[r.stance] ?? 'var(--t2)';
                       return (
-                        <Link key={i} href={`/dashboard/actors?actor=${r.actorId}`}
-                          style={{ textDecoration: 'none' }}>
-                          <div style={{
-                            padding: '8px 12px', border: '1px solid var(--bd)',
-                            borderLeft: `3px solid ${stC}`, cursor: 'pointer',
-                          }}
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg-3)'}
-                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+                        <Link key={i} href={`/dashboard/actors?actor=${r.actorId}`} className="no-underline">
+                          <div
+                            className="px-3 py-2 border border-[var(--bd)] cursor-pointer hover:bg-[var(--bg-3)] transition-colors"
+                            style={{ borderLeft: `3px solid ${stC}` }}
                           >
-                            <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--t1)' }}>{r.actorName}</span>
-                              <span style={{
-                                fontSize: 8, padding: '1px 5px',
-                                background: stC + '18', color: stC, fontWeight: 700, letterSpacing: '.05em',
-                              }}>{r.stance}</span>
-                              <span className="label" style={{ fontSize: 8, marginLeft: 'auto', color: 'var(--t3)' }}>{r.type}</span>
-                              <ArrowRight size={9} style={{ color: 'var(--t3)' }} strokeWidth={1.5} />
+                            <div className="flex gap-2 mb-1">
+                              <span className="text-[11px] font-bold text-[var(--t1)]">{r.actorName}</span>
+                              <span
+                                className="text-[8px] px-[5px] py-px font-bold tracking-[0.05em]"
+                                style={{ background: stC + '18', color: stC }}
+                              >{r.stance}</span>
+                              <span className="label text-[8px] ml-auto text-[var(--t3)]">{r.type}</span>
+                              <ArrowRight size={9} className="text-[var(--t3)]" strokeWidth={1.5} />
                             </div>
-                            <p style={{ fontSize: 11.5, color: 'var(--t2)', lineHeight: 1.5, fontStyle: 'italic' }}>
-                              "{r.statement}"
+                            <p className="text-[11.5px] text-[var(--t2)] leading-[1.5] italic">
+                              &quot;{r.statement}&quot;
                             </p>
                           </div>
                         </Link>
@@ -170,20 +160,20 @@ export function EventDetail({ event, tab, onTabChange }: Props) {
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="signals" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          <ScrollArea style={{ height: '100%' }}>
-            <div style={{ padding: '12px 16px' }}>
+        <TabsContent value="signals" className="flex-1 min-h-0 overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="px-4 py-3">
               {xPosts.length === 0 ? (
-                <div style={{ padding: 48, textAlign: 'center' }}>
-                  <span style={{ fontSize: 20, color: 'var(--t3)' }}>𝕏</span>
-                  <p className="label" style={{ color: 'var(--t3)', marginTop: 8 }}>
+                <div className="p-12 text-center">
+                  <span className="text-xl text-[var(--t3)]">𝕏</span>
+                  <p className="label text-[var(--t3)] mt-2">
                     No signals indexed for this event
                   </p>
                 </div>
               ) : (
                 <>
-                  <div style={{ marginBottom: 10 }}>
-                    <span className="label" style={{ fontSize: 8 }}>
+                  <div className="mb-2.5">
+                    <span className="label text-[8px]">
                       {xPosts.length} POSTS · PHAROS-CURATED · CHRONOLOGICAL
                     </span>
                   </div>

@@ -28,15 +28,11 @@ export function FeedFilterRail({
   onSevChange, onTypeChange, onVerChange,
 }: Props) {
   return (
-    <div style={{
-      width: 160, minWidth: 160, flexShrink: 0,
-      borderRight: '1px solid var(--bd)',
-      display: 'flex', flexDirection: 'column', overflow: 'hidden',
-    }}>
+    <div className="w-40 min-w-40 shrink-0 border-r border-[var(--bd)] flex flex-col overflow-hidden">
       <div className="panel-header">
         <span className="section-title">Filters</span>
       </div>
-      <ScrollArea style={{ flex: 1 }}>
+      <ScrollArea className="flex-1">
         <FilterBlock label="SEVERITY">
           {(['CRITICAL', 'HIGH', 'STANDARD'] as Severity[]).map(s => (
             <CheckboxRow key={s} label={s} color={SEV_C[s]}
@@ -54,8 +50,8 @@ export function FeedFilterRail({
           ))}
         </FilterBlock>
       </ScrollArea>
-      <div style={{ padding: '8px 12px', borderTop: '1px solid var(--bd)', flexShrink: 0 }}>
-        <span className="mono" style={{ fontSize: 9, color: 'var(--t3)' }}>{totalFiltered} EVENTS</span>
+      <div className="px-3 py-2 border-t border-[var(--bd)] shrink-0">
+        <span className="mono text-[9px] text-[var(--t3)]">{totalFiltered} EVENTS</span>
       </div>
     </div>
   );
