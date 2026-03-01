@@ -2,19 +2,20 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Button } from '@/components/ui/button';
 import type { PredictionMarket } from '@/app/api/polymarket/route';
 import type { MarketGroup } from '@/data/predictionGroups';
 import { MarketRow } from './MarketRow';
 import { fmtVol, getLeadProb } from './utils';
 
-interface Props {
+type Props = {
   group: MarketGroup;
   markets: PredictionMarket[];
   expandedId: string | null;
   onToggle: (id: string) => void;
   globalRankOffset: number;
   sortBy: 'volume' | 'volume24hr' | 'probability';
-}
+};
 
 export function GroupSection({ group, markets, expandedId, onToggle, globalRankOffset, sortBy }: Props) {
   const [open, setOpen] = useState(true);
@@ -30,33 +31,37 @@ export function GroupSection({ group, markets, expandedId, onToggle, globalRankO
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger asChild>
-        <div
-          role="button"
-          tabIndex={0}
+        <Button
+          variant="ghost"
           style={{
-            height: 30, display: 'flex', alignItems: 'center', padding: '0 14px',
-            background: group.bg, borderBottom: `1px solid ${group.border}`,
-            borderLeft: `3px solid ${group.color}`, cursor: 'pointer', gap: 8,
+            width: '100%', height: 30, borderRadius: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+            padding: '0 14px', gap: 8,
+            background: group.bg,
+            borderBottom: `1px solid ${group.border}`,
+            borderLeft: `3px solid ${group.color}`,
           }}
         >
           {open
             ? <ChevronDown  size={11} style={{ color: group.color, flexShrink: 0 }} />
             : <ChevronRight size={11} style={{ color: group.color, flexShrink: 0 }} />}
-          <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', fontWeight: 700, color: group.color, letterSpacing: '0.10em' }}>
+
+          <span className="mono" style={{ fontWeight: 700, color: group.color, letterSpacing: '0.10em', fontSize: 9 }}>
             {group.label}
           </span>
-          <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.04em' }}>
+          <span className="mono" style={{ color: 'var(--t4)', letterSpacing: '0.04em', fontSize: 9 }}>
             {group.description}
           </span>
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)' }}>
+
+          <div className="flex items-center gap-3 ml-auto">
+            <span className="mono" style={{ color: 'var(--t4)', fontSize: 9 }}>
               {markets.length} {markets.length === 1 ? 'MARKET' : 'MARKETS'}
             </span>
-            <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t3)', fontWeight: 700 }}>
+            <span className="mono" style={{ color: 'var(--t3)', fontWeight: 700, fontSize: 9 }}>
               {fmtVol(groupVol)} VOL
             </span>
           </div>
-        </div>
+        </Button>
       </CollapsibleTrigger>
 
       <CollapsibleContent>

@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import type { PredictionMarket } from '@/app/api/polymarket/route';
 import { PriceChart } from './PriceChart';
 import { SubMarketTable } from './SubMarketTable';
-import { fmtVol, fmtDate, probColor, probBg, spreadColor, statusLabel, getLeadProb, COL } from './utils';
+import { fmtVol, fmtMarketDate, probColor, probBg, spreadColor, statusLabel, getLeadProb, COL } from './utils';
 
-interface Props {
+type Props = {
   market: PredictionMarket;
   rank: number;
   isExpanded: boolean;
   onToggle: () => void;
-}
+};
 
 export function MarketRow({ market, rank, isExpanded, onToggle }: Props) {
   const [selectedSubId, setSelectedSubId] = useState(
@@ -36,86 +36,81 @@ export function MarketRow({ market, rank, isExpanded, onToggle }: Props) {
 
   return (
     <Collapsible open={isExpanded} onOpenChange={onToggle}>
+
       {/* ── Row trigger ── */}
       <CollapsibleTrigger asChild>
-        <div
-          role="button"
-          tabIndex={0}
+        <Button
+          variant="ghost"
           style={{
-            display: 'grid', gridTemplateColumns: COL, alignItems: 'center', height: 44,
-            borderBottom: '1px solid var(--bd)', cursor: 'pointer',
-            background: isExpanded ? 'var(--bg-2)' : 'transparent', transition: 'background 0.1s',
+            display: 'grid', gridTemplateColumns: COL, gap: 0,
+            width: '100%', height: 44, padding: 0, borderRadius: 0,
+            borderBottom: '1px solid var(--bd)',
+            background: isExpanded ? 'var(--bg-2)' : 'transparent',
           }}
-          onMouseEnter={e => { if (!isExpanded) (e.currentTarget as HTMLDivElement).style.background = 'rgba(56,62,71,0.45)'; }}
-          onMouseLeave={e => { if (!isExpanded) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
         >
           {/* Rank */}
-          <div style={{ paddingLeft: 14, fontSize: 10, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', fontWeight: 700 }}>
+          <span className="mono flex items-center pl-3.5" style={{ color: 'var(--t4)', fontWeight: 700 }}>
             {rank}
-          </div>
+          </span>
 
-          {/* Title + group badge */}
-          <div style={{ paddingRight: 20, overflow: 'hidden', display: 'flex', alignItems: 'center', gap: 7 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--t1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          {/* Title + group count badge */}
+          <div className="flex items-center gap-2 overflow-hidden pr-5">
+            <span className="truncate" style={{ fontSize: 12, fontWeight: 600, color: 'var(--t1)' }}>
               {market.title}
-            </div>
+            </span>
             {isGroup && (
-              <Badge variant="outline" style={{ flexShrink: 0, fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', padding: '1px 5px', color: 'var(--blue-l)', borderColor: 'rgba(76,144,240,0.25)', background: 'rgba(76,144,240,0.1)' }}>
+              <Badge variant="outline" style={{ flexShrink: 0, fontSize: 8, padding: '1px 5px', color: 'var(--blue-l)', borderColor: 'rgba(76,144,240,0.25)', background: 'var(--blue-dim)' }}>
                 {market.subMarkets.length}
               </Badge>
             )}
           </div>
 
           {/* Probability bar + value */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 12 }}>
-            <Progress
-              value={prob * 100}
-              style={{ flex: 1, height: 4, borderRadius: 1, background: 'var(--bg-3)' }}
-              indicatorStyle={{ background: color, borderRadius: 1 }}
-            />
-            <div style={{ fontSize: 12, fontFamily: 'SFMono-Regular, Menlo, monospace', fontWeight: 700, color, background: bg, padding: '1px 5px', borderRadius: 2, minWidth: 40, textAlign: 'right' }}>
+          <div className="flex items-center gap-2 pr-3">
+            <Progress value={prob * 100} className="flex-1 h-1 rounded-sm" style={{ background: 'var(--bg-3)' }} indicatorStyle={{ background: color }} />
+            <span className="mono" style={{ fontWeight: 700, color, background: bg, padding: '1px 5px', borderRadius: 2, minWidth: 40, textAlign: 'right' }}>
               {Math.round(prob * 100)}%
-            </div>
+            </span>
           </div>
 
-          {/* Volume */}
-          <div style={{ fontSize: 11, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t2)', textAlign: 'right', paddingRight: 12 }}>
+          {/* Total volume */}
+          <span className="mono text-right pr-3" style={{ color: 'var(--t2)' }}>
             {fmtVol(market.volume)}
-          </div>
+          </span>
 
-          {/* 24h Vol */}
-          <div style={{ fontSize: 11, fontFamily: 'SFMono-Regular, Menlo, monospace', color: market.volume24hr > 0 ? '#23A26D' : 'var(--t4)', textAlign: 'right', paddingRight: 12 }}>
+          {/* 24h volume */}
+          <span className="mono text-right pr-3" style={{ color: market.volume24hr > 0 ? 'var(--success)' : 'var(--t4)' }}>
             {market.volume24hr > 0 ? fmtVol(market.volume24hr) : '—'}
-          </div>
+          </span>
 
           {/* End date */}
-          <div style={{ fontSize: 10, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t3)', textAlign: 'right', paddingRight: 12 }}>
-            {fmtDate(market.endDate)}
-          </div>
+          <span className="mono text-right pr-3" style={{ fontSize: 10, color: 'var(--t3)' }}>
+            {fmtMarketDate(market.endDate)}
+          </span>
 
           {/* Status badge */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: 8 }}>
-            <Badge variant="outline" style={{ fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', padding: '1px 5px', color: status.color, borderColor: status.border, background: status.bg, letterSpacing: '0.06em' }}>
+          <div className="flex justify-end pr-2">
+            <Badge variant="outline" style={{ fontSize: 8, padding: '1px 5px', color: status.color, borderColor: status.border, background: status.bg, letterSpacing: '0.06em' }}>
               {status.label}
             </Badge>
           </div>
 
           {/* Expand chevron */}
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--t4)' }}>
+          <div className="flex justify-center items-center" style={{ color: 'var(--t4)' }}>
             <ChevronDown size={12} style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
           </div>
-        </div>
+        </Button>
       </CollapsibleTrigger>
 
       {/* ── Expanded detail panel ── */}
       <CollapsibleContent>
-        <div style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--bd)', padding: '14px 50px 18px 50px' }}>
-          <div style={{ display: 'flex', gap: 28, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--bd)', padding: '14px 50px 18px' }}>
+          <div className="flex gap-7 items-start flex-wrap">
 
             {/* Chart */}
             <div style={{ flexShrink: 0 }}>
               {isGroup && (
-                <div style={{ fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.08em', marginBottom: 6 }}>
+                <div className="label mb-1.5">
                   CHART: {market.subMarkets.find(s => s.id === selectedSubId)?.groupItemTitle ?? '—'}
                 </div>
               )}
@@ -123,74 +118,26 @@ export function MarketRow({ market, rank, isExpanded, onToggle }: Props) {
             </div>
 
             {/* Description + outcomes */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: 1, minWidth: 200 }}>
+            <div className="flex flex-col gap-2.5 flex-1 min-w-[200px]">
               {market.description && (
                 <p style={{ fontSize: 11, color: 'var(--t3)', lineHeight: 1.7, maxWidth: 600 }}>{market.description}</p>
               )}
               {!isBinary && market.outcomes.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxWidth: 400 }}>
-                  <div style={{ fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.08em' }}>OUTCOMES</div>
-                  {market.outcomes.slice(0, 6).map((outcome, i) => {
-                    const p = market.prices[i] ?? 0;
-                    const c = probColor(p);
-                    return (
-                      <div key={outcome} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontSize: 10, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t2)', width: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                          {outcome}
-                        </span>
-                        <Progress value={p * 100} style={{ flex: 1, height: 3, maxWidth: 180, borderRadius: 1, background: 'var(--bg-3)' }} indicatorStyle={{ background: c }} />
-                        <span style={{ fontSize: 10, fontFamily: 'SFMono-Regular, Menlo, monospace', fontWeight: 700, color: c, width: 32, textAlign: 'right', flexShrink: 0 }}>
-                          {Math.round(p * 100)}%
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+                <OutcomeList outcomes={market.outcomes} prices={market.prices} />
               )}
             </div>
 
             {/* Order book + stats */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 160, alignItems: 'flex-end' }}>
-              <div style={{ textAlign: 'right', width: '100%' }}>
-                <div style={{ fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.06em', marginBottom: 4 }}>ORDER BOOK</div>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', fontFamily: 'SFMono-Regular, Menlo, monospace', fontSize: 11 }}>
-                  {[
-                    { label: 'BID',    val: market.bestBid   > 0 ? `${Math.round(market.bestBid * 100)}¢` : '—',           color: '#23A26D' },
-                    { label: 'ASK',    val: market.bestAsk   > 0 ? `${Math.round(market.bestAsk * 100)}¢` : '—',           color: '#E76A6E' },
-                    { label: 'SPREAD', val: market.spread    > 0 ? `${(market.spread * 100).toFixed(1)}¢` : '—',           color: spreadColor(market.spread) },
-                  ].map(({ label, val, color: c }) => (
-                    <div key={label} style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: 7, color: 'var(--t4)', letterSpacing: '0.06em' }}>{label}</div>
-                      <div style={{ fontWeight: 700, color: c }}>{val}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 16px', width: '100%' }}>
-                {[
-                  { label: 'LIQUIDITY',   val: fmtVol(market.liquidity)   },
-                  { label: '24H VOL',     val: fmtVol(market.volume24hr)  },
-                  { label: '7D VOL',      val: fmtVol(market.volume1wk)   },
-                  { label: '1MO VOL',     val: fmtVol(market.volume1mo)   },
-                  ...(market.openInterest > 0 ? [{ label: 'OPEN INT', val: fmtVol(market.openInterest) }] : []),
-                  { label: 'COMPETITIVE', val: `${(market.competitive * 100).toFixed(0)}%` },
-                ].map(({ label, val }) => (
-                  <div key={label} style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 7, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.06em' }}>{label}</div>
-                    <div style={{ fontSize: 11, fontFamily: 'SFMono-Regular, Menlo, monospace', fontWeight: 700, color: 'var(--t1)' }}>{val}</div>
-                  </div>
-                ))}
-              </div>
-
+            <div className="flex flex-col gap-2.5 items-end" style={{ minWidth: 160 }}>
+              <OrderBook market={market} />
+              <StatGrid market={market} />
               {market.startDate && (
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 7, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.06em' }}>OPENED</div>
-                  <div style={{ fontSize: 10, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t3)' }}>{fmtDate(market.startDate)}</div>
+                <div className="text-right">
+                  <div className="label">OPENED</div>
+                  <span className="mono" style={{ fontSize: 10, color: 'var(--t3)' }}>{fmtMarketDate(market.startDate)}</span>
                 </div>
               )}
-
-              <Button asChild variant="outline" size="sm" style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', letterSpacing: '0.08em', color: 'var(--blue-l)', borderColor: 'rgba(76,144,240,0.3)', background: 'rgba(45,114,210,0.08)', gap: 4 }}>
+              <Button asChild variant="outline" size="sm" className="mono" style={{ fontSize: 9, letterSpacing: '0.08em', color: 'var(--blue-l)', borderColor: 'rgba(76,144,240,0.3)', background: 'var(--blue-dim)' }}>
                 <a href={market.polyUrl} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}>
                   <ExternalLink size={10} /> POLYMARKET ↗
                 </a>
@@ -198,21 +145,84 @@ export function MarketRow({ market, rank, isExpanded, onToggle }: Props) {
             </div>
           </div>
 
-          {/* Sub-markets table */}
+          {/* Sub-markets */}
           {isGroup && (
             <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 12 }}>
-              <div style={{ fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.10em', marginBottom: 6 }}>
+              <div className="label mb-1.5">
                 {market.subMarkets.length} SUB-MARKETS — CLICK ROW TO VIEW CHART
               </div>
-              <SubMarketTable
-                subMarkets={market.subMarkets}
-                selectedId={selectedSubId}
-                onSelect={id => setSelectedSubId(id)}
-              />
+              <SubMarketTable subMarkets={market.subMarkets} selectedId={selectedSubId} onSelect={setSelectedSubId} />
             </div>
           )}
         </div>
       </CollapsibleContent>
     </Collapsible>
+  );
+}
+
+// ── Private sub-components ────────────────────────────────────────────────────
+
+function OutcomeList({ outcomes, prices }: { outcomes: string[]; prices: number[] }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxWidth: 400 }}>
+      <div className="label">OUTCOMES</div>
+      {outcomes.slice(0, 6).map((outcome, i) => {
+        const p = prices[i] ?? 0;
+        const c = p >= 0.65 ? 'var(--success)' : p >= 0.5 ? 'var(--blue)' : p >= 0.35 ? 'var(--warning)' : 'var(--danger)';
+        return (
+          <div key={outcome} className="flex items-center gap-2">
+            <span className="mono truncate" style={{ fontSize: 10, color: 'var(--t2)', width: 150, flexShrink: 0 }}>{outcome}</span>
+            <Progress value={p * 100} className="flex-1 h-px" style={{ maxWidth: 180, background: 'var(--bg-3)' }} indicatorStyle={{ background: c }} />
+            <span className="mono" style={{ fontSize: 10, fontWeight: 700, color: c, width: 32, textAlign: 'right', flexShrink: 0 }}>
+              {Math.round(p * 100)}%
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function OrderBook({ market }: { market: PredictionMarket }) {
+  const { spreadColor: sc } = { spreadColor };
+  const entries = [
+    { label: 'BID',    val: market.bestBid  > 0 ? `${Math.round(market.bestBid * 100)}¢` : '—', color: 'var(--success)' },
+    { label: 'ASK',    val: market.bestAsk  > 0 ? `${Math.round(market.bestAsk * 100)}¢` : '—', color: 'var(--danger)'  },
+    { label: 'SPREAD', val: market.spread   > 0 ? `${(market.spread * 100).toFixed(1)}¢`  : '—', color: spreadColor(market.spread) },
+  ];
+  void sc; // used inline above
+  return (
+    <div className="text-right w-full">
+      <div className="label mb-1">ORDER BOOK</div>
+      <div className="flex gap-2.5 justify-end">
+        {entries.map(({ label, val, color }) => (
+          <div key={label} className="text-right">
+            <div className="label" style={{ fontSize: 7 }}>{label}</div>
+            <span className="mono" style={{ fontWeight: 700, color }}>{val}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StatGrid({ market }: { market: PredictionMarket }) {
+  const rows = [
+    { label: 'LIQUIDITY',   val: fmtVol(market.liquidity)  },
+    { label: '24H VOL',     val: fmtVol(market.volume24hr) },
+    { label: '7D VOL',      val: fmtVol(market.volume1wk)  },
+    { label: '1MO VOL',     val: fmtVol(market.volume1mo)  },
+    ...(market.openInterest > 0 ? [{ label: 'OPEN INT', val: fmtVol(market.openInterest) }] : []),
+    { label: 'COMPETITIVE', val: `${(market.competitive * 100).toFixed(0)}%` },
+  ];
+  return (
+    <div className="grid gap-x-4 gap-y-1 w-full" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      {rows.map(({ label, val }) => (
+        <div key={label} className="text-right">
+          <div className="label" style={{ fontSize: 7 }}>{label}</div>
+          <span className="mono" style={{ fontSize: 11, fontWeight: 700, color: 'var(--t1)' }}>{val}</span>
+        </div>
+      ))}
+    </div>
   );
 }

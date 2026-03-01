@@ -38,7 +38,7 @@ export function ActorList({ selectedId, onSelect }: Props) {
               variant="ghost"
               onClick={() => onSelect(isOn ? null : actor.id)}
               style={{
-                display: 'grid', gridTemplateColumns: '1fr 60px 30px',
+                display: 'grid', gridTemplateColumns: '1fr 60px 30px', gap: 0,
                 width: '100%', height: 'auto', padding: '8px 12px',
                 borderRadius: 0, justifyContent: 'start', alignItems: 'center',
                 borderBottom: '1px solid var(--bd-s)',

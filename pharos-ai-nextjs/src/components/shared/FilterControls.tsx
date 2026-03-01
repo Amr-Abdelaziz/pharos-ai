@@ -1,28 +1,24 @@
 'use client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 
 /** Labelled group of filter rows. */
 export function FilterBlock({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ padding: '10px 0', borderBottom: '1px solid var(--bd-s)' }}>
-      <div className="label" style={{ padding: '0 12px', marginBottom: 4, fontSize: 8 }}>{label}</div>
+      <div className="label px-3 mb-1">{label}</div>
       {children}
     </div>
   );
 }
 
-/** shadcn Checkbox-based filter row — replaces custom drawn checkbox. */
+/** Checkbox-based filter row — uses shadcn Checkbox. */
 export function CheckboxRow({
   label, color, checked, onChange,
 }: { label: string; color: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <label
-      style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '5px 12px', cursor: 'pointer',
-      }}
-    >
+    <label className="flex items-center gap-2 px-3 py-1.5 cursor-pointer">
       <Checkbox
         checked={checked}
         onCheckedChange={onChange}
@@ -37,19 +33,18 @@ export function CheckboxRow({
   );
 }
 
-/** shadcn Switch-based toggle row used in filter rails. */
+/** Switch-based toggle row — no manual role/keyboard handling. */
 export function ToggleRow({
   label, checked, onChange,
 }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <Button
+      variant="ghost"
       onClick={() => onChange(!checked)}
-      onKeyDown={e => e.key === 'Enter' && onChange(!checked)}
       style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '7px 12px', cursor: 'pointer',
+        width: '100%', height: 'auto', borderRadius: 0,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '7px 12px',
       }}
     >
       <span style={{ fontSize: 10, color: checked ? 'var(--t1)' : 'var(--t2)' }}>{label}</span>
@@ -58,6 +53,6 @@ export function ToggleRow({
         onCheckedChange={onChange}
         onClick={e => e.stopPropagation()}
       />
-    </div>
+    </Button>
   );
 }

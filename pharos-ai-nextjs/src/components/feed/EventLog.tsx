@@ -1,4 +1,5 @@
 'use client';
+import { fmtTime } from '@/lib/format';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -13,7 +14,7 @@ const SEV_BG: Record<string, string> = {
   CRITICAL: 'rgba(231,106,110,0.12)', HIGH: 'rgba(236,154,60,0.12)', STANDARD: 'rgba(76,144,240,0.1)',
 };
 
-function fmtTime(ts: string) { return new Date(ts).toISOString().slice(11, 16); }
+
 
 function groupByDate(events: IntelEvent[]) {
   const groups: Record<string, IntelEvent[]> = {};
@@ -68,7 +69,7 @@ export function EventLog({ events, selectedId, onSelect }: Props) {
                   variant="ghost"
                   onClick={() => onSelect(isOn ? null : evt.id)}
                   style={{
-                    display: 'grid', gridTemplateColumns: '40px 50px 1fr 24px',
+                    display: 'grid', gridTemplateColumns: '40px 50px 1fr 24px', gap: 0,
                     width: '100%', height: 'auto', padding: '6px 12px',
                     borderRadius: 0, justifyContent: 'start', alignItems: 'start',
                     borderBottom: '1px solid var(--bd-s)',

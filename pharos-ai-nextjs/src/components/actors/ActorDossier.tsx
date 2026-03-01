@@ -10,7 +10,7 @@ import { getPostsForActor } from '@/data/iranXPosts';
 
 const TYPE_C: Record<string, string> = {
   MILITARY: 'var(--danger)', DIPLOMATIC: 'var(--info)',
-  POLITICAL: '#a78bfa', ECONOMIC: 'var(--warning)', INTELLIGENCE: 'var(--t2)',
+  POLITICAL: 'var(--cyber)', ECONOMIC: 'var(--warning)', INTELLIGENCE: 'var(--t2)',
 };
 
 interface Props {

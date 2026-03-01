@@ -1,4 +1,5 @@
 'use client';
+import { fmtDate, fmtTimeZ } from '@/lib/format';
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
@@ -20,8 +21,8 @@ const SEV_CLS: Record<string, string> = {
   CRITICAL: 'sev sev-crit', HIGH: 'sev sev-high', STANDARD: 'sev sev-std',
 };
 
-function fmtTime(ts: string) { return new Date(ts).toISOString().slice(11, 16) + 'Z'; }
-function fmtDate(ts: string) { return new Date(ts).toISOString().slice(0, 10); }
+
+
 
 function CasChip({ label, val, color }: { label: string; val: string; color: string }) {
   return (
@@ -109,7 +110,7 @@ export default function OverviewPage() {
                     >
                       <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4, width: 80 }}>
                         <span className={SEV_CLS[evt.severity]}>{evt.severity.slice(0, 4)}</span>
-                        <span className="mono" style={{ fontSize: 9, color: 'var(--t4)' }}>{fmtTime(evt.timestamp)}</span>
+                        <span className="mono" style={{ fontSize: 9, color: 'var(--t4)' }}>{fmtTimeZ(evt.timestamp)}</span>
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontSize: 12, color: 'var(--t1)', lineHeight: 1.4, marginBottom: 3 }}>{evt.title}</p>

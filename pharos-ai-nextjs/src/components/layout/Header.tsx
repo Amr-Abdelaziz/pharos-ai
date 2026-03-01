@@ -49,15 +49,7 @@ export function Header() {
           WebkitAppRegion: 'no-drag',
         } as React.CSSProperties}
       >
-        <span
-          style={{
-            fontFamily: 'SFMono-Regular, Menlo, monospace',
-            fontSize: 13,
-            fontWeight: 700,
-            color: 'var(--t1)',
-            letterSpacing: '0.18em',
-          }}
-        >
+        <span className="mono" style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)', letterSpacing: '0.18em' }}>
           PHAROS
         </span>
 
@@ -70,15 +62,7 @@ export function Header() {
           }}
         />
 
-        <span
-          style={{
-            fontFamily: 'SFMono-Regular, Menlo, monospace',
-            fontSize: 9,
-            fontWeight: 700,
-            color: 'var(--t4)',
-            letterSpacing: '0.08em',
-          }}
-        >
+        <span className="mono" style={{ fontSize: 9, fontWeight: 700, color: 'var(--t4)', letterSpacing: '0.08em' }}>
           EPIC FURY
         </span>
 
@@ -144,28 +128,13 @@ export function Header() {
         {/* LIVE indicator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <div className="dot dot-live" />
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: 'var(--danger)',
-              letterSpacing: '0.06em',
-              fontFamily: 'SFMono-Regular, monospace',
-            }}
-          >
+          <span className="mono" style={{ fontSize: 10, fontWeight: 700, color: 'var(--danger)', letterSpacing: '0.06em' }}>
             LIVE
           </span>
         </div>
 
         {/* UTC clock */}
-        <span
-          style={{
-            fontSize: 10,
-            color: 'var(--t4)',
-            fontFamily: 'SFMono-Regular, monospace',
-            letterSpacing: '0.02em',
-          }}
-        >
+        <span className="mono" style={{ fontSize: 10, color: 'var(--t4)', letterSpacing: '0.02em' }}>
           2026-03-01 · UTC
         </span>
 

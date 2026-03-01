@@ -9,7 +9,7 @@ const SEV_C: Record<Severity, string> = {
   CRITICAL: 'var(--danger)', HIGH: 'var(--warning)', STANDARD: 'var(--info)',
 };
 const TYPE_C: Record<EventType, string> = {
-  MILITARY: 'var(--danger)', DIPLOMATIC: 'var(--info)', INTELLIGENCE: '#a78bfa',
+  MILITARY: 'var(--danger)', DIPLOMATIC: 'var(--info)', INTELLIGENCE: 'var(--cyber)',
   ECONOMIC: 'var(--warning)', HUMANITARIAN: 'var(--success)', POLITICAL: 'var(--t2)',
 };
 

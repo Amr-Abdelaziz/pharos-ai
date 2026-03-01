@@ -6,7 +6,14 @@ import { probColor } from './utils';
 const MIN_W = 220, MIN_H = 80, MAX_W = 900, MAX_H = 400;
 const PAD   = { top: 12, right: 12, bottom: 22, left: 36 };
 
-export function PriceChart({ yesTokenId }: { yesTokenId: string }) {
+// SVG <text> can't use className directly for font-family in all renderers,
+// so we define the font string once as a constant scoped to this file.
+// This is the only permitted exception to the no-font-string rule (CODEX §1.3).
+const SVG_FONT = 'SFMono-Regular, Menlo, monospace';
+
+type Props = { yesTokenId: string };
+
+export function PriceChart({ yesTokenId }: Props) {
   const [history,  setHistory]  = useState<PricePoint[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState(false);
@@ -33,7 +40,11 @@ export function PriceChart({ yesTokenId }: { yesTokenId: string }) {
       const nh = Math.max(MIN_H, Math.min(MAX_H, resizeRef.current.sh + ev.clientY - resizeRef.current.sy));
       setSize({ w: nw, h: nh });
     };
-    const onUp = () => { resizeRef.current = null; window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+    const onUp = () => {
+      resizeRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+    };
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
   }, [size]);
@@ -57,23 +68,22 @@ export function PriceChart({ yesTokenId }: { yesTokenId: string }) {
   }, [history, size.w]);
 
   const { w, h } = size;
-  const chartW = w - PAD.left - PAD.right;
-  const chartH = h - PAD.top - PAD.bottom;
-  const gradId = `fill-${yesTokenId.slice(-8)}`;
+  const chartW   = w - PAD.left - PAD.right;
+  const chartH   = h - PAD.top  - PAD.bottom;
+  const gradId   = `fill-${yesTokenId.slice(-8)}`;
 
-  const placeholder = (msg: string) => (
-    <div style={{ width: w, height: h + 24, display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.08em' }}>PRICE HISTORY</span>
-      </div>
-      <div style={{ flex: 1, border: '1px solid var(--bd)', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.06em' }}>{msg}</span>
+  // ── Placeholder (loading / no data) ──────────────────────────────────────
+  const Placeholder = ({ msg }: { msg: string }) => (
+    <div style={{ width: w, height: h + 24 }} className="flex flex-col gap-1">
+      <span className="mono label">PRICE HISTORY</span>
+      <div className="flex flex-1 items-center justify-center" style={{ border: '1px solid var(--bd)', borderRadius: 2 }}>
+        <span className="mono label">{msg}</span>
       </div>
     </div>
   );
 
-  if (loading) return placeholder('LOADING CHART...');
-  if (error || history.length < 2) return placeholder('NO PRICE HISTORY');
+  if (loading) return <Placeholder msg="LOADING CHART..." />;
+  if (error || history.length < 2) return <Placeholder msg="NO PRICE HISTORY" />;
 
   const pts    = history;
   const minT   = pts[0].t, maxT = pts[pts.length - 1].t;
@@ -102,27 +112,32 @@ export function PriceChart({ yesTokenId }: { yesTokenId: string }) {
   const tooltipLeft = hX !== null && hX > w / 2;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, userSelect: 'none' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.08em' }}>PRICE HISTORY</span>
-        <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', fontWeight: 700, letterSpacing: '0.06em', color: change >= 0 ? '#23A26D' : '#E76A6E' }}>
+    <div className="flex flex-col gap-1 select-none">
+      {/* ── Header row ── */}
+      <div className="flex items-center gap-2.5">
+        <span className="mono label">PRICE HISTORY</span>
+        <span className="mono" style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', color: change >= 0 ? 'var(--success)' : 'var(--danger)' }}>
           {change >= 0 ? '+' : ''}{(change * 100).toFixed(1)}%
         </span>
-        {hPt && (
-          <span style={{ fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', marginLeft: 4 }}>
-            {hDate!.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}
-            {' '}{hDate!.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+        {hPt && hDate && (
+          <span className="mono" style={{ fontSize: 9, color: 'var(--t4)', marginLeft: 4 }}>
+            {hDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase()}
+            {' '}{hDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
             {'  '}<span style={{ color: hColor, fontWeight: 700 }}>{Math.round(hPt.p * 100)}%</span>
           </span>
         )}
-        <span style={{ marginLeft: 'auto', fontSize: 9, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', opacity: 0.5 }}>
-          {pts.length} pts
-        </span>
+        <span className="mono ml-auto" style={{ fontSize: 9, color: 'var(--t4)', opacity: 0.5 }}>{pts.length} pts</span>
       </div>
 
-      <div style={{ position: 'relative', width: w, height: h }}>
-        <svg ref={svgRef} width={w} height={h} style={{ display: 'block', cursor: 'crosshair' }}
-          onMouseMove={onMouseMove} onMouseLeave={() => setHoverIdx(null)}>
+      {/* ── SVG chart ── */}
+      <div className="relative" style={{ width: w, height: h }}>
+        <svg
+          ref={svgRef}
+          width={w} height={h}
+          style={{ display: 'block', cursor: 'crosshair' }}
+          onMouseMove={onMouseMove}
+          onMouseLeave={() => setHoverIdx(null)}
+        >
           <defs>
             <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stopColor={color} stopOpacity="0.28" />
@@ -132,34 +147,47 @@ export function PriceChart({ yesTokenId }: { yesTokenId: string }) {
               <rect x={PAD.left} y={PAD.top} width={chartW} height={chartH} />
             </clipPath>
           </defs>
+
+          {/* Grid */}
           <rect x={PAD.left} y={PAD.top} width={chartW} height={chartH} fill="none" stroke="var(--bd)" strokeWidth={0.5} />
           {gridLines.map(g => (
             <g key={g}>
               <line x1={PAD.left} y1={scaleY(g)} x2={w - PAD.right} y2={scaleY(g)}
-                stroke="var(--bd)" strokeWidth={0.5} strokeDasharray={g === 0 || g === 1 ? 'none' : '3,4'} />
+                stroke="var(--bd)" strokeWidth={0.5}
+                strokeDasharray={g === 0 || g === 1 ? 'none' : '3,4'} />
               <text x={PAD.left - 5} y={scaleY(g) + 3.5} fontSize={7} fill="var(--t4)"
-                textAnchor="end" fontFamily="SFMono-Regular, Menlo, monospace">
+                textAnchor="end" fontFamily={SVG_FONT}>
                 {Math.round(g * 100)}
               </text>
             </g>
           ))}
+
+          {/* Area + line */}
           <g clipPath={`url(#clip-${gradId})`}>
             <path d={areaPath} fill={`url(#${gradId})`} />
             <polyline points={linePts} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
           </g>
+
+          {/* Last price dot (when not hovering) */}
           {hoverIdx === null && (
             <circle cx={scaleX(pts[pts.length - 1].t)} cy={scaleY(lastP)} r={3}
               fill={color} stroke="var(--bg-2)" strokeWidth={1.5} />
           )}
+
+          {/* X-axis date labels */}
           {[pts[0], pts[Math.floor(pts.length / 2)], pts[pts.length - 1]].map((pt, i) => {
-            const x = scaleX(pt.t);
+            const x   = scaleX(pt.t);
             const lbl = new Date(pt.t * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
             return (
               <text key={i} x={x} y={h - 5} fontSize={7} fill="var(--t4)"
                 textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'}
-                fontFamily="SFMono-Regular, Menlo, monospace">{lbl}</text>
+                fontFamily={SVG_FONT}>
+                {lbl}
+              </text>
             );
           })}
+
+          {/* Crosshair */}
           {hX !== null && hY !== null && (
             <>
               <line x1={hX} y1={PAD.top} x2={hX} y2={PAD.top + chartH} stroke="var(--t3)" strokeWidth={1} strokeDasharray="3,3" />
@@ -167,42 +195,42 @@ export function PriceChart({ yesTokenId }: { yesTokenId: string }) {
               <circle cx={hX} cy={hY} r={4} fill={hColor} stroke="var(--bg-1)" strokeWidth={2} />
               <rect x={0} y={hY - 7} width={PAD.left - 2} height={14} rx={1} fill="var(--bg-2)" stroke={hColor} strokeWidth={0.5} />
               <text x={PAD.left - 5} y={hY + 3.5} fontSize={7} fill={hColor}
-                textAnchor="end" fontFamily="SFMono-Regular, Menlo, monospace" fontWeight="bold">
+                textAnchor="end" fontFamily={SVG_FONT} fontWeight="bold">
                 {Math.round(hPt!.p * 100)}
               </text>
             </>
           )}
         </svg>
 
+        {/* Hover tooltip */}
         {hX !== null && hY !== null && hPt && hDate && hDelta !== null && (
-          <div style={{
-            position: 'absolute',
-            top: Math.max(PAD.top, Math.min(h - 80, hY - 40)),
-            ...(tooltipLeft ? { right: w - hX + 10 } : { left: hX + 10 }),
-            pointerEvents: 'none',
-            background: 'var(--bg-app)', border: `1px solid ${hColor}`,
-            borderRadius: 2, padding: '6px 8px', minWidth: 120, zIndex: 10,
-          }}>
-            <div style={{ fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t4)', letterSpacing: '0.08em', marginBottom: 4 }}>
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              top: Math.max(PAD.top, Math.min(h - 80, hY - 40)),
+              ...(tooltipLeft ? { right: w - hX + 10 } : { left: hX + 10 }),
+              background: 'var(--bg-app)', border: `1px solid ${hColor}`,
+              borderRadius: 2, padding: '6px 8px', minWidth: 120, zIndex: 10,
+            }}
+          >
+            <div className="mono label mb-1">
               {hDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' }).toUpperCase()}
               {'  '}{hDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
-              <span style={{ fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', color: 'var(--t3)' }}>YES</span>
-              <span style={{ fontSize: 16, fontFamily: 'SFMono-Regular, Menlo, monospace', fontWeight: 700, color: hColor, lineHeight: 1 }}>
+            <div className="flex justify-between items-baseline gap-3">
+              <span className="mono label">YES</span>
+              <span className="mono" style={{ fontSize: 16, fontWeight: 700, color: hColor, lineHeight: 1 }}>
                 {Math.round(hPt.p * 100)}%
               </span>
             </div>
-            <div style={{ marginTop: 4, fontSize: 8, fontFamily: 'SFMono-Regular, Menlo, monospace', color: hDelta >= 0 ? '#23A26D' : '#E76A6E', letterSpacing: '0.04em' }}>
+            <div className="mono mt-1" style={{ fontSize: 8, color: hDelta >= 0 ? 'var(--success)' : 'var(--danger)', letterSpacing: '0.04em' }}>
               {hDelta >= 0 ? '▲' : '▼'} {Math.abs(hDelta * 100).toFixed(1)}% from open
             </div>
           </div>
         )}
 
-        <div onMouseDown={onResizeDown} style={{
-          position: 'absolute', bottom: 0, right: 0, width: 14, height: 14,
-          cursor: 'nwse-resize', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
+        {/* Resize handle */}
+        <div onMouseDown={onResizeDown} className="absolute bottom-0 right-0 flex items-center justify-center" style={{ width: 14, height: 14, cursor: 'nwse-resize' }}>
           <svg width={8} height={8} viewBox="0 0 8 8" fill="none">
             <line x1="2" y1="8" x2="8" y2="2" stroke="var(--t4)" strokeWidth={1.2} />
             <line x1="5" y1="8" x2="8" y2="5" stroke="var(--t4)" strokeWidth={1.2} />

@@ -1,4 +1,5 @@
 'use client';
+import { fmtDate } from '@/lib/format';
 import { CONFLICT } from '@/data/iranConflict';
 import { ACTORS }   from '@/data/iranActors';
 import { EVENTS }   from '@/data/iranEvents';
@@ -24,7 +25,7 @@ const SOURCES = [
 
 const TIER_C: Record<number, string> = { 1: 'var(--success)', 2: 'var(--warning)' };
 
-function fmtDate(ts: string) { return new Date(ts).toISOString().slice(0, 10); }
+
 
 export default function BriefPage() {
   const recentEvents = [...EVENTS]
