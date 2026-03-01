@@ -1,91 +1,154 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
-  --radius: 0.25rem;
-}
+/* ─────────────────────────────────────────────
+   PHAROS — Palantir-style design system
+   Dark navy, monospace, operator aesthetic
+───────────────────────────────────────────── */
 
 :root {
-  --background: 0 0% 98%;
-  --foreground: 220 14% 8%;
-  --card: 0 0% 100%;
-  --card-foreground: 220 14% 8%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 220 14% 8%;
-  --primary: 220 14% 8%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 96%;
-  --secondary-foreground: 220 14% 8%;
-  --muted: 0 0% 96%;
-  --muted-foreground: 0 0% 45%;
-  --accent: 0 0% 96%;
-  --accent-foreground: 220 14% 8%;
-  --destructive: 0 84% 45%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 88%;
-  --input: 0 0% 88%;
-  --ring: 220 14% 8%;
+  /* Background layers */
+  --p0: #03080f;   /* page base */
+  --p1: #060e1a;   /* panel surface */
+  --p2: #09131f;   /* panel header / elevated */
+  --p3: #0c1a29;   /* hover */
+  --p4: #0f2035;   /* selected / active */
 
-  /* Pharos brand tokens */
-  --pharos-red:       #dd4545;
-  --pharos-header:    #0f172a;  /* slate-900 */
-  --pharos-critical:  #dc2626;  /* red-600 */
-  --pharos-high:      #f97316;  /* orange-500 */
-  --pharos-standard:  #64748b;  /* slate-500 */
+  /* Borders */
+  --b:  #162737;   /* standard border */
+  --bs: #0a1726;   /* subtle separator */
+
+  /* Text */
+  --t1: #c2d8ec;   /* primary */
+  --t2: #4e6d87;   /* secondary / labels */
+  --t3: #27404f;   /* muted / disabled */
+  --tm: #7fb0ce;   /* monospace data */
+
+  /* Status */
+  --crit:  #ef4444;
+  --high:  #f59e0b;
+  --elev:  #3b82f6;
+  --mon:   #22c55e;
+  --cyber: #a78bfa;
+
+  /* Accent */
+  --acc:  #1d72ff;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; }
+html, body { height: 100%; overflow: hidden; }
 
 body {
-  font-family: "Georgia", "Times New Roman", serif;
-  background: #f8fafc;
-  color: #0f172a;
-  font-size: 14px;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--p0);
+  color: var(--t1);
+  font-size: 13px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* News typography */
-.news-headline {
-  font-family: "Arial", "Helvetica", sans-serif;
+/* ── Typography utility classes ── */
+
+/* Uppercase label — use for section headers, column titles */
+.lbl {
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.news-body {
-  font-family: "Georgia", "Times New Roman", serif;
-  line-height: 1.65;
-}
-
-.news-meta {
-  font-family: "Arial", "Helvetica", sans-serif;
-  font-size: 0.7rem;
-  font-weight: 600;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: var(--t2);
+  font-family: system-ui, sans-serif;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+/* Monospace data value */
+.mono {
+  font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Cascadia Code', 'Fira Code', monospace;
+  letter-spacing: -0.01em;
+  color: var(--tm);
+}
+
+/* Bold headline — panel titles */
+.hd {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--t1);
+  font-family: system-ui, sans-serif;
+}
+
+/* ── Panel primitives ── */
+
+.pane {
+  background: var(--p1);
+  border: 1px solid var(--b);
+}
+
+.pane-hdr {
+  display: flex;
+  align-items: center;
+  padding: 7px 14px;
+  background: var(--p2);
+  border-bottom: 1px solid var(--b);
+  gap: 8px;
+}
+
+/* ── Status dot ── */
+.dot-crit  { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--crit);  flex-shrink:0; }
+.dot-high  { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--high);  flex-shrink:0; }
+.dot-elev  { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--elev);  flex-shrink:0; }
+.dot-mon   { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--mon);   flex-shrink:0; }
+.dot-ok    { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--mon);   flex-shrink:0; }
+.dot-cyber { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--cyber); flex-shrink:0; }
+
+/* ── Severity badges ── */
+.sev-crit  { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--crit);  font-family:system-ui; }
+.sev-high  { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--high);  font-family:system-ui; }
+.sev-std   { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--elev);  font-family:system-ui; }
+.sev-mon   { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--mon);   font-family:system-ui; }
+
+/* ── Escalation bar ── */
+.esc-bar {
+  height: 3px;
+  background: var(--b);
+  width: 100%;
+}
+.esc-bar-fill {
+  height: 100%;
+  transition: width 0.3s;
+}
+
+/* ── Row interactions ── */
+.row-btn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  font-size: inherit;
+}
+.row-btn:hover { background: var(--p3); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+::-webkit-scrollbar-thumb { background: var(--b); }
+::-webkit-scrollbar-thumb:hover { background: var(--t3); }
+
+/* ── Focus ── */
+:focus-visible { outline: 1px solid var(--acc); outline-offset: -1px; }
+
+/* ── X post ── */
+.xpost {
+  border-left: 3px solid var(--b);
+  padding: 10px 12px;
+  background: var(--p1);
+  border-top: 1px solid var(--bs);
+  border-right: 1px solid var(--bs);
+  border-bottom: 1px solid var(--bs);
+  margin-bottom: 6px;
+}
+.xpost-breaking {
+  border-left-color: var(--crit);
+}

@@ -1,144 +1,135 @@
 'use client';
 import { use } from 'react';
-import Link from 'next/link';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, ArrowRight, CheckCircle } from 'lucide-react';
-import { CONFLICTS, STATUS_STYLE }   from '@/data/mockConflicts';
-import { EVENTS, SEV_STYLE }         from '@/data/mockEvents';
-import { ACTORS, ACTIVITY_STYLE }    from '@/data/mockActors';
-import { getPostsForConflict }       from '@/data/mockXPosts';
-import XPostCard                     from '@/components/dashboard/XPostCard';
+import Link    from 'next/link';
+import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { CONFLICTS }             from '@/data/mockConflicts';
+import { EVENTS }                from '@/data/mockEvents';
+import { ACTORS }                from '@/data/mockActors';
+import { getPostsForConflict }   from '@/data/mockXPosts';
+import XPostCard                 from '@/components/dashboard/XPostCard';
 
-const TEXT  = '#0f172a';
-const TEXT2 = '#475569';
-const TEXT3 = '#94a3b8';
-const SEP   = '#e2e8f0';
-const RED   = '#dd4545';
+const SEV_C: Record<string, string>  = { CRITICAL: 'var(--crit)', HIGH: 'var(--high)', STANDARD: 'var(--elev)' };
+const ACT_C: Record<string, string>  = { HIGH: 'var(--crit)', ELEVATED: 'var(--high)', MODERATE: 'var(--elev)', LOW: 'var(--t2)' };
+const STATUS_C: Record<string, string> = { CRITICAL: 'var(--crit)', ESCALATING: 'var(--crit)', ELEVATED: 'var(--elev)', MONITORING: 'var(--mon)', 'DE-ESCALATING': 'var(--mon)' };
 
-function timeAgo(ts: string) {
+function fmtTs(ts: string) { return new Date(ts).toISOString().slice(11, 16); }
+function ago(ts: string) {
   const ms = Date.now() - new Date(ts).getTime();
-  if (ms < 3600000)  return `${Math.round(ms / 60000)}m ago`;
-  if (ms < 86400000) return `${Math.round(ms / 3600000)}h ago`;
-  return `${Math.round(ms / 86400000)}d ago`;
+  if (ms < 3600000) return Math.round(ms/60000)+'m';
+  return Math.round(ms/3600000)+'h';
 }
 
 export default function ConflictPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const conflict = CONFLICTS.find(c => c.id === id);
 
-  if (!conflict) {
-    return (
-      <div style={{ padding: 48, textAlign: 'center' }}>
-        <p style={{ color: TEXT3, fontFamily: 'Arial, sans-serif' }}>Conflict not found.</p>
-        <Link href="/dashboard">← Back</Link>
-      </div>
-    );
-  }
+  if (!conflict) return (
+    <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span className="lbl" style={{ color: 'var(--t3)' }}>Conflict not found</span>
+    </div>
+  );
 
-  const ss          = STATUS_STYLE[conflict.status];
-  const events      = EVENTS.filter(e => e.conflictId === id)
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  const actors      = ACTORS.filter(a => a.conflictIds.includes(id));
-  const xPosts      = getPostsForConflict(id);
+  const sc      = STATUS_C[conflict.status] ?? 'var(--t2)';
+  const events  = EVENTS.filter(e => e.conflictId === id).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const actors  = ACTORS.filter(a => a.conflictIds.includes(id));
+  const xPosts  = getPostsForConflict(id);
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: '#f1f5f9' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-      {/* ── Color bar header ──────────────────────────── */}
-      <div style={{ borderLeft: `8px solid ${conflict.accentColor}`, background: 'white', borderBottom: `2px solid ${SEP}`, padding: '20px 36px' }}>
-        <Link href="/dashboard" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 14, color: TEXT3 }}>
-          <ArrowLeft size={13} strokeWidth={2} />
-          <span className="news-meta" style={{ fontSize: 10, color: TEXT3 }}>SITUATION ROOM</span>
+      {/* ── Header ──────────────────────────────────── */}
+      <div style={{ padding: '10px 20px', borderBottom: '1px solid var(--b)', background: 'var(--p2)', flexShrink: 0 }}>
+        <Link href="/dashboard" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
+          <ArrowLeft size={11} strokeWidth={2} style={{ color: 'var(--t3)' }} />
+          <span className="lbl" style={{ fontSize: 8, color: 'var(--t3)' }}>SITUATION ROOM</span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 20 }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-              <h1 className="news-headline" style={{ fontSize: 28, color: TEXT }}>{conflict.name}</h1>
-              {conflict.trend === 'UP' && <TrendingUp size={18} style={{ color: '#dc2626' }} strokeWidth={2} />}
-              {conflict.trend === 'DOWN' && <TrendingDown size={18} style={{ color: '#16a34a' }} strokeWidth={2} />}
-              {conflict.trend === 'STABLE' && <Minus size={18} style={{ color: '#94a3b8' }} strokeWidth={2} />}
+            <div className="lbl" style={{ fontSize: 8, color: 'var(--t3)', marginBottom: 4 }}>
+              CONFLICT ASSESSMENT // PHAROS INTELLIGENCE
             </div>
-            <p style={{ fontSize: 13, color: TEXT2, fontFamily: 'Arial, sans-serif' }}>{conflict.region}</p>
-            <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-              <span className="news-meta" style={{ fontSize: 10, padding: '3px 10px', borderRadius: 2, background: ss.bg, color: ss.color, border: `1px solid ${ss.color}33` }}>
-                {ss.label}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: 'var(--t1)', fontFamily: 'system-ui, sans-serif', lineHeight: 1.1 }}>
+                {conflict.name.toUpperCase()}
+              </h1>
+              <span style={{ fontSize: 8, padding: '2px 8px', border: `1px solid ${sc}`, color: sc, fontFamily: 'system-ui', fontWeight: 700, letterSpacing: '.06em' }}>
+                {conflict.status}
               </span>
+            </div>
+            <span className="mono" style={{ fontSize: 10, color: 'var(--t3)' }}>{conflict.region}</span>
+            <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
               {conflict.actors.map(a => (
-                <span key={a} className="news-meta" style={{ fontSize: 10, padding: '3px 10px', borderRadius: 2, background: '#f8fafc', color: TEXT3, border: `1px solid ${SEP}` }}>
-                  {a}
-                </span>
+                <span key={a} style={{ fontSize: 9, padding: '1px 7px', border: '1px solid var(--b)', color: 'var(--t3)', fontFamily: 'system-ui, sans-serif' }}>{a}</span>
               ))}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 24 }}>
+
+          {/* Metrics */}
+          <div style={{ display: 'flex', gap: 20, flexShrink: 0 }}>
             {[
-              { label: 'ESCALATION', val: `${conflict.escalationScore}%`, color: conflict.accentColor },
-              { label: 'CRITICAL TODAY', val: String(conflict.criticalToday), color: '#dc2626' },
-              { label: 'HIGH TODAY', val: String(conflict.highToday), color: '#ea580c' },
-              { label: 'EVENTS TOTAL', val: String(events.length), color: '#64748b' },
-            ].map(s => (
-              <div key={s.label} style={{ textAlign: 'right' }}>
-                <div className="news-headline" style={{ fontSize: 26, color: s.color, lineHeight: 1 }}>{s.val}</div>
-                <div className="news-meta" style={{ fontSize: 9, color: TEXT3, marginTop: 2 }}>{s.label}</div>
+              { label: 'ESCALATION',  val: `${conflict.escalationScore}%`, color: sc },
+              { label: 'CRITICAL',    val: String(conflict.criticalToday),  color: 'var(--crit)' },
+              { label: 'HIGH',        val: String(conflict.highToday),      color: 'var(--high)' },
+              { label: 'TOTAL EVT',   val: String(events.length),           color: 'var(--t2)' },
+            ].map(m => (
+              <div key={m.label} style={{ textAlign: 'right' }}>
+                <div className="mono" style={{ fontSize: 22, color: m.color, lineHeight: 1 }}>{m.val}</div>
+                <div className="lbl" style={{ fontSize: 8, marginTop: 2 }}>{m.label}</div>
               </div>
             ))}
           </div>
         </div>
-        {/* Escalation bar */}
-        <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="news-meta" style={{ fontSize: 9, color: TEXT3, minWidth: 80 }}>ESCALATION INDEX</div>
-          <div style={{ flex: 1, height: 8, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ width: `${conflict.escalationScore}%`, height: '100%', background: conflict.accentColor }} />
+
+        {/* Escalation bar + CTAs */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
+          <div className="lbl" style={{ fontSize: 8, minWidth: 70 }}>ESCALATION</div>
+          <div style={{ flex: 1, height: 4, background: 'var(--b)' }}>
+            <div style={{ width: `${conflict.escalationScore}%`, height: '100%', background: sc }} />
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <Link href={`/dashboard/feed?conflict=${id}`} style={{ textDecoration: 'none' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', background: conflict.accentColor, cursor: 'pointer' }}>
-                <span className="news-meta" style={{ fontSize: 10, color: 'white' }}>INTEL FEED</span>
-                <ArrowRight size={12} strokeWidth={2} style={{ color: 'white' }} />
-              </div>
-            </Link>
-            <Link href={`/dashboard/actors?conflict=${id}`} style={{ textDecoration: 'none' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 14px', background: '#0f172a', cursor: 'pointer' }}>
-                <span className="news-meta" style={{ fontSize: 10, color: 'white' }}>ACTORS</span>
-                <ArrowRight size={12} strokeWidth={2} style={{ color: 'white' }} />
-              </div>
-            </Link>
+          <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+            <NavBtn href={`/dashboard/feed?conflict=${id}`} label="INTEL FEED" />
+            <NavBtn href={`/dashboard/actors?conflict=${id}`} label="ACTORS" />
           </div>
         </div>
       </div>
 
-      {/* ── Three-column body ─────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 340px', gap: 0, minHeight: 'calc(100vh - 240px)' }}>
+      {/* ── Three columns ────────────────────────────── */}
+      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
 
-        {/* Col 1: Event timeline */}
-        <div style={{ borderRight: `1px solid ${SEP}`, padding: '24px 24px' }}>
-          <div className="news-headline" style={{ fontSize: 14, color: TEXT, marginBottom: 16, paddingBottom: 10, borderBottom: `2px solid ${RED}` }}>
-            EVENT TIMELINE
+        {/* Event timeline */}
+        <div style={{ flex: 1, borderRight: '1px solid var(--b)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div className="pane-hdr">
+            <span className="hd">Event Timeline</span>
+            <span className="lbl" style={{ marginLeft: 'auto' }}>{events.length}</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {events.map(evt => {
-              const sevColor = SEV_STYLE[evt.severity].color;
+          {/* Col headers */}
+          <div style={{ display: 'grid', gridTemplateColumns: '44px 50px 1fr 30px', padding: '4px 12px', borderBottom: '1px solid var(--b)', background: 'var(--p2)' }}>
+            {['TIME', 'SEV', 'EVENT', 'SRC'].map(h => <span key={h} className="lbl" style={{ fontSize: 8 }}>{h}</span>)}
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {events.map((evt, i) => {
+              const sc = SEV_C[evt.severity] ?? 'var(--elev)';
               return (
                 <Link key={evt.id} href={`/dashboard/feed?event=${evt.id}`} style={{ textDecoration: 'none' }}>
                   <div style={{
-                    padding: '10px 14px', background: 'white', border: `1px solid ${SEP}`,
-                    borderLeft: `4px solid ${sevColor}`, cursor: 'pointer', transition: 'background 0.08s',
+                    display: 'grid', gridTemplateColumns: '44px 50px 1fr 30px',
+                    padding: '7px 12px', borderBottom: i < events.length - 1 ? '1px solid var(--bs)' : 'none',
+                    cursor: 'pointer',
                   }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#f8fafc'}
-                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'white'}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--p3)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                   >
-                    <div style={{ display: 'flex', gap: 8, marginBottom: 4 }}>
-                      <span className="news-meta" style={{ fontSize: 9, padding: '2px 5px', background: sevColor, color: 'white', borderRadius: 2 }}>
-                        {evt.severity}
-                      </span>
-                      <span className="news-meta" style={{ fontSize: 9, color: TEXT3 }}>{evt.type}</span>
-                      {evt.verified && <CheckCircle size={10} style={{ color: '#16a34a' }} strokeWidth={2} />}
-                      <span style={{ marginLeft: 'auto', fontSize: 10, color: TEXT3, fontFamily: 'Arial, sans-serif' }}>{timeAgo(evt.timestamp)}</span>
+                    <span className="mono" style={{ fontSize: 9, color: 'var(--t3)', alignSelf: 'flex-start', paddingTop: 2 }}>{fmtTs(evt.timestamp)}</span>
+                    <span style={{ fontSize: 8, fontWeight: 700, color: sc, letterSpacing: '.06em', fontFamily: 'system-ui', alignSelf: 'flex-start', paddingTop: 2 }}>{evt.severity.slice(0,4)}</span>
+                    <div>
+                      <p style={{ fontSize: 11.5, color: 'var(--t1)', fontFamily: 'system-ui, sans-serif', lineHeight: 1.3, marginBottom: 2 }}>{evt.title}</p>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <span className="lbl" style={{ fontSize: 8, color: 'var(--t3)' }}>{evt.type}</span>
+                        {evt.verified && <CheckCircle size={8} style={{ color: 'var(--mon)' }} strokeWidth={2} />}
+                      </div>
                     </div>
-                    <p className="news-headline" style={{ fontSize: 12.5, color: TEXT, lineHeight: 1.35 }}>{evt.title}</p>
-                    <p className="news-body" style={{ fontSize: 12, color: TEXT2, lineHeight: 1.4, marginTop: 4,
-                      display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      {evt.summary}
-                    </p>
+                    <span className="mono" style={{ fontSize: 10, color: 'var(--t3)', textAlign: 'right' }}>{evt.sources.length}</span>
                   </div>
                 </Link>
               );
@@ -146,43 +137,45 @@ export default function ConflictPage({ params }: { params: Promise<{ id: string 
           </div>
         </div>
 
-        {/* Col 2: Actors */}
-        <div style={{ borderRight: `1px solid ${SEP}`, padding: '24px 24px' }}>
-          <div className="news-headline" style={{ fontSize: 14, color: TEXT, marginBottom: 16, paddingBottom: 10, borderBottom: `2px solid ${RED}` }}>
-            KEY ACTORS ({actors.length})
+        {/* Actors */}
+        <div style={{ width: 300, minWidth: 300, borderRight: '1px solid var(--b)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div className="pane-hdr">
+            <span className="hd">Key Actors</span>
+            <span className="lbl" style={{ marginLeft: 'auto' }}>{actors.length}</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {actors.map(actor => {
-              const as = ACTIVITY_STYLE[actor.activityLevel];
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {actors.map((actor, i) => {
+              const ac  = ACT_C[actor.activityLevel] ?? 'var(--t2)';
+              const stc: Record<string, string> = { AGGRESSIVE: 'var(--crit)', OPPOSING: 'var(--high)', NEUTRAL: 'var(--t2)', SUPPORTING: 'var(--mon)', DEFENSIVE: 'var(--elev)' };
               return (
                 <Link key={actor.id} href={`/dashboard/actors?actor=${actor.id}`} style={{ textDecoration: 'none' }}>
                   <div style={{
-                    padding: '12px 14px', background: 'white', border: `1px solid ${SEP}`,
-                    borderLeft: `4px solid ${as.color}`, cursor: 'pointer', transition: 'background 0.08s',
+                    padding: '10px 14px',
+                    borderBottom: i < actors.length - 1 ? '1px solid var(--bs)' : 'none',
+                    cursor: 'pointer', borderLeft: `3px solid ${ac}`,
                   }}
-                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = '#f8fafc'}
-                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'white'}
+                    onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--p3)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                      {actor.flag && <span style={{ fontSize: 18 }}>{actor.flag}</span>}
-                      <span className="news-headline" style={{ fontSize: 13, color: TEXT, flex: 1 }}>{actor.name}</span>
-                      <span className="news-meta" style={{ fontSize: 9, padding: '2px 6px', borderRadius: 2, background: as.color + '18', color: as.color, border: `1px solid ${as.color}33` }}>
-                        {actor.activityLevel}
-                      </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                      {actor.flag && <span style={{ fontSize: 16 }}>{actor.flag}</span>}
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)', fontFamily: 'system-ui', flex: 1 }}>{actor.name}</span>
+                      <span style={{ fontSize: 8, padding: '1px 5px', border: `1px solid ${ac}`, color: ac, fontFamily: 'system-ui', fontWeight: 700 }}>{actor.activityLevel}</span>
+                      <ArrowRight size={9} style={{ color: 'var(--t3)' }} strokeWidth={1.5} />
                     </div>
-                    <p className="news-body" style={{ fontSize: 12, color: TEXT2, lineHeight: 1.4, fontStyle: 'italic',
+                    <p style={{ fontSize: 10.5, color: 'var(--t2)', fontFamily: 'system-ui', lineHeight: 1.4, fontStyle: 'italic', marginBottom: 6,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                      "{actor.saying.slice(0, 120)}…"
+                      "{actor.saying.slice(0, 100)}…"
                     </p>
-                    <div style={{ marginTop: 8 }}>
-                      <div className="news-meta" style={{ fontSize: 9, color: TEXT3, marginBottom: 4 }}>DOING</div>
-                      <p className="news-body" style={{ fontSize: 11.5, color: TEXT2 }}>{actor.doing[0]}</p>
+                    <div>
+                      <span className="lbl" style={{ fontSize: 8, marginRight: 6 }}>DOING:</span>
+                      <span style={{ fontSize: 10, color: 'var(--t2)', fontFamily: 'system-ui' }}>{actor.doing[0]}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
-                      <div style={{ flex: 1, height: 4, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
-                        <div style={{ width: `${actor.activityScore}%`, height: '100%', background: as.color }} />
+                    <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                      <div style={{ flex: 1, height: 3, background: 'var(--b)', alignSelf: 'center' }}>
+                        <div style={{ width: `${actor.activityScore}%`, height: '100%', background: ac }} />
                       </div>
-                      <span style={{ fontSize: 10, color: TEXT3, fontFamily: 'Arial, sans-serif' }}>{actor.activityScore}%</span>
+                      <span className="mono" style={{ fontSize: 9, color: ac }}>{actor.activityScore}%</span>
                     </div>
                   </div>
                 </Link>
@@ -191,20 +184,18 @@ export default function ConflictPage({ params }: { params: Promise<{ id: string 
           </div>
         </div>
 
-        {/* Col 3: X posts */}
-        <div style={{ background: 'white' }}>
-          <div style={{ padding: '14px 16px', borderBottom: `2px solid #000000`, background: '#0f172a' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 16 }}>𝕏</span>
-              <div className="news-headline" style={{ fontSize: 14, color: 'white' }}>FIELD SIGNALS</div>
-            </div>
-            <div style={{ fontSize: 11, color: '#64748b', fontFamily: 'Arial, sans-serif', marginTop: 2 }}>
-              {conflict.shortName} · {xPosts.length} posts
-            </div>
+        {/* X posts */}
+        <div style={{ width: 280, minWidth: 280, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div className="pane-hdr">
+            <span style={{ fontSize: 13, color: 'var(--t1)', lineHeight: 1 }}>𝕏</span>
+            <span className="hd" style={{ marginLeft: 2 }}>Field Signals</span>
+            <span className="lbl" style={{ marginLeft: 'auto' }}>{xPosts.length}</span>
           </div>
-          <div style={{ padding: '12px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
             {xPosts.length === 0 ? (
-              <p style={{ fontSize: 12, color: TEXT3, fontFamily: 'Arial, sans-serif', padding: 16 }}>No X posts for this conflict.</p>
+              <div style={{ padding: 24, textAlign: 'center' }}>
+                <span className="lbl" style={{ color: 'var(--t3)' }}>No signals</span>
+              </div>
             ) : (
               xPosts.map(post => <XPostCard key={post.id} post={post} compact />)
             )}
@@ -212,5 +203,19 @@ export default function ConflictPage({ params }: { params: Promise<{ id: string 
         </div>
       </div>
     </div>
+  );
+}
+
+function NavBtn({ href, label }: { href: string; label: string }) {
+  return (
+    <Link href={href} style={{ textDecoration: 'none' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 12px', border: '1px solid var(--b)', cursor: 'pointer' }}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--p3)'}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+      >
+        <span className="lbl" style={{ fontSize: 8, color: 'var(--acc)' }}>{label}</span>
+        <ArrowRight size={9} strokeWidth={1.5} style={{ color: 'var(--acc)' }} />
+      </div>
+    </Link>
   );
 }

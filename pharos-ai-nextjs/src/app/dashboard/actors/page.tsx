@@ -2,65 +2,54 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams }               from 'next/navigation';
 import Link                              from 'next/link';
-import { CheckCircle, Users, ArrowRight } from 'lucide-react';
+import { Users, CheckCircle, ArrowRight } from 'lucide-react';
 import { CONFLICTS }                     from '@/data/mockConflicts';
 import { ACTORS, ACTIVITY_STYLE, STANCE_STYLE, type Actor } from '@/data/mockActors';
 import { getPostsForActor }              from '@/data/mockXPosts';
 import XPostCard                         from '@/components/dashboard/XPostCard';
 
-const TEXT  = '#0f172a';
-const TEXT2 = '#475569';
-const TEXT3 = '#94a3b8';
-const SEP   = '#e2e8f0';
-const RED   = '#dd4545';
-
-const ACTION_COLOR: Record<string, string> = {
-  MILITARY:     '#dc2626',
-  DIPLOMATIC:   '#2563eb',
-  POLITICAL:    '#7c3aed',
-  ECONOMIC:     '#d97706',
-  CYBER:        '#16a34a',
-  INTELLIGENCE: '#64748b',
-};
+const ACT_C: Record<string, string> = { HIGH: 'var(--crit)', ELEVATED: 'var(--high)', MODERATE: 'var(--elev)', LOW: 'var(--t2)' };
+const STA_C: Record<string, string> = { AGGRESSIVE: 'var(--crit)', OPPOSING: 'var(--high)', NEUTRAL: 'var(--t2)', SUPPORTING: 'var(--mon)', DEFENSIVE: 'var(--elev)' };
+const ACT_TYPE_C: Record<string, string> = { MILITARY: 'var(--crit)', DIPLOMATIC: 'var(--elev)', POLITICAL: '#a78bfa', ECONOMIC: 'var(--high)', CYBER: 'var(--mon)', INTELLIGENCE: 'var(--t2)' };
 
 function ActorsInner() {
-  const searchParams     = useSearchParams();
-  const initialConflict  = searchParams.get('conflict') ?? 'all';
-  const initialActor     = searchParams.get('actor');
+  const searchParams = useSearchParams();
+  const initConflict = searchParams.get('conflict') ?? 'all';
+  const initActor    = searchParams.get('actor');
 
-  const [conflictFilter, setConflictFilter] = useState<string>(initialConflict);
-  const [selectedId,     setSelectedId]     = useState<string | null>(initialActor);
-  const [activeTab,      setActiveTab]      = useState<'intel' | 'signals'>('intel');
+  const [cfFilter, setCfFilter] = useState(initConflict);
+  const [selId,    setSelId]    = useState<string | null>(initActor);
+  const [tab,      setTab]      = useState<'intel' | 'signals'>('intel');
 
-  useEffect(() => { if (initialActor) setSelectedId(initialActor); }, [initialActor]);
+  useEffect(() => { if (initActor) setSelId(initActor); }, [initActor]);
 
-  const filtered = ACTORS.filter(a =>
-    conflictFilter === 'all' || a.conflictIds.includes(conflictFilter)
-  );
-  const selected = ACTORS.find(a => a.id === selectedId) ?? null;
+  const filtered = ACTORS.filter(a => cfFilter === 'all' || a.conflictIds.includes(cfFilter));
+  const selected = ACTORS.find(a => a.id === selId) ?? null;
 
   return (
     <div style={{ display: 'flex', flex: 1, minWidth: 0, overflow: 'hidden' }}>
 
-      {/* ── Conflict filter sidebar ─────────────────── */}
-      <div style={{ width: 180, minWidth: 180, flexShrink: 0, background: '#f1f5f9', borderRight: `1px solid ${SEP}`, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ padding: '14px 16px 10px', borderBottom: `2px solid ${RED}`, background: '#f8fafc' }}>
-          <div className="news-meta" style={{ fontSize: 10, color: TEXT3, marginBottom: 2 }}>Filter by</div>
-          <div className="news-headline" style={{ fontSize: 14, color: TEXT }}>CONFLICT</div>
+      {/* ── CONFLICT FILTER ── 160px ── */}
+      <div style={{ width: 160, minWidth: 160, flexShrink: 0, borderRight: '1px solid var(--b)', display: 'flex', flexDirection: 'column' }}>
+        <div className="pane-hdr">
+          <span className="hd">Conflict</span>
         </div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
           {['all', ...CONFLICTS.map(c => c.id)].map(id => {
-            const conflict = CONFLICTS.find(c => c.id === id);
-            const isActive = conflictFilter === id;
+            const c      = CONFLICTS.find(x => x.id === id);
+            const active = cfFilter === id;
             return (
-              <button key={id} onClick={() => { setConflictFilter(id); setSelectedId(null); }}
-                style={{ width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 8, padding: '7px 16px', border: 'none', cursor: 'pointer', fontFamily: 'inherit', background: isActive ? '#0f172a' : 'transparent' }}
-                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.04)'; }}
-                onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+              <button key={id} onClick={() => { setCfFilter(id); setSelId(null); }}
+                className="row-btn"
+                style={{
+                  padding: '6px 14px',
+                  borderLeft: `3px solid ${active ? 'var(--acc)' : 'transparent'}`,
+                  background: active ? 'var(--p4)' : 'transparent',
+                  display: 'flex', alignItems: 'center', gap: 7,
+                }}
               >
-                {conflict && <div style={{ width: 7, height: 7, borderRadius: 1, background: isActive ? 'white' : conflict.accentColor, flexShrink: 0 }} />}
-                <span className="news-meta" style={{ fontSize: 10, color: isActive ? 'white' : TEXT }}>
-                  {conflict ? conflict.shortName : 'ALL ACTORS'}
+                <span style={{ fontSize: 10, fontWeight: active ? 700 : 400, color: active ? 'var(--t1)' : 'var(--t2)', fontFamily: 'system-ui, sans-serif' }}>
+                  {c ? c.shortName.toUpperCase() : 'ALL ACTORS'}
                 </span>
               </button>
             );
@@ -68,206 +57,219 @@ function ActorsInner() {
         </div>
       </div>
 
-      {/* ── Actor list ──────────────────────────────── */}
-      <div style={{ width: 260, minWidth: 260, flexShrink: 0, borderRight: `1px solid ${SEP}`, background: 'white', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ padding: '12px 16px', borderBottom: `2px solid ${RED}`, background: '#f8fafc', flexShrink: 0 }}>
-          <div className="news-headline" style={{ fontSize: 16, color: TEXT }}>ACTORS</div>
-          <div style={{ fontSize: 11, color: TEXT3, fontFamily: 'Arial, sans-serif', marginTop: 2 }}>{filtered.length} tracked</div>
+      {/* ── ACTOR LIST ── 240px ── */}
+      <div style={{ width: 240, minWidth: 240, flexShrink: 0, borderRight: '1px solid var(--b)', display: 'flex', flexDirection: 'column' }}>
+        <div className="pane-hdr" style={{ justifyContent: 'space-between' }}>
+          <span className="hd">Actors</span>
+          <span className="lbl">{filtered.length}</span>
         </div>
+
+        {/* Column headers */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 30px', padding: '4px 12px', borderBottom: '1px solid var(--b)', background: 'var(--p2)' }}>
+          {['ACTOR', 'ACTIVITY', ''].map(h => <span key={h} className="lbl" style={{ fontSize: 8 }}>{h}</span>)}
+        </div>
+
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {filtered.map(actor => {
-            const isOn = selectedId === actor.id;
-            const as = ACTIVITY_STYLE[actor.activityLevel];
-            const xPosts = getPostsForActor(actor.id);
+            const isOn   = selId === actor.id;
+            const actC   = ACT_C[actor.activityLevel] ?? 'var(--t2)';
+            const xCount = getPostsForActor(actor.id).length;
             return (
-              <button key={actor.id} onClick={() => { setSelectedId(isOn ? null : actor.id); setActiveTab('intel'); }}
+              <button key={actor.id} onClick={() => { setSelId(isOn ? null : actor.id); setTab('intel'); }}
+                className="row-btn"
                 style={{
-                  width: '100%', textAlign: 'left', display: 'block', padding: '12px 16px',
-                  borderLeft: `4px solid ${isOn ? as.color : 'transparent'}`,
-                  borderTop: 'none', borderRight: 'none', borderBottom: `1px solid ${SEP}`,
-                  background: isOn ? as.bg : 'white', cursor: 'pointer', fontFamily: 'inherit',
+                  display: 'grid', gridTemplateColumns: '1fr 60px 30px',
+                  padding: '8px 12px',
+                  borderBottom: '1px solid var(--bs)',
+                  borderLeft: `3px solid ${isOn ? actC : 'transparent'}`,
+                  background: isOn ? 'var(--p4)' : 'transparent',
                 }}
-                onMouseEnter={e => { if (!isOn) (e.currentTarget as HTMLElement).style.background = '#f8fafc'; }}
-                onMouseLeave={e => { if (!isOn) (e.currentTarget as HTMLElement).style.background = 'white'; }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    {actor.flag && <span style={{ fontSize: 16 }}>{actor.flag}</span>}
-                    <span className="news-headline" style={{ fontSize: 13, color: TEXT }}>{actor.name}</span>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
+                    {actor.flag && <span style={{ fontSize: 13 }}>{actor.flag}</span>}
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--t1)', fontFamily: 'system-ui, sans-serif' }}>{actor.name}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {xPosts.length > 0 && <span style={{ fontSize: 10, color: TEXT3 }}>𝕏</span>}
-                    <span className="news-meta" style={{ fontSize: 9, padding: '2px 6px', borderRadius: 2, background: as.bg, color: as.color, border: `1px solid ${as.color}33` }}>
-                      {actor.activityLevel}
-                    </span>
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <span style={{ fontSize: 8, color: STA_C[actor.stance] ?? 'var(--t2)', fontFamily: 'system-ui', fontWeight: 700, letterSpacing: '.04em' }}>{actor.stance}</span>
+                    {xCount > 0 && <span className="mono" style={{ fontSize: 8, color: 'var(--t3)' }}>𝕏{xCount}</span>}
                   </div>
                 </div>
-                <div style={{ fontSize: 11, color: TEXT3, fontFamily: 'Arial, sans-serif', marginBottom: 5 }}>{actor.fullName}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ flex: 1, height: 4, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{ width: `${actor.activityScore}%`, height: '100%', background: as.color }} />
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 3 }}>
+                  <div style={{ height: 3, background: 'var(--b)', width: '100%' }}>
+                    <div style={{ width: `${actor.activityScore}%`, height: '100%', background: actC }} />
                   </div>
-                  <span style={{ fontSize: 10, color: TEXT3, fontFamily: 'Arial, sans-serif', minWidth: 28 }}>{actor.activityScore}%</span>
+                  <span className="mono" style={{ fontSize: 8, color: actC }}>{actor.activityScore}%</span>
                 </div>
+                <ArrowRight size={9} style={{ color: 'var(--t3)', alignSelf: 'center' }} strokeWidth={1.5} />
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* ── Actor detail ────────────────────────────── */}
-      <div style={{ flex: 1, minWidth: 0, background: 'white', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      {/* ── ACTOR DOSSIER ── fills ── */}
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {!selected ? (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-            <Users size={44} style={{ color: '#e2e8f0' }} strokeWidth={1} />
-            <p className="news-meta" style={{ fontSize: 11, color: TEXT3 }}>Select an actor to view intelligence</p>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <Users size={32} style={{ color: 'var(--t3)' }} strokeWidth={1} />
+            <span className="lbl" style={{ color: 'var(--t3)' }}>Select an actor</span>
           </div>
         ) : (
-          <ActorDetail actor={selected} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <ActorDossier actor={selected} tab={tab} setTab={setTab} />
         )}
       </div>
     </div>
   );
 }
 
-function ActorDetail({ actor, activeTab, setActiveTab }: {
-  actor: Actor;
-  activeTab: 'intel' | 'signals';
-  setActiveTab: (t: 'intel' | 'signals') => void;
-}) {
-  const as     = ACTIVITY_STYLE[actor.activityLevel];
-  const ss     = STANCE_STYLE[actor.stance];
+function ActorDossier({ actor, tab, setTab }: { actor: Actor; tab: 'intel' | 'signals'; setTab: (t: 'intel' | 'signals') => void }) {
+  const actC   = ACT_C[actor.activityLevel] ?? 'var(--t2)';
+  const staC   = STA_C[actor.stance] ?? 'var(--t2)';
   const xPosts = getPostsForActor(actor.id);
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      {/* Header */}
-      <div style={{ borderLeft: `6px solid ${as.color}`, borderBottom: `1px solid ${SEP}`, padding: '18px 24px', background: as.bg, flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {actor.flag && <span style={{ fontSize: 28 }}>{actor.flag}</span>}
-            <div>
-              <h1 className="news-headline" style={{ fontSize: 22, color: TEXT, lineHeight: 1.1, marginBottom: 3 }}>{actor.name}</h1>
-              <div style={{ fontSize: 12, color: TEXT2, fontFamily: 'Arial, sans-serif' }}>{actor.fullName}</div>
-              <span className="news-meta" style={{ fontSize: 9, color: TEXT3 }}>{actor.type}</span>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-            <Badge label={actor.activityLevel} color={as.color} bg={as.bg} />
-            <Badge label={actor.stance} color={ss.color} bg={ss.bg} />
-          </div>
+      {/* Dossier header */}
+      <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--b)', background: 'var(--p2)', flexShrink: 0 }}>
+        {/* Classification */}
+        <div className="lbl" style={{ fontSize: 8, color: 'var(--t3)', marginBottom: 8 }}>
+          ACTOR INTELLIGENCE DOSSIER // PHAROS THREAT ANALYSIS
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="news-meta" style={{ fontSize: 9, color: TEXT3, minWidth: 80 }}>ACTIVITY</div>
-          <div style={{ flex: 1, height: 6, background: 'rgba(0,0,0,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ width: `${actor.activityScore}%`, height: '100%', background: as.color }} />
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 10 }}>
+          {actor.flag && <span style={{ fontSize: 32, lineHeight: 1, flexShrink: 0 }}>{actor.flag}</span>}
+          <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+              <h1 style={{ fontSize: 16, fontWeight: 700, color: 'var(--t1)', fontFamily: 'system-ui, sans-serif', lineHeight: 1.1 }}>
+                {actor.name.toUpperCase()}
+              </h1>
+              <span style={{ fontSize: 8, padding: '2px 8px', border: `1px solid ${actC}`, color: actC, fontFamily: 'system-ui', fontWeight: 700, letterSpacing: '.06em' }}>
+                {actor.activityLevel}
+              </span>
+              <span style={{ fontSize: 8, padding: '2px 8px', border: `1px solid ${staC}`, color: staC, fontFamily: 'system-ui', fontWeight: 700, letterSpacing: '.06em' }}>
+                {actor.stance}
+              </span>
+            </div>
+            <span className="mono" style={{ fontSize: 10, color: 'var(--t2)' }}>{actor.fullName}</span>
+            <span className="lbl" style={{ marginLeft: 10, fontSize: 8, color: 'var(--t3)' }}>{actor.type}</span>
           </div>
-          <span className="news-headline" style={{ fontSize: 13, color: as.color, minWidth: 36 }}>{actor.activityScore}%</span>
+          <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ height: 6, width: 80, background: 'var(--b)' }}>
+              <div style={{ width: `${actor.activityScore}%`, height: '100%', background: actC }} />
+            </div>
+            <span className="mono" style={{ fontSize: 11, color: actC }}>{actor.activityScore}%</span>
+          </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: `1px solid ${SEP}`, flexShrink: 0, background: '#f8fafc' }}>
-        {(['intel', 'signals'] as const).map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} style={{
-            padding: '10px 20px', border: 'none', cursor: 'pointer',
-            fontFamily: 'Arial, sans-serif', fontWeight: 700, fontSize: 11, letterSpacing: '0.05em', textTransform: 'uppercase',
-            background: activeTab === tab ? 'white' : 'transparent',
-            color: activeTab === tab ? TEXT : TEXT3,
-            borderBottom: activeTab === tab ? `2px solid ${RED}` : '2px solid transparent',
+      <div style={{ display: 'flex', borderBottom: '1px solid var(--b)', flexShrink: 0, background: 'var(--p2)' }}>
+        {(['intel', 'signals'] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)} className="row-btn" style={{
+            padding: '8px 18px', width: 'auto',
+            fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: tab === t ? 'var(--t1)' : 'var(--t2)',
+            borderBottom: tab === t ? '2px solid var(--acc)' : '2px solid transparent',
+            background: tab === t ? 'var(--p1)' : 'transparent',
           }}>
-            {tab === 'signals' ? `𝕏 FIELD SIGNALS${xPosts.length > 0 ? ` (${xPosts.length})` : ''}` : 'ACTOR INTELLIGENCE'}
+            {t === 'signals' ? `𝕏 SIGNALS${xPosts.length > 0 ? ` (${xPosts.length})` : ''}` : 'ACTOR INTELLIGENCE'}
           </button>
         ))}
       </div>
 
-      {/* Tab content */}
+      {/* Content */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        {activeTab === 'intel' ? (
-          <div style={{ padding: '22px 24px' }}>
+        {tab === 'intel' ? (
+          <div style={{ padding: '18px 22px' }}>
             {/* SAYING */}
-            <Section label="SAYING — Official Position">
-              <div style={{ borderLeft: `4px solid ${ss.color}`, paddingLeft: 14 }}>
-                <p className="news-body" style={{ fontSize: 13.5, color: TEXT, lineHeight: 1.7, fontStyle: 'italic' }}>{actor.saying}</p>
+            <DocSection label="SAYING — OFFICIAL POSITION">
+              <div style={{ borderLeft: `3px solid ${staC}`, paddingLeft: 12 }}>
+                <p style={{ fontSize: 12.5, color: 'var(--t1)', lineHeight: 1.7, fontFamily: 'system-ui, sans-serif', fontStyle: 'italic' }}>
+                  {actor.saying}
+                </p>
               </div>
-            </Section>
+            </DocSection>
 
             {/* DOING */}
-            <Section label="DOING — Observed Actions">
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <DocSection label="DOING — VERIFIED ACTIONS">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {actor.doing.map((action, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', background: '#f8fafc', border: `1px solid ${SEP}` }}>
-                    <div style={{ width: 7, height: 7, borderRadius: 1, background: as.color, flexShrink: 0, marginTop: 5 }} />
-                    <span className="news-body" style={{ fontSize: 13, color: TEXT, lineHeight: 1.5 }}>{action}</span>
+                  <div key={i} style={{ display: 'flex', gap: 10, padding: '6px 10px', border: '1px solid var(--b)' }}>
+                    <span style={{ color: actC, fontFamily: 'system-ui', fontSize: 12, flexShrink: 0, marginTop: 1 }}>▸</span>
+                    <span style={{ fontSize: 12, color: 'var(--t1)', fontFamily: 'system-ui, sans-serif', lineHeight: 1.4 }}>{action}</span>
                   </div>
                 ))}
               </div>
-            </Section>
+            </DocSection>
 
             {/* Assessment */}
-            <Section label="PHAROS ASSESSMENT">
-              <div style={{ borderLeft: `4px solid ${RED}`, paddingLeft: 14 }}>
-                <p className="news-body" style={{ fontSize: 13.5, color: '#1e293b', lineHeight: 1.7 }}>{actor.assessment}</p>
+            <DocSection label="PHAROS ASSESSMENT">
+              <div style={{ borderLeft: '3px solid var(--acc)', paddingLeft: 12 }}>
+                <p style={{ fontSize: 12.5, color: 'var(--t1)', lineHeight: 1.7, fontFamily: 'system-ui, sans-serif' }}>
+                  {actor.assessment}
+                </p>
               </div>
-            </Section>
+            </DocSection>
 
             {/* Recent actions */}
-            <Section label={`RECENT ACTIONS (${actor.recentActions.length})`}>
-              {actor.recentActions.map((action, i) => (
-                <div key={i} style={{
-                  display: 'flex', gap: 12, padding: '10px 12px', background: '#f8fafc', border: `1px solid ${SEP}`,
-                  borderLeft: `3px solid ${ACTION_COLOR[action.type] || '#64748b'}`, marginBottom: 6,
-                }}>
-                  <div style={{ flexShrink: 0, minWidth: 66 }}>
-                    <span style={{ fontSize: 11, color: TEXT3, fontFamily: 'Arial, sans-serif' }}>{action.date}</span>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                      <span className="news-meta" style={{ fontSize: 9, padding: '2px 5px', borderRadius: 2, background: ACTION_COLOR[action.type] || '#64748b', color: 'white' }}>{action.type}</span>
-                      <span className="news-meta" style={{ fontSize: 9, color: action.significance === 'HIGH' ? '#dc2626' : action.significance === 'MEDIUM' ? '#d97706' : TEXT3 }}>
-                        {action.significance} SIG.
-                      </span>
-                      {action.verified && <CheckCircle size={10} style={{ color: '#16a34a' }} strokeWidth={2} />}
+            <DocSection label={`RECENT ACTIONS (${actor.recentActions.length})`}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {actor.recentActions.map((action, i) => {
+                  const ac = ACT_TYPE_C[action.type] ?? 'var(--t2)';
+                  return (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '86px 64px 1fr', gap: 0, padding: '6px 0', borderBottom: '1px solid var(--bs)' }}>
+                      <span className="mono" style={{ fontSize: 10, color: 'var(--t3)', alignSelf: 'flex-start', paddingTop: 1 }}>{action.date}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <span style={{ fontSize: 8, fontWeight: 700, padding: '1px 5px', background: ac + '18', color: ac, fontFamily: 'system-ui', letterSpacing: '.04em' }}>{action.type}</span>
+                        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                          {action.verified && <CheckCircle size={8} style={{ color: 'var(--mon)' }} strokeWidth={2} />}
+                          <span className="mono" style={{ fontSize: 8, color: 'var(--t3)' }}>{action.sourceCount}src</span>
+                        </div>
+                      </div>
+                      <p style={{ fontSize: 11.5, color: 'var(--t1)', fontFamily: 'system-ui, sans-serif', lineHeight: 1.4, paddingLeft: 4 }}>
+                        {action.description}
+                      </p>
                     </div>
-                    <p style={{ fontSize: 13, color: TEXT, fontFamily: 'Georgia, serif', lineHeight: 1.4 }}>{action.description}</p>
-                    <div style={{ fontSize: 11, color: TEXT3, fontFamily: 'Arial, sans-serif', marginTop: 2 }}>
-                      {action.sourceCount} source{action.sourceCount !== 1 ? 's' : ''}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </Section>
+                  );
+                })}
+              </div>
+            </DocSection>
 
-            {/* Conflicts */}
-            <Section label="ACTIVE IN">
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {/* Active conflicts */}
+            <DocSection label="ACTIVE IN">
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {actor.conflictIds.map(cid => {
                   const c = CONFLICTS.find(x => x.id === cid);
                   if (!c) return null;
                   return (
                     <Link key={cid} href={`/dashboard/conflicts/${cid}`} style={{ textDecoration: 'none' }}>
-                      <span className="news-meta" style={{ fontSize: 10, padding: '4px 10px', borderRadius: 2, background: c.accentColor, color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                        {c.shortName} <ArrowRight size={10} strokeWidth={2} />
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', border: '1px solid var(--b)', cursor: 'pointer' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--p3)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+                      >
+                        <span className="lbl" style={{ fontSize: 9, color: 'var(--acc)' }}>{c.shortName}</span>
+                        <ArrowRight size={9} strokeWidth={1.5} style={{ color: 'var(--acc)' }} />
+                      </div>
                     </Link>
                   );
                 })}
               </div>
-            </Section>
+            </DocSection>
           </div>
         ) : (
-          <div style={{ padding: '16px' }}>
+          <div style={{ padding: '12px 16px' }}>
             {xPosts.length === 0 ? (
-              <div style={{ padding: '48px 16px', textAlign: 'center' }}>
-                <span style={{ fontSize: 24 }}>𝕏</span>
-                <p className="news-meta" style={{ fontSize: 11, color: TEXT3, marginTop: 8 }}>No X posts indexed for this actor</p>
+              <div style={{ padding: 48, textAlign: 'center' }}>
+                <span style={{ fontSize: 20, color: 'var(--t3)' }}>𝕏</span>
+                <p className="lbl" style={{ color: 'var(--t3)', marginTop: 8 }}>No signals indexed for this actor</p>
               </div>
             ) : (
               <>
-                <div className="news-meta" style={{ fontSize: 9, color: TEXT3, marginBottom: 12 }}>
-                  {xPosts.length} POSTS · Pharos-curated · {actor.name}
+                <div style={{ marginBottom: 10 }}>
+                  <span className="lbl" style={{ fontSize: 8 }}>{xPosts.length} POSTS · PHAROS-CURATED · {actor.name.toUpperCase()}</span>
                 </div>
-                {xPosts.map(post => <XPostCard key={post.id} post={post} />)}
+                {xPosts.map(p => <XPostCard key={p.id} post={p} />)}
               </>
             )}
           </div>
@@ -277,26 +279,21 @@ function ActorDetail({ actor, activeTab, setActiveTab }: {
   );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function DocSection({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 26 }}>
-      <div className="news-meta" style={{ fontSize: 10, color: TEXT3, marginBottom: 10 }}>{label}</div>
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+        <span className="lbl" style={{ fontSize: 8 }}>{label}</span>
+        <div style={{ flex: 1, height: 1, background: 'var(--bs)' }} />
+      </div>
       {children}
     </div>
   );
 }
 
-function Badge({ label, color, bg }: { label: string; color: string; bg: string }) {
-  return (
-    <span className="news-meta" style={{ fontSize: 10, padding: '3px 8px', borderRadius: 2, border: `1px solid ${color}44`, color, background: bg }}>
-      {label}
-    </span>
-  );
-}
-
 export default function ActorsPage() {
   return (
-    <Suspense fallback={<div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading…</div>}>
+    <Suspense fallback={<div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="lbl">Loading…</span></div>}>
       <ActorsInner />
     </Suspense>
   );
