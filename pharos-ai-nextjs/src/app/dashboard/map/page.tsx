@@ -24,8 +24,9 @@ import {
   type ThreatZone,
   type HeatPoint,
 } from '@/data/mapData';
-import { MAP_STORIES, type MapStory } from '@/data/mapStories';
+import { MAP_STORIES, type MapStory, type StoryEvent } from '@/data/mapStories';
 import StoryIcon from '@/components/dashboard/StoryIcon';
+import StoryTimeline from '@/components/dashboard/StoryTimeline';
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
@@ -128,51 +129,78 @@ function StoryCard({
 
       {/* Expanded body */}
       {isOpen && (
-        <div
-          style={{
-            background: '#1A1F25',
-            padding: '12px 16px',
-          }}
-        >
-          <p
-            style={{
-              fontSize: 12,
-              color: '#C0C8D4',
-              lineHeight: 1.6,
-              margin: '0 0 10px 0',
-            }}
-          >
+        <div style={{ background: '#1A1F25', padding: '12px 16px' }}>
+
+          {/* Narrative */}
+          <p style={{ fontSize: 12, color: '#C0C8D4', lineHeight: 1.6, margin: '0 0 12px 0' }}>
             {story.narrative}
           </p>
-          <div>
+
+          {/* Event timeline */}
+          {story.events.length > 0 && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 8, fontFamily: 'monospace', fontWeight: 700, color: '#5C7080', letterSpacing: '0.1em', marginBottom: 8 }}>
+                EVENT LOG
+              </div>
+              <div style={{ position: 'relative', paddingLeft: 16 }}>
+                {/* Vertical connector line */}
+                <div style={{
+                  position: 'absolute', left: 5, top: 6,
+                  width: 1, bottom: 6, background: '#2A2F38',
+                }} />
+                {story.events.map((ev: StoryEvent, i: number) => {
+                  const evColor: Record<string, string> = {
+                    STRIKE: '#E84C4C', RETALIATION: '#E8A84C',
+                    INTEL: '#B84CE8', NAVAL: '#4C9BE8', POLITICAL: '#8F99A8',
+                  };
+                  const c = evColor[ev.type] ?? '#8F99A8';
+                  const t = new Date(ev.time);
+                  const hhmm = t.getUTCHours().toString().padStart(2,'0') + ':' + t.getUTCMinutes().toString().padStart(2,'0') + 'Z';
+                  const day = t.getUTCDate() === 28 ? 'FEB 28' : 'MAR 01';
+                  return (
+                    <div key={i} style={{ position: 'relative', marginBottom: i < story.events.length - 1 ? 10 : 0 }}>
+                      {/* Dot on the line */}
+                      <div style={{
+                        position: 'absolute', left: -12, top: 4,
+                        width: 7, height: 7, borderRadius: '50%',
+                        background: c, border: `1px solid ${c}88`,
+                        boxShadow: `0 0 4px ${c}66`,
+                      }} />
+                      {/* Timestamp */}
+                      <div style={{ fontFamily: 'monospace', fontSize: 9, color: c, fontWeight: 700, marginBottom: 1 }}>
+                        {day} · {hhmm}
+                      </div>
+                      {/* Label */}
+                      <div style={{ fontSize: 11, color: '#8F99A8', lineHeight: 1.4 }}>
+                        {ev.label}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Key facts */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 8, fontFamily: 'monospace', fontWeight: 700, color: '#5C7080', letterSpacing: '0.1em', marginBottom: 6 }}>
+              KEY FACTS
+            </div>
             {story.keyFacts.map((fact, i) => (
-              <div
-                key={i}
-                style={{
-                  fontFamily: 'monospace',
-                  fontSize: 11,
-                  color: '#8F99A8',
-                  marginBottom: 3,
-                }}
-              >
+              <div key={i} style={{ fontFamily: 'monospace', fontSize: 11, color: '#8F99A8', marginBottom: 3 }}>
                 → {fact}
               </div>
             ))}
           </div>
+
+          {/* Fly to */}
           <button
             onClick={onFlyTo}
             style={{
-              width: '100%',
-              marginTop: 10,
-              padding: 6,
-              background: '#1C3A5E',
-              border: '1px solid #2D72D2',
-              color: '#4C9BE8',
-              fontSize: 10,
-              fontWeight: 700,
-              fontFamily: 'monospace',
-              cursor: 'pointer',
-              letterSpacing: '0.06em',
+              width: '100%', padding: 6,
+              background: '#1C3A5E', border: '1px solid #2D72D2',
+              color: '#4C9BE8', fontSize: 10, fontWeight: 700,
+              fontFamily: 'monospace', cursor: 'pointer', letterSpacing: '0.06em',
             }}
           >
             ⊙ FLY TO
@@ -588,6 +616,18 @@ export default function FullMapPage() {
             </span>
           )}
         </div>
+
+        {/* Timeline strip — only when expanded */}
+        {sidebarOpen && (
+          <StoryTimeline
+            stories={MAP_STORIES}
+            activeId={activeStory?.id ?? null}
+            onActivate={(story) => {
+              setOpenStoryId(story.id);
+              activateStory(story);
+            }}
+          />
+        )}
 
         {/* Stories list */}
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
