@@ -39,6 +39,7 @@
 
   /* Dim variants for backgrounds */
   --danger-dim:  rgba(231, 106, 110, 0.12);
+  --danger-bd:   rgba(231, 106, 110, 0.35);
   --warning-dim: rgba(236, 154, 60,  0.12);
   --success-dim: rgba(35,  162, 109, 0.12);
   --info-dim:    rgba(76,  144, 240, 0.12);

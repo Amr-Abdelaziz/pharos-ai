@@ -44,8 +44,7 @@ export function Header() {
 
         {/* ONGOING badge */}
         <div
-          className="px-[7px] py-0.5 bg-[var(--danger-dim)]"
-          style={{ border: '1px solid rgba(231,106,110,.35)' }}
+          className="px-[7px] py-0.5 bg-[var(--danger-dim)] border border-[var(--danger-bd)] rounded-sm"
         >
           <span className="text-[8px] font-bold text-[var(--danger)] tracking-[0.08em] uppercase">
             ONGOING
@@ -92,8 +91,7 @@ export function Header() {
 
         {/* KIA badge */}
         <div
-          className="flex items-center gap-[5px] px-[9px] py-[3px] bg-[var(--danger-dim)]"
-          style={{ border: '1px solid rgba(231,106,110,.35)' }}
+          className="flex items-center gap-[5px] px-[9px] py-[3px] bg-[var(--danger-dim)] border border-[var(--danger-bd)] rounded-sm"
         >
           <div className="w-[5px] h-[5px] rounded-full bg-[var(--danger)] shrink-0" />
           <span className="text-[9px] font-bold text-[var(--danger)] tracking-[0.08em] uppercase">
