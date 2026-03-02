@@ -119,7 +119,10 @@ export default function FullMapPage() {
         <MapDetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} onSelectItem={setSelectedItem} onActivateStory={handleActivateStory} />
 
         {/* Timeline scrubber — bottom */}
-        <MapTimeline timeExtent={f.timeExtent} timeRange={f.state.timeRange} onTimeRange={f.setTimeRange} />
+        <MapTimeline
+          dataExtent={f.dataExtent} viewExtent={f.viewExtent} onViewExtent={f.setViewExtent}
+          timeRange={f.state.timeRange} onTimeRange={f.setTimeRange}
+        />
       </div>
     </div>
   );

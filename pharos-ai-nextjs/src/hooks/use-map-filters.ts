@@ -46,7 +46,11 @@ export type UseMapFiltersReturn = {
   state:    FilterState;
   filtered: FilteredData;
   facets:   FilterFacets;
-  timeExtent: [number, number];
+  /** Absolute min/max of all timestamped data */
+  dataExtent:   [number, number];
+  /** Current visible window on the timeline (zoom level) */
+  viewExtent:   [number, number];
+  setViewExtent: (ext: [number, number]) => void;
   toggleDataset:  (d: string) => void;
   toggleType:     (t: string) => void;
   toggleActor:    (a: string) => void;
@@ -61,10 +65,11 @@ export type UseMapFiltersReturn = {
 // ─── Hook ───────────────────────────────────────────────────────────────────────
 
 const INITIAL_STATE = extractInitialState(RAW_DATA);
-const TIME_EXTENT = extractTimeExtent(RAW_DATA);
+const DATA_EXTENT = extractTimeExtent(RAW_DATA);
 
 export function useMapFilters(): UseMapFiltersReturn {
   const [state, setState] = useState<FilterState>(INITIAL_STATE);
+  const [viewExtent, setViewExtent] = useState<[number, number]>(DATA_EXTENT);
 
   // When toggling a dataset ON, auto-enable all its types
   const toggleDataset = useCallback((d: string) => setState(p => {
@@ -107,7 +112,7 @@ export function useMapFilters(): UseMapFiltersReturn {
     state.timeRange !== null;
 
   return {
-    state, filtered, facets, timeExtent: TIME_EXTENT,
+    state, filtered, facets, dataExtent: DATA_EXTENT, viewExtent, setViewExtent,
     toggleDataset, toggleType, toggleActor, togglePriority, toggleStatus, toggleHeat,
     setTimeRange, resetFilters, isFiltered,
   };

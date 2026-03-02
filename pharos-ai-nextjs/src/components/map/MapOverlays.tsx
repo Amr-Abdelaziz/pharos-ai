@@ -78,21 +78,10 @@ type Props = {
   onToggleSidebar: () => void;
 };
 
-export default function MapOverlays({ activeStory, onClearStory, sidebarOpen, onToggleSidebar }: Props) {
+export default function MapOverlays({ activeStory, onClearStory }: Props) {
   return (
     <>
       <BackButton />
-      {!sidebarOpen && (
-        <button
-          onClick={onToggleSidebar}
-          style={{
-            position: 'absolute', top: 52, left: 12, zIndex: 10,
-            background: 'rgba(28,33,39,0.95)', border: '1px solid var(--bd)',
-            borderRadius: 2, padding: '5px 8px', cursor: 'pointer',
-            color: 'var(--blue)', fontSize: 12, fontWeight: 700,
-          }}
-        >◈ STORIES</button>
-      )}
       {activeStory && <ActiveStoryPill story={activeStory} onClear={onClearStory} />}
     </>
   );
