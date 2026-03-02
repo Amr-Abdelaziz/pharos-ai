@@ -1129,39 +1129,43 @@ UK Defence Secretary John Healey convened an emergency COBRA meeting. UK militar
 
   {
     id:        'evt-030',
-    timestamp: '2026-03-02T07:00:00Z',
+    timestamp: '2026-03-02T11:18:00Z',
     severity:  'CRITICAL',
     type:      'MILITARY',
-    title:     'Several US warplanes crash in Kuwait during intense Iranian fire — all crew survive',
+    title:     'CENTCOM confirms: 3 US F-15s shot down by Kuwaiti air defenses in friendly fire incident',
     location:  'Kuwait',
-    summary:   'Kuwait\'s defence ministry announced that "several United States military aircraft crashed" during Monday morning. All crew members bailed out safely and were checked at a hospital in stable condition. Video footage showed at least one F-15 spinning to the ground while on fire. The crashes came during an intense period of Iranian fire targeting Kuwait. The cause is under investigation — unclear whether the aircraft were shot down by Iranian missiles/AA or suffered mechanical failures under combat conditions.',
-    fullContent: `Kuwait's Ministry of Defence statement: "Several United States military aircraft crashed this morning. All crew members survived."
+    summary:   'US Central Command confirmed that three US F-15 fighter jets were shot down over Kuwait by Kuwaiti air defenses in a friendly fire incident. All six aircrew ejected safely and are in stable condition. CENTCOM: "During active combat that included attacks from Iranian aircraft, ballistic missiles, and drones — the US Air Force fighter jets were mistakenly shot down by Kuwaiti air defenses." Video showed at least one F-15 spinning to the ground on fire. This is the most significant friendly fire incident involving US aircraft since the 2003 Iraq War.',
+    fullContent: `US Central Command released a full statement (centcom.mil):
 
-Details:
-• Kuwait MOD did not specify the number or type of aircraft involved.
-• The War Zone (twz.com) identified at least one aircraft as an F-15, publishing footage showing an F-15 "spinning into the ground while on fire."
-• Separate footage showed a pilot being ejected and recovered.
-• CNN confirmed "several" aircraft crashed based on Kuwait MOD statement.
-• All pilots bailed safely; being treated at a hospital in stable condition.
-• The incident occurred during intense Iranian missile and drone fire targeting Kuwait.
+"Three U.S. F-15s involved in friendly fire incident in Kuwait — pilots safe."
+
+"During active combat — that included attacks from Iranian aircraft, ballistic missiles, and drones — the U.S. Air Force fighter jets were mistakenly shot down by Kuwaiti air defenses."
+
+"The three jets went down over Kuwait due to an apparent friendly fire incident."
+
+"All six aircrew ejected safely, have been safely recovered and are in stable condition."
+
+"The circumstances surrounding the incident remain under investigation and additional information will be released as it becomes available."
+
+Earlier Monday, Kuwait's Ministry of Defence had announced that "several United States military aircraft crashed" without specifying the cause. The War Zone (twz.com) published footage showing an F-15 spinning to the ground while on fire, and a separate video of a pilot being ejected and recovered.
 
 Analysis:
-• The cause is under investigation. Possibilities include: (1) Iranian anti-aircraft missiles, (2) Iranian drone collision, (3) friendly fire from air defense systems, (4) mechanical failure under combat stress.
-• Kuwait already lost 3 US service members in the conflict (Army sustainment unit, March 1).
-• US Embassy Kuwait issued shelter-in-place: "There is a continuing threat of missile and UAV attacks over Kuwait. Do not come to the embassy."
-• Smoke was seen rising from the area near the US Embassy in Kuwait City (AFP correspondent).`,
+• The fog of war during intense Iranian missile/drone fire caused Kuwaiti air defense operators to misidentify friendly aircraft as hostile incoming threats.
+• This is the most significant friendly fire incident involving US aircraft since the 2003 Iraq War (where a US Patriot battery shot down a RAF Tornado GR4 and a US Navy F/A-18C).
+• The loss of 3x F-15s (est. $200M+ in aircraft) is a significant material loss, though all crew surviving mitigates the human cost.
+• The incident raises questions about air defense coordination (IFF — Identification Friend or Foe) in the chaotic multi-threat environment over the Gulf.`,
     verified: true,
     sources: [
-      { name: 'Kuwait Ministry of Defence', tier: 1, reliability: 95 },
-      { name: 'CNN',                        tier: 1, reliability: 95 },
-      { name: 'The War Zone',               tier: 2, reliability: 88 },
-      { name: 'Times of Israel',             tier: 2, reliability: 88 },
-      { name: 'Telegraph',                  tier: 1, reliability: 93 },
+      { name: 'CENTCOM official statement',  tier: 1, reliability: 99 },
+      { name: 'Guardian',                    tier: 1, reliability: 95 },
+      { name: 'CNN',                         tier: 1, reliability: 95 },
+      { name: 'The War Zone',                tier: 2, reliability: 88 },
+      { name: 'Telegraph',                   tier: 1, reliability: 93 },
     ],
     actorResponses: [
-      { actorId: 'us', actorName: 'US Embassy Kuwait', stance: 'NEUTRAL', type: 'ALERT', statement: 'There is a continuing threat of missile and UAV attacks over Kuwait. Do not come to the embassy. US Embassy personnel are sheltering in place.' },
+      { actorId: 'us', actorName: 'CENTCOM', stance: 'NEUTRAL', type: 'STATEMENT', statement: 'Three US F-15s went down over Kuwait due to an apparent friendly fire incident during active combat. All six aircrew ejected safely and are in stable condition.' },
     ],
-    tags: ['kuwait', 'f-15', 'crash', 'warplanes', 'embassy', 'day-3'],
+    tags: ['kuwait', 'f-15', 'friendly-fire', 'centcom', 'air-defense', 'day-3'],
   },
 
   {
@@ -1356,6 +1360,63 @@ The timeline also explains why the US is not rushing to negotiate — Trump sees
       { actorId: 'us', actorName: 'President Trump', stance: 'SUPPORTING', type: 'STATEMENT', statement: 'It was always a four-week process. It\'s a big country. It will take four weeks or less.' },
     ],
     tags: ['trump', 'timeline', 'four-weeks', 'campaign-duration', 'day-3'],
+  },
+
+  {
+    id:        'evt-036',
+    timestamp: '2026-03-02T11:00:00Z',
+    severity:  'HIGH',
+    type:      'DIPLOMATIC',
+    title:     'US and 6 Gulf states joint statement: Iran\'s "indiscriminate and reckless attacks" condemn',
+    location:  'Washington D.C. / Gulf region',
+    summary:   'The United States and six Gulf allied states — Kuwait, Saudi Arabia, Bahrain, Qatar, Jordan, and the UAE — issued a joint statement condemning Iran\'s "indiscriminate and reckless attacks across the region, which targeted sovereign territories, endangered civilians, and inflicted damage on civilian infrastructure." The statement confirmed attacks in Bahrain, Iraq (including Kurdistan), Jordan, Kuwait, Oman, Qatar, Saudi Arabia, and the UAE. They affirmed their "right to self-defense" and commended "effective cooperation in air and missile defense that prevented greater loss of life."',
+    fullContent: `Joint statement from the US and six allied Gulf states:
+
+"Iran's actions represent a dangerous escalation that violates the sovereignty of multiple states and threatens regional stability."
+
+"Targeting civilians and non-combatant states is reckless behavior that undermines stability."
+
+"We stand united in defense of our citizens, our sovereignty, and our territories, and we reaffirm our right to self-defense in the face of these attacks, while underscoring our commitment to regional security and commending the effective cooperation in air and missile defense that prevented greater loss of life and destruction."
+
+Signatories: United States, Kuwait, Saudi Arabia, Bahrain, Qatar, Jordan, United Arab Emirates.
+
+The statement confirmed Iranian attacks occurred in: Bahrain, Iraq (including the Kurdistan Region), Jordan, Kuwait, Oman, Qatar, Saudi Arabia, and the United Arab Emirates.
+
+This is the broadest US-Gulf coalition statement since the 1991 Gulf War. The inclusion of Qatar is notable — Qatar has historically maintained closer ties to Iran than other Gulf states and hosts the Al Udeid US air base.`,
+    verified: true,
+    sources: [
+      { name: 'Guardian',     tier: 1, reliability: 95 },
+      { name: 'Reuters',      tier: 1, reliability: 99 },
+      { name: 'AP',           tier: 1, reliability: 98 },
+    ],
+    actorResponses: [],
+    tags: ['gulf-coalition', 'joint-statement', 'sovereignty', 'air-defense', 'day-3'],
+  },
+
+  {
+    id:        'evt-037',
+    timestamp: '2026-03-02T12:00:00Z',
+    severity:  'HIGH',
+    type:      'MILITARY',
+    title:     'Two more drones heading toward RAF Akrotiri intercepted — Cyprus government confirms',
+    location:  'RAF Akrotiri, Cyprus',
+    summary:   'Two unmanned drones heading toward RAF Akrotiri in Cyprus were "successfully intercepted," Cyprus government spokesperson Konstantinos Letymbiotis confirmed. This comes after the first Iranian drone struck the UK base overnight. The repeated targeting of a UK sovereign base in an EU member state represents a sustained attempt by Iran to punish the UK for authorizing US use of its bases.',
+    fullContent: `Cyprus government spokesperson Konstantinos Letymbiotis confirmed that two unmanned drones heading toward RAF Akrotiri in Cyprus were "successfully intercepted."
+
+This is the third drone targeting the UK base:
+• Overnight: 1 Iranian drone struck RAF Akrotiri — limited damage, no casualties, families evacuated.
+• Midday March 2: 2 additional drones heading toward Akrotiri intercepted before reaching the base.
+
+The sustained targeting suggests Iran views UK bases as legitimate targets following Starmer's authorization of US use of UK facilities for defensive operations.
+
+Cyprus — an EU member state — is now effectively under sustained drone attack from Iran, raising questions about EU mutual defense obligations and NATO coordination.`,
+    verified: true,
+    sources: [
+      { name: 'Guardian',                        tier: 1, reliability: 95 },
+      { name: 'Cyprus Government Spokesperson',  tier: 1, reliability: 95 },
+    ],
+    actorResponses: [],
+    tags: ['raf-akrotiri', 'cyprus', 'drones', 'intercepted', 'uk', 'day-3'],
   },
 ];
 
