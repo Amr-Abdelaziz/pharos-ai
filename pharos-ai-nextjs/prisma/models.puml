@@ -1,0 +1,567 @@
+@startuml models
+!theme plain
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam classFontSize 11
+skinparam classAttributeFontSize 10
+skinparam defaultFontName "SF Mono,Menlo,monospace"
+skinparam backgroundColor #1C2127
+skinparam classBorderColor #3D4752
+skinparam classBackgroundColor #252A31
+skinparam classFontColor #E0E6ED
+skinparam classAttributeFontColor #ABB3BF
+skinparam arrowColor #5C7080
+skinparam stereotypeFontColor #8A9BA8
+skinparam packageBorderColor #3D4752
+skinparam packageFontColor #8A9BA8
+skinparam noteBorderColor #3D4752
+skinparam noteBackgroundColor #2B3139
+skinparam noteFontColor #ABB3BF
+
+hide circle
+hide methods
+
+' ════════════════════════════════════════════════════════════
+' ENUMS
+' ════════════════════════════════════════════════════════════
+
+package "Enums" <<Rectangle>> {
+  enum ThreatLevel {
+    CRITICAL
+    HIGH
+    ELEVATED
+    MONITORING
+  }
+
+  enum ConflictStatus {
+    ONGOING
+    PAUSED
+    CEASEFIRE
+    RESOLVED
+  }
+
+  enum ActorType {
+    STATE
+    NON_STATE
+    ORGANIZATION
+    INDIVIDUAL
+  }
+
+  enum ActivityLevel {
+    CRITICAL
+    HIGH
+    ELEVATED
+    MODERATE
+  }
+
+  enum Stance {
+    AGGRESSOR
+    DEFENDER
+    RETALIATING
+    PROXY
+    NEUTRAL
+    CONDEMNING
+  }
+
+  enum ActionType {
+    MILITARY
+    DIPLOMATIC
+    POLITICAL
+    ECONOMIC
+    INTELLIGENCE
+  }
+
+  enum ActionSignificance {
+    HIGH
+    MEDIUM
+    LOW
+  }
+
+  enum Severity {
+    CRITICAL
+    HIGH
+    STANDARD
+  }
+
+  enum EventType {
+    MILITARY
+    DIPLOMATIC
+    INTELLIGENCE
+    ECONOMIC
+    HUMANITARIAN
+    POLITICAL
+  }
+
+  enum ActorResponseStance {
+    SUPPORTING
+    OPPOSING
+    NEUTRAL
+    UNKNOWN
+  }
+
+  enum SignificanceLevel {
+    BREAKING
+    HIGH
+    STANDARD
+  }
+
+  enum AccountType {
+    military
+    government
+    journalist
+    analyst
+    official
+  }
+
+  enum Perspective {
+    WESTERN
+    US_GOV
+    ISRAELI
+    IRANIAN
+    ARAB
+    RUSSIAN
+    CHINESE
+    INDEPENDENT
+    INTL_ORG
+  }
+
+  enum EconCategory {
+    ENERGY
+    SAFE_HAVEN
+    EQUITIES
+    VOLATILITY
+    CURRENCY
+    DEFENSE
+    SHIPPING
+  }
+
+  enum MapFeatureType {
+    STRIKE_ARC
+    MISSILE_TRACK
+    TARGET
+    ASSET
+    THREAT_ZONE
+    HEAT_POINT
+  }
+
+  enum StoryCategory {
+    STRIKE
+    RETALIATION
+    NAVAL
+    INTEL
+    DIPLOMATIC
+  }
+
+  enum StoryEventType {
+    STRIKE
+    RETALIATION
+    INTEL
+    NAVAL
+    POLITICAL
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' CONFLICT CORE
+' ════════════════════════════════════════════════════════════
+
+package "Conflict Core" <<Rectangle>> {
+  entity Conflict {
+    * id : String <<PK>>
+    --
+    name : String
+    codename : Json
+    status : ConflictStatus
+    threatLevel : ThreatLevel?
+    startDate : Date
+    region : String
+    escalation : Int
+    summary : String
+    keyFacts : String[]
+    objectives : Json
+    commanders : Json
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity ConflictDaySnapshot {
+    * id : String <<PK>> <<cuid>>
+    --
+    conflictId : String <<FK>>
+    day : Date
+    dayLabel : String
+    summary : String
+    keyFacts : String[]
+    escalation : Int
+    economicNarrative : String
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+    ..
+    <<unique>> conflictId + day
+  }
+
+  entity CasualtySummary {
+    * id : String <<PK>> <<cuid>>
+    --
+    snapshotId : String <<FK>>
+    faction : String
+    killed : Int
+    wounded : Int
+    civilians : Int
+    injured : Int
+    ..
+    <<unique>> snapshotId + faction
+  }
+
+  entity EconomicImpactChip {
+    * id : String <<PK>> <<cuid>>
+    --
+    snapshotId : String <<FK>>
+    ord : Int
+    label : String
+    val : String
+    sub : String
+    color : String
+    ..
+    <<unique>> snapshotId + ord
+  }
+
+  entity Scenario {
+    * id : String <<PK>> <<cuid>>
+    --
+    snapshotId : String <<FK>>
+    ord : Int
+    label : String
+    subtitle : String
+    color : String
+    prob : String
+    body : String
+    ..
+    <<unique>> snapshotId + ord
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' ACTORS
+' ════════════════════════════════════════════════════════════
+
+package "Actors" <<Rectangle>> {
+  entity Actor {
+    * id : String <<PK>>
+    --
+    conflictId : String <<FK>>
+    name : String
+    fullName : String
+    countryCode : String?
+    type : ActorType
+    activityLevel : ActivityLevel
+    activityScore : Int
+    stance : Stance
+    saying : String
+    doing : String[]
+    assessment : String
+    keyFigures : String[]
+    linkedEventIds : String[]
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity ActorDaySnapshot {
+    * id : String <<PK>> <<cuid>>
+    --
+    actorId : String <<FK>>
+    day : Date
+    activityLevel : ActivityLevel
+    activityScore : Int
+    stance : Stance
+    saying : String
+    doing : String[]
+    assessment : String
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+    ..
+    <<unique>> actorId + day
+  }
+
+  entity ActorAction {
+    * id : String <<PK>> <<cuid>>
+    --
+    actorId : String <<FK>>
+    date : String
+    type : ActionType
+    description : String
+    verified : Boolean
+    significance : ActionSignificance
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' EVENTS
+' ════════════════════════════════════════════════════════════
+
+package "Events" <<Rectangle>> {
+  entity IntelEvent {
+    * id : String <<PK>>
+    --
+    conflictId : String <<FK>>
+    timestamp : DateTime
+    severity : Severity
+    type : EventType
+    title : String
+    location : String
+    summary : String
+    fullContent : String
+    verified : Boolean
+    tags : String[]
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity EventSource {
+    * id : String <<PK>> <<cuid>>
+    --
+    eventId : String <<FK>>
+    name : String
+    tier : Int
+    reliability : Int
+    url : String?
+  }
+
+  entity EventActorResponse {
+    * id : String <<PK>> <<cuid>>
+    --
+    eventId : String <<FK>>
+    actorId : String <<FK>>
+    actorName : String
+    stance : ActorResponseStance
+    type : String
+    statement : String
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' SIGNALS (X Posts)
+' ════════════════════════════════════════════════════════════
+
+package "Signals" <<Rectangle>> {
+  entity XPost {
+    * id : String <<PK>>
+    --
+    conflictId : String <<FK>>
+    handle : String
+    displayName : String
+    avatar : String
+    avatarColor : String
+    verified : Boolean
+    accountType : AccountType
+    significance : SignificanceLevel
+    timestamp : DateTime
+    content : String
+    images : String[]
+    videoThumb : String?
+    likes : Int
+    retweets : Int
+    replies : Int
+    views : Int
+    pharosNote : String?
+    eventId : String? <<FK>>
+    actorId : String? <<FK>>
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' MAP
+' ════════════════════════════════════════════════════════════
+
+package "Map" <<Rectangle>> {
+  entity MapFeature {
+    * id : String <<PK>>
+    --
+    conflictId : String <<FK>>
+    featureType : MapFeatureType
+    actor : String
+    priority : String
+    category : String
+    type : String
+    status : String?
+    timestamp : DateTime?
+    geometry : Json
+    properties : Json
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity MapStory {
+    * id : String <<PK>>
+    --
+    conflictId : String <<FK>>
+    title : String
+    tagline : String
+    iconName : String
+    category : StoryCategory
+    narrative : String
+    highlightStrikeIds : String[]
+    highlightMissileIds : String[]
+    highlightTargetIds : String[]
+    highlightAssetIds : String[]
+    viewState : Json
+    keyFacts : String[]
+    timestamp : DateTime
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity MapStoryEvent {
+    * id : String <<PK>> <<cuid>>
+    --
+    storyId : String <<FK>>
+    ord : Int
+    time : String
+    label : String
+    type : StoryEventType
+    ..
+    <<unique>> storyId + ord
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' RSS / NEWS
+' ════════════════════════════════════════════════════════════
+
+package "RSS / News" <<Rectangle>> {
+  entity RssFeed {
+    * id : String <<PK>>
+    --
+    name : String
+    url : String
+    perspective : Perspective
+    country : String
+    tags : String[]
+    stateFunded : Boolean
+    tier : Int
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity ConflictCollection {
+    * id : String <<PK>> <<cuid>>
+    --
+    conflictId : String <<FK>>
+    name : String
+    description : String
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity ConflictChannel {
+    * id : String <<PK>> <<cuid>>
+    --
+    collectionId : String <<FK>>
+    label : String
+    description : String
+    perspective : String
+    color : String
+    ord : Int
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+    ..
+    <<unique>> collectionId + ord
+  }
+
+  entity ChannelFeed {
+    * channelId : String <<PK>> <<FK>>
+    * feedId : String <<PK>> <<FK>>
+    --
+    ord : Int
+    ..
+    <<unique>> channelId + ord
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' CONFIGURATION
+' ════════════════════════════════════════════════════════════
+
+package "Configuration" <<Rectangle>> {
+  entity EconomicIndex {
+    * id : String <<PK>>
+    --
+    ticker : String
+    name : String
+    shortName : String
+    category : EconCategory
+    tier : Int
+    unit : String
+    description : String
+    color : String
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+  }
+
+  entity PredictionGroup {
+    * id : String <<PK>>
+    --
+    label : String
+    description : String
+    color : String
+    bg : String
+    border : String
+    titleMatches : String[]
+    ord : Int
+    --
+    createdAt : DateTime
+    updatedAt : DateTime
+    ..
+    <<unique>> ord
+  }
+}
+
+' ════════════════════════════════════════════════════════════
+' RELATIONSHIPS
+' ════════════════════════════════════════════════════════════
+
+Conflict ||--o{ ConflictDaySnapshot : "daySnapshots"
+Conflict ||--o{ Actor : "actors"
+Conflict ||--o{ IntelEvent : "events"
+Conflict ||--o{ XPost : "xPosts"
+Conflict ||--o{ MapFeature : "mapFeatures"
+Conflict ||--o{ MapStory : "mapStories"
+Conflict ||--o{ ConflictCollection : "collections"
+
+ConflictDaySnapshot ||--o{ CasualtySummary : "casualties"
+ConflictDaySnapshot ||--o{ EconomicImpactChip : "economicChips"
+ConflictDaySnapshot ||--o{ Scenario : "scenarios"
+
+Actor ||--o{ ActorDaySnapshot : "daySnapshots"
+Actor ||--o{ ActorAction : "actions"
+Actor ||--o{ EventActorResponse : "responses"
+Actor ||--o{ XPost : "xPosts"
+
+IntelEvent ||--o{ EventSource : "sources"
+IntelEvent ||--o{ EventActorResponse : "actorResponses"
+IntelEvent ||--o{ XPost : "xPosts"
+
+MapStory ||--o{ MapStoryEvent : "events"
+
+ConflictCollection ||--o{ ConflictChannel : "channels"
+ConflictChannel ||--o{ ChannelFeed : "feeds"
+RssFeed ||--o{ ChannelFeed : "channelLinks"
+
+@enduml
