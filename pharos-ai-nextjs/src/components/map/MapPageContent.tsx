@@ -1,7 +1,8 @@
 'use client';
 
-import '@/lib/deckgl-device';
 import { useCallback } from 'react';
+
+import '@/lib/deckgl-device';
 import DeckGL from '@deck.gl/react';
 import Map from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';

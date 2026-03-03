@@ -1,8 +1,9 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import { applyFilters } from '@/lib/map-filter-engine';
-import { ACTOR_META } from '@/data/mapTokens';
 import { RAW_DATA, INITIAL_SERIALIZABLE_FILTERS } from './map-slice';
+
+import { ACTOR_META } from '@/data/mapTokens';
 
 import type { RootState } from './index';
 import type { FilterState } from '@/lib/map-filter-engine';

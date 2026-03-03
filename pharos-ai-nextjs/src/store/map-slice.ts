@@ -45,7 +45,7 @@ function toSerializable(fs: ReturnType<typeof extractInitialState>): Serializabl
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export interface SerializableFilterState {
+export type SerializableFilterState = {
   datasets:   string[];
   types:      string[];
   actors:     string[];
@@ -53,9 +53,9 @@ export interface SerializableFilterState {
   priorities: string[];
   heat:       boolean;
   timeRange:  [number, number] | null;
-}
+};
 
-export interface MapState {
+export type MapState = {
   // Camera
   viewState: MapViewState;
 
@@ -70,7 +70,7 @@ export interface MapState {
   // UI chrome
   sidebarOpen: boolean;
   mapStyle: 'dark' | 'satellite';
-}
+};
 
 // ─── localStorage persistence ────────────────────────────────────────────────
 
