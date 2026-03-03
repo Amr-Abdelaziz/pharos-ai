@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
 
@@ -26,13 +26,14 @@ type Props = {
 export default function MapSidebar({ isOpen, stories, activeStory, onToggle, onActivateStory, onClearStory }: Props) {
   const [openStoryId, setOpenStoryId] = useState<string | null>(null);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   const sorted = useMemo(
-    () => [...stories].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()),
+    () => [...stories].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()),
     [stories],
   );
 
-  const days = useMemo(() => groupByDay(sorted), [sorted]);
+  const days = useMemo(() => groupByDay(sorted).reverse(), [sorted]);
 
   // Auto-expand date group when a story is activated
   useEffect(() => {
@@ -42,6 +43,17 @@ export default function MapSidebar({ isOpen, stories, activeStory, onToggle, onA
       setExpandedDates(prev => new Set(prev).add(group.date));
     }
   }, [activeStory, days, expandedDates]);
+
+  // Scroll the active story card into view after the date group expands
+  useEffect(() => {
+    if (!openStoryId || !bodyRef.current) return;
+    // Small delay so the date group has time to expand and render cards
+    const timer = setTimeout(() => {
+      const el = bodyRef.current?.querySelector(`[data-story-id="${openStoryId}"]`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [openStoryId]);
 
   const handleToggleStory = (story: MapStory) => {
     const opening = openStoryId !== story.id;
@@ -93,7 +105,7 @@ export default function MapSidebar({ isOpen, stories, activeStory, onToggle, onA
       />
 
       {/* Stories list — grouped by date */}
-      <div className="panel-body">
+      <div ref={bodyRef} className="panel-body">
         {days.map(group => (
           <StoryDateGroup
             key={group.date}

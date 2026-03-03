@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { fmtTimeZ } from '@/lib/format';
 import StoryIcon from './StoryIcon';
 
@@ -42,7 +44,7 @@ function EventLog({ events }: { events: StoryEvent[] }) {
                 background: color, border: `1px solid ${color}`,
               }} />
               <p className="mono" style={{ fontSize: 9, color, fontWeight: 700, marginBottom: 1 }}>
-                {new Date(ev.time).getUTCDate() === 28 ? 'FEB 28' : 'MAR 01'} · {fmtTimeZ(ev.time)}
+                {new Date(ev.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }).toUpperCase()} · {fmtTimeZ(ev.time)}
               </p>
               <p style={{ fontSize: 11, color: 'var(--t3)', lineHeight: 1.4 }}>{ev.label}</p>
             </div>
@@ -64,6 +66,7 @@ type Props = {
 
 export default function StoryCard({ story, isOpen, onToggle, onFlyTo }: Props) {
   const catColor = CATEGORY_COLORS[story.category];
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <div style={{ borderBottom: '1px solid var(--bd-s)' }}>
@@ -118,13 +121,80 @@ export default function StoryCard({ story, isOpen, onToggle, onFlyTo }: Props) {
             ))}
           </div>
 
-          <Button variant="outline" size="sm" onClick={onFlyTo} className="w-full font-mono text-[10px] tracking-widest"
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={onFlyTo} className="flex-1 font-mono text-[10px] tracking-widest"
+              style={{ color: 'var(--blue-l)', borderColor: 'var(--blue)', background: 'var(--blue-dim)' }}
+            >
+              ⊙ FLY TO
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setModalOpen(true)} className="flex-1 font-mono text-[10px] tracking-widest"
+              style={{ color: 'var(--t2)', borderColor: 'var(--bd)', background: 'var(--bg-1)' }}
+            >
+              ⊞ OPEN
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Story detail modal */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent
+          className="sm:max-w-2xl max-h-[80vh] overflow-y-auto"
+          style={{ background: 'var(--bg-app)', color: 'var(--t1)', borderColor: 'var(--bd)' }}
+        >
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <StoryIcon iconName={story.iconName} category={story.category} size={20} boxSize={36} />
+              <div className="flex-1 min-w-0">
+                <DialogTitle className="text-sm leading-tight" style={{ color: 'var(--t1)' }}>
+                  {story.title}
+                </DialogTitle>
+                <DialogDescription className="text-xs mt-1" style={{ color: 'var(--t3)' }}>
+                  {story.tagline}
+                </DialogDescription>
+              </div>
+              <span className="mono shrink-0" style={{
+                background: catColor.bg, color: catColor.text,
+                fontSize: 9, fontWeight: 700, padding: '3px 7px', borderRadius: 3,
+              }}>
+                {story.category}
+              </span>
+            </div>
+          </DialogHeader>
+
+          {/* Narrative */}
+          <div style={{ borderTop: '1px solid var(--bd-s)', paddingTop: 16 }}>
+            <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.7 }}>
+              {story.narrative}
+            </p>
+          </div>
+
+          {/* Event log */}
+          {story.events.length > 0 && (
+            <div style={{ borderTop: '1px solid var(--bd-s)', paddingTop: 16 }}>
+              <EventLog events={story.events} />
+            </div>
+          )}
+
+          {/* Key facts */}
+          <div style={{ borderTop: '1px solid var(--bd-s)', paddingTop: 16 }}>
+            <p className="label" style={{ color: 'var(--t4)', marginBottom: 8 }}>KEY FACTS</p>
+            {story.keyFacts.map((fact, i) => (
+              <p key={i} className="mono" style={{ fontSize: 11, color: 'var(--t3)', marginBottom: 4 }}>
+                → {fact}
+              </p>
+            ))}
+          </div>
+
+          {/* Fly to */}
+          <Button variant="outline" size="sm" onClick={() => { onFlyTo(); setModalOpen(false); }}
+            className="w-full font-mono text-[10px] tracking-widest"
             style={{ color: 'var(--blue-l)', borderColor: 'var(--blue)', background: 'var(--blue-dim)' }}
           >
             ⊙ FLY TO
           </Button>
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

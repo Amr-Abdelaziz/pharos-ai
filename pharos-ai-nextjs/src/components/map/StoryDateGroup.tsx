@@ -58,13 +58,14 @@ export default function StoryDateGroup({
 
       {/* Nested story cards */}
       {isExpanded && group.stories.map(story => (
-        <StoryCard
-          key={story.id}
-          story={story}
-          isOpen={openStoryId === story.id}
-          onToggle={() => onToggleStory(story)}
-          onFlyTo={() => onFlyTo(story)}
-        />
+        <div key={story.id} data-story-id={story.id}>
+          <StoryCard
+            story={story}
+            isOpen={openStoryId === story.id}
+            onToggle={() => onToggleStory(story)}
+            onFlyTo={() => onFlyTo(story)}
+          />
+        </div>
       ))}
     </div>
   );
