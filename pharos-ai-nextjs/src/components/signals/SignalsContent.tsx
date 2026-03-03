@@ -37,7 +37,7 @@ export function SignalsContent() {
   const standard = filtered.filter(p => p.significance === 'STANDARD');
 
   return (
-    <ResizablePanelGroup orientation="horizontal" defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged} className="flex-1 min-w-0">
+    <ResizablePanelGroup orientation="horizontal" defaultLayout={defaultLayout} onLayoutChanged={onLayoutChanged} className="flex-1 min-h-0 min-w-0">
       <ResizablePanel id="filters" defaultSize="22%" minSize="15%" maxSize="35%" className="flex flex-col overflow-hidden min-w-[180px]">
         <SignalFilterRail
           sigFilter={sigFilter}

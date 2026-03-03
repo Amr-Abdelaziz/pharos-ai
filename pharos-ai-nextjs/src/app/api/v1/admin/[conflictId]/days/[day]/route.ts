@@ -1,0 +1,103 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { ok, err } from '@/lib/api-utils';
+import { requireAdmin } from '@/lib/admin-auth';
+import { assertIntRange , safeJson } from '@/lib/admin-validate';
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ conflictId: string; day: string }> },
+) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
+  const { conflictId, day: dayStr } = await params;
+  const body = await safeJson(req);
+  if (body instanceof NextResponse) return body;
+
+  const day = new Date(dayStr + 'T00:00:00Z');
+  if (isNaN(day.getTime())) return err('VALIDATION', 'Invalid day format');
+
+  const snapshot = await prisma.conflictDaySnapshot.findUnique({
+    where: { conflictId_day: { conflictId, day } },
+  });
+  if (!snapshot) return err('NOT_FOUND', `Day snapshot for ${dayStr} not found`, 404);
+
+  if (body.escalation !== undefined) {
+    const e = assertIntRange(body.escalation, 0, 100, 'escalation');
+    if (e) return err('VALIDATION', e);
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const data: Record<string, unknown> = {};
+    if (body.dayLabel !== undefined) data.dayLabel = body.dayLabel;
+    if (body.summary !== undefined) data.summary = body.summary;
+    if (body.keyFacts !== undefined) data.keyFacts = body.keyFacts;
+    if (body.escalation !== undefined) data.escalation = body.escalation;
+    if (body.economicNarrative !== undefined) data.economicNarrative = body.economicNarrative;
+
+    if (Object.keys(data).length > 0) {
+      await tx.conflictDaySnapshot.update({ where: { id: snapshot.id }, data });
+    }
+
+    // Replace casualties if provided
+    if (body.casualties !== undefined) {
+      await tx.casualtySummary.deleteMany({ where: { snapshotId: snapshot.id } });
+      if (body.casualties.length) {
+        await tx.casualtySummary.createMany({
+          data: body.casualties.map(
+            (c: { faction: string; killed?: number; wounded?: number; civilians?: number; injured?: number }) => ({
+              snapshotId: snapshot.id,
+              faction: c.faction,
+              killed: c.killed ?? 0,
+              wounded: c.wounded ?? 0,
+              civilians: c.civilians ?? 0,
+              injured: c.injured ?? 0,
+            }),
+          ),
+        });
+      }
+    }
+
+    // Replace economic chips if provided
+    if (body.economicChips !== undefined) {
+      await tx.economicImpactChip.deleteMany({ where: { snapshotId: snapshot.id } });
+      if (body.economicChips.length) {
+        await tx.economicImpactChip.createMany({
+          data: body.economicChips.map(
+            (c: { label: string; val: string; sub: string; color: string }, i: number) => ({
+              snapshotId: snapshot.id,
+              ord: i,
+              label: c.label,
+              val: c.val,
+              sub: c.sub,
+              color: c.color,
+            }),
+          ),
+        });
+      }
+    }
+
+    // Replace scenarios if provided
+    if (body.scenarios !== undefined) {
+      await tx.scenario.deleteMany({ where: { snapshotId: snapshot.id } });
+      if (body.scenarios.length) {
+        await tx.scenario.createMany({
+          data: body.scenarios.map(
+            (s: { label: string; subtitle: string; color: string; prob: string; body: string }, i: number) => ({
+              snapshotId: snapshot.id,
+              ord: i,
+              label: s.label,
+              subtitle: s.subtitle,
+              color: s.color,
+              prob: s.prob,
+              body: s.body,
+            }),
+          ),
+        });
+      }
+    }
+  });
+
+  return ok({ id: snapshot.id, day: dayStr, updated: true });
+}

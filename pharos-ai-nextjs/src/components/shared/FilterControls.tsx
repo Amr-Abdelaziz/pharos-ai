@@ -1,7 +1,7 @@
 'use client';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
+
 
 /** Labelled group of filter rows. */
 export function FilterBlock({ label, children }: { label: string; children: React.ReactNode }) {
@@ -43,10 +43,12 @@ export function ToggleRow({
   label, checked, onChange,
 }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <Button
-      variant="ghost"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => onChange(!checked)}
-      className="w-full h-auto rounded-none flex justify-between items-center px-3 py-[7px]"
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onChange(!checked); } }}
+      className="w-full flex justify-between items-center px-3 py-[7px] hover:bg-[var(--bg-sel)] cursor-pointer"
     >
       <span
         className="text-[10px]"
@@ -59,6 +61,6 @@ export function ToggleRow({
         onCheckedChange={onChange}
         onClick={e => e.stopPropagation()}
       />
-    </Button>
+    </div>
   );
 }

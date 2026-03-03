@@ -110,7 +110,8 @@ export function extractInitialState(data: DataArrays): FilterState {
   return { datasets, types, actors, statuses, priorities, heat: true, timeRange: null };
 }
 
-/** Derive min/max timestamps from timestamped data only (strikes, missiles, targets) */
+/** Derive min/max timestamps from timestamped data only (strikes, missiles, targets).
+ *  Max is always at least "now" so the timeline extends to the current time. */
 export function extractTimeExtent(data: DataArrays): [number, number] {
   let min = Infinity;
   let max = -Infinity;
@@ -122,6 +123,8 @@ export function extractTimeExtent(data: DataArrays): [number, number] {
       if (t > max) max = t;
     }
   }
+  const now = Date.now();
+  if (now > max) max = now;
   return [min, max];
 }
 

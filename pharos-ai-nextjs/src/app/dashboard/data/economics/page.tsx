@@ -42,6 +42,7 @@ export default function EconomicsPage() {
   const range = RANGES[rangeIdx];
 
   const fetchAll = useCallback(async () => {
+    if (ECONOMIC_INDEXES.length === 0) return;
     setRefreshing(true);
     try {
       const tickers = ECONOMIC_INDEXES.map(i => i.ticker).join(',');
@@ -60,7 +61,7 @@ export default function EconomicsPage() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [range]);
+  }, [ECONOMIC_INDEXES, range]);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 

@@ -44,4 +44,8 @@ export const queryKeys = {
   predictions: {
     groups: () => ['prediction-groups'] as const,
   },
+  worldBank: {
+    military: (countries?: string[]) =>
+      ['world-bank-military', countries] as const,
+  },
 };

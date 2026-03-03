@@ -5,16 +5,20 @@ import { IntelTabBar, TabsContent } from '@/components/shared/IntelTabs';
 import Flag from '@/components/shared/Flag';
 import XPostCard from '@/components/shared/XPostCard';
 import { ActorIntelTab } from '@/components/actors/ActorIntelTab';
+import { ActorMilitaryTab } from '@/components/actors/ActorMilitaryTab';
 import { ACT_C, STA_C } from '@/data/iran-actors';
+import { ISO2_TO_ISO3 } from '@/lib/country-codes';
 import { getActorForDay, dayAbbrev } from '@/lib/day-filter';
 import { useXPostsByActor } from '@/api/x-posts';
 import { useConflictDay } from '@/hooks/use-conflict-day';
 import type { Actor, XPost } from '@/types/domain';
 
+type DossierTab = 'intel' | 'signals' | 'military';
+
 type Props = {
   actor: Actor;
-  tab: 'intel' | 'signals';
-  onTabChange: (t: 'intel' | 'signals') => void;
+  tab: DossierTab;
+  onTabChange: (t: DossierTab) => void;
   currentDay: string;
 };
 
@@ -27,11 +31,13 @@ export function ActorDossier({ actor, tab, onTabChange, currentDay }: Props) {
   const dayActions = actor.recentActions.filter(a => a.date === currentDay);
 
   const posts = xPosts ?? [];
+  const iso3 = ISO2_TO_ISO3[actor.countryCode ?? ''];
 
-  const tabs = [
-    { value: 'intel'   as const, label: 'ACTOR INTELLIGENCE' },
-    { value: 'signals' as const, label: `𝕏 SIGNALS${posts.length > 0 ? ` (${posts.length})` : ''}` },
+  const tabs: { value: DossierTab; label: string }[] = [
+    { value: 'intel', label: 'ACTOR INTELLIGENCE' },
+    { value: 'signals', label: `𝕏 SIGNALS${posts.length > 0 ? ` (${posts.length})` : ''}` },
   ];
+  if (iso3) tabs.push({ value: 'military', label: 'MILITARY PROFILE' });
 
   if (!snap) return null;
 
@@ -134,6 +140,12 @@ export function ActorDossier({ actor, tab, onTabChange, currentDay }: Props) {
             </div>
           </ScrollArea>
         </TabsContent>
+
+        {iso3 && (
+          <TabsContent value="military" className="flex-1 min-h-0 overflow-hidden">
+            <ActorMilitaryTab actor={actor} iso3={iso3} />
+          </TabsContent>
+        )}
       </IntelTabBar>
     </div>
   );

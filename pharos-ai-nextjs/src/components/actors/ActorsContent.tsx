@@ -17,7 +17,7 @@ export function ActorsContent() {
   const { currentDay, setDay } = useConflictDay();
 
   const [selId, setSelId] = useState<string | null>(initActor);
-  const [tab,   setTab]   = useState<'intel' | 'signals'>('intel');
+  const [tab,   setTab]   = useState<'intel' | 'signals' | 'military'>('intel');
   const { defaultLayout, onLayoutChanged } = usePanelLayout({ id: 'actors' });
 
   useEffect(() => { if (initActor) setSelId(initActor); }, [initActor]);
