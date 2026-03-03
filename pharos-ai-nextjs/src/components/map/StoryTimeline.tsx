@@ -1,9 +1,10 @@
 'use client';
 
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import StoryIcon from './StoryIcon';
 import { Button } from '@/components/ui/button';
+import { groupByDay } from './story-utils';
 
 import type { MapStory } from '@/data/mapStories';
 
@@ -15,40 +16,12 @@ type Props = {
   onActivate: (story: MapStory) => void;
 };
 
-type DayGroup = {
-  label: string;
-  date:  string;
-  stories: MapStory[];
-};
-
-// ─── Helpers ────────────────────────────────────────────────────────────────────
-
-function groupByDay(stories: MapStory[]): DayGroup[] {
-  const sorted = [...stories].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
-  );
-
-  const groups = new Map<string, MapStory[]>();
-  for (const s of sorted) {
-    const d = new Date(s.timestamp);
-    const key = d.toISOString().slice(0, 10);
-    groups.set(key, [...(groups.get(key) ?? []), s]);
-  }
-
-  return [...groups.entries()].map(([date, stories]) => {
-    const d = new Date(date + 'T00:00:00Z');
-    const mon = d.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase();
-    const day = d.getUTCDate().toString().padStart(2, '0');
-    return { label: `${mon} ${day}`, date, stories };
-  });
-}
-
 const DAY_W = 80; // px per day column
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 
 export default function StoryTimeline({ stories, activeId, onActivate }: Props) {
-  const days = groupByDay(stories);
+  const days = useMemo(() => groupByDay(stories), [stories]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollL, setCanScrollL] = useState(false);
   const [canScrollR, setCanScrollR] = useState(false);
