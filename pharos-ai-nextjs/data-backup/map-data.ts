@@ -7,7 +7,7 @@ import type {
   InstallationType,
   InstallationStatus,
   ZoneType,
-} from '@/data/mapTokens';
+} from '@/data/map-tokens';
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import FilterSection from '@/components/map/FilterSection';
 import DatasetDrilldown from '@/components/map/DatasetDrilldown';
 
-import { LAYER_DISPLAY } from '@/data/mapTokens';
+import { LAYER_DISPLAY } from '@/data/map-tokens';
 import { ALL_DATASETS, DATASET_LABEL } from '@/hooks/use-map-filters';
 
 import type { FilterFacets, FilterState } from '@/lib/map-filter-engine';

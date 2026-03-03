@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { useAppSelector } from '@/store';
 import { useMapStories } from '@/api/map';
 
-import { ACTOR_META, CATEGORY_LABEL, STATUS_META } from '@/data/mapTokens';
+import { ACTOR_META, CATEGORY_LABEL, STATUS_META } from '@/data/map-tokens';
 import StoryIcon from './StoryIcon';
 
-import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/mapData';
+import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/map-data';
 import type { MapStory } from '@/types/domain';
 import type { SelectedItem } from './MapDetailPanel';
 

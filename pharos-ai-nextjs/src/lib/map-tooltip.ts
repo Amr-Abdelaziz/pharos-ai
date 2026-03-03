@@ -6,10 +6,10 @@
  * All colours reference CSS variables — zero hex literals allowed.
  */
 
-import { ACTOR_META, STATUS_META } from '@/data/mapTokens';
+import { ACTOR_META, STATUS_META } from '@/data/map-tokens';
 
 import type { PickingInfo } from '@deck.gl/core';
-import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/mapData';
+import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/map-data';
 
 // ─── Shared wrapper ───────────────────────────────────────────────────────────
 

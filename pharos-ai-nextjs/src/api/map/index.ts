@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import type { MapStory } from '@/types/domain';
-import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone, HeatPoint } from '@/data/mapData';
+import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone, HeatPoint } from '@/data/map-data';
 import { api } from '../client';
 import { queryKeys } from '../keys';
 

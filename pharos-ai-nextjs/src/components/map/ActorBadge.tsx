@@ -1,8 +1,8 @@
 'use client';
 
-import { ACTOR_META } from '@/data/mapTokens';
+import { ACTOR_META } from '@/data/map-tokens';
 
-import type { ActorKey } from '@/data/mapTokens';
+import type { ActorKey } from '@/data/map-tokens';
 
 type Props = {
   actor:     ActorKey;

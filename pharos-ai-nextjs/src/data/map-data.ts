@@ -7,7 +7,7 @@ import type {
   InstallationType,
   InstallationStatus,
   ZoneType,
-} from './mapTokens';
+} from './map-tokens';
 
 export type { ActorKey };
 

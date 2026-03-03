@@ -36,7 +36,7 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/componen
 import { usePanelLayout } from '@/hooks/use-panel-layout';
 
 import type { MapViewState, PickingInfo } from '@deck.gl/core';
-import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/mapData';
+import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/map-data';
 import type { OverlayVisibility } from '@/components/map/MapVisibilityMenu';
 
 // ─── Page ─────────────────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@ import { createSelector } from '@reduxjs/toolkit';
 
 import { applyFilters } from '@/lib/map-filter-engine';
 
-import { ACTOR_META } from '@/data/mapTokens';
+import { ACTOR_META } from '@/data/map-tokens';
 
 import type { RootState } from './index';
 import type { FilterState, FilteredData, FilterFacets } from '@/lib/map-filter-engine';

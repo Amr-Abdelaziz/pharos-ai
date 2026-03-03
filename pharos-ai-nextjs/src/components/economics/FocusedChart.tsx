@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { createChart, ColorType, LineStyle, AreaSeries, type IChartApi } from 'lightweight-charts';
 import type { EconomicIndex } from '@/types/domain';
 import type { MarketResult } from '@/types/domain';
-import { ECON_CATEGORY_MAP } from '@/data/economicIndexes';
+import { ECON_CATEGORY_MAP } from '@/data/economic-indexes';
 
 const RANGES = [
   { key: '1d',  label: '1D',  interval: '5m'  },

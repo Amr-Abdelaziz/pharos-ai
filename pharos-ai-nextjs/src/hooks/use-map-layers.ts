@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { ArcLayer, ScatterplotLayer, TextLayer, PolygonLayer } from '@deck.gl/layers';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 
-import { ACTOR_META, NAVAL_RGB, STATUS_META } from '@/data/mapTokens';
+import { ACTOR_META, NAVAL_RGB, STATUS_META } from '@/data/map-tokens';
 
-import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone, HeatPoint } from '@/data/mapData';
+import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone, HeatPoint } from '@/data/map-data';
 import type { FilteredData } from './use-map-filters';
 import type { MapStory } from '@/types/domain';
 

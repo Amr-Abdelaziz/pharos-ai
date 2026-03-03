@@ -2,7 +2,7 @@
 
 import type { EconomicIndex } from '@/types/domain';
 import type { MarketResult } from '@/types/domain';
-import { ECON_CATEGORY_MAP } from '@/data/economicIndexes';
+import { ECON_CATEGORY_MAP } from '@/data/economic-indexes';
 import { MiniChart } from './MiniChart';
 
 interface IndexCardProps {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { ECON_CATEGORIES } from '@/data/economicIndexes';
+import { ECON_CATEGORIES } from '@/data/economic-indexes';
 import type { EconCategory, EconomicIndex } from '@/types/domain';
 import { useEconomicIndexes } from '@/api/economics';
 import type { MarketResult } from '@/types/domain';

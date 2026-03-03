@@ -20,7 +20,7 @@ import type {
   Asset,
   ThreatZone,
   HeatPoint,
-} from '@/data/mapData';
+} from '@/data/map-data';
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 

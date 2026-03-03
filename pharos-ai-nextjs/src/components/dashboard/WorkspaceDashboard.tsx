@@ -7,7 +7,7 @@ import { ArrowRight, ArrowLeft, X as XIcon, Plus } from 'lucide-react';
 
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { fmtDate, fmtTimeZ } from '@/lib/format';
-import { ACT_C, STA_C } from '@/data/iranActors';
+import { ACT_C, STA_C } from '@/data/iran-actors';
 import XPostCard from '@/components/shared/XPostCard';
 import Flag from '@/components/shared/Flag';
 import { CasChip } from '@/app/dashboard/overview/CasChip';
@@ -277,7 +277,7 @@ function CommandersWidget() {
 // ── Predictions ──
 import type { PredictionMarket as PMType } from '@/types/domain';
 import { getLeadProb, probColor, fmtVol, spreadColor, statusLabel } from '@/components/predictions/utils';
-import { assignGroup } from '@/data/predictionGroups';
+import { assignGroup } from '@/data/prediction-groups';
 
 function PredictionsWidget() {
   const [markets, setMarkets] = useState<PMType[]>([]);

@@ -5,7 +5,7 @@ import { IntelTabBar, TabsContent } from '@/components/shared/IntelTabs';
 import Flag from '@/components/shared/Flag';
 import XPostCard from '@/components/shared/XPostCard';
 import { ActorIntelTab } from '@/components/actors/ActorIntelTab';
-import { ACT_C, STA_C } from '@/data/iranActors';
+import { ACT_C, STA_C } from '@/data/iran-actors';
 import { getActorForDay, dayAbbrev } from '@/lib/day-filter';
 import { useXPostsByActor } from '@/api/x-posts';
 import { useConflictDay } from '@/hooks/use-conflict-day';
