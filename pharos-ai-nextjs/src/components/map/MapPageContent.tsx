@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import '@/lib/deckgl-device';
 import DeckGL from '@deck.gl/react';
@@ -20,36 +20,22 @@ import {
 import { useMapFilters } from '@/hooks/use-map-filters';
 import { useMapLayers } from '@/hooks/use-map-layers';
 import { buildTooltip } from '@/lib/map-tooltip';
+import { MAP_STYLE_DARK, MAP_STYLE_SAT } from '@/components/map/map-styles';
 
-import MapSidebar    from '@/components/map/MapSidebar';
-import MapControls   from '@/components/map/MapControls';
-import MapOverlays   from '@/components/map/MapOverlays';
-import MapDetailPanel from '@/components/map/MapDetailPanel';
-import MapLegend     from '@/components/map/MapLegend';
-import MapFilterPanel from '@/components/map/MapFilterPanel';
-import MapTimeline   from '@/components/map/MapTimeline';
+import MapSidebar        from '@/components/map/MapSidebar';
+import MapControls       from '@/components/map/MapControls';
+import MapOverlays       from '@/components/map/MapOverlays';
+import MapDetailPanel    from '@/components/map/MapDetailPanel';
+import MapLegend         from '@/components/map/MapLegend';
+import MapFilterPanel    from '@/components/map/MapFilterPanel';
+import MapTimeline       from '@/components/map/MapTimeline';
+import MapVisibilityMenu from '@/components/map/MapVisibilityMenu';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { usePanelLayout } from '@/hooks/use-panel-layout';
 
 import type { MapViewState, PickingInfo } from '@deck.gl/core';
-import type { StyleSpecification } from 'maplibre-gl';
 import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/mapData';
-
-// ─── Map styles ───────────────────────────────────────────────────────────────
-
-const MAP_STYLE_DARK = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
-
-const MAP_STYLE_SAT: StyleSpecification = {
-  version: 8,
-  sources: {
-    esri: { type: 'raster', tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'], tileSize: 256, maxzoom: 19, attribution: '© Esri, Maxar' },
-    'dark-overlay-src': { type: 'geojson', data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[-180,-90],[180,-90],[180,90],[-180,90],[-180,-90]]] }, properties: {} } },
-  },
-  layers: [
-    { id: 'esri-satellite', type: 'raster', source: 'esri', paint: { 'raster-brightness-max': 0.65, 'raster-saturation': -0.2 } },
-    { id: 'dark-overlay',   type: 'fill',   source: 'dark-overlay-src', paint: { 'fill-color': '#000814', 'fill-opacity': 0.38 } },
-  ],
-};
+import type { OverlayVisibility } from '@/components/map/MapVisibilityMenu';
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -61,6 +47,16 @@ export default function FullMapPage({ embedded = false }: { embedded?: boolean }
   const sidebarOpen  = useAppSelector(s => s.map.sidebarOpen);
   const mapStyle     = useAppSelector(s => s.map.mapStyle);
   const { defaultLayout, onLayoutChanged } = usePanelLayout({ id: 'map', panelIds: ['sidebar', 'canvas'] });
+
+  const [overlayVisibility, setOverlayVisibility] = useState<OverlayVisibility>({
+    timeline: true,
+    filters:  true,
+    legend:   true,
+  });
+
+  const toggleOverlay = useCallback((key: keyof OverlayVisibility) => {
+    setOverlayVisibility(prev => ({ ...prev, [key]: !prev[key] }));
+  }, []);
 
   const f = useMapFilters();
 
@@ -110,32 +106,47 @@ export default function FullMapPage({ embedded = false }: { embedded?: boolean }
         </DeckGL>
 
         <MapOverlays activeStory={activeStory} onClearStory={() => dispatch(setActiveStoryAction(null))} sidebarOpen={sidebarOpen} onToggleSidebar={() => dispatch(toggleSidebarAction())} embedded={embedded} />
-        <MapLegend hasPanel={!!selectedItem} />
+        {overlayVisibility.legend && <MapLegend hasPanel={!!selectedItem} />}
         <MapControls viewState={viewState} mapStyle={mapStyle} hasPanel={!!selectedItem} onStyleChange={style => dispatch(setMapStyleAction(style))} />
 
-        {/* Filter panel — top right */}
-        <div style={{ position: 'absolute', top: 12, right: selectedItem ? 332 : 12, zIndex: 10, transition: 'right 0.22s cubic-bezier(0.4,0,0.2,1)' }}>
-          <MapFilterPanel
-            state={f.state}
-            facets={f.facets}
-            isFiltered={f.isFiltered}
-            onToggleDataset={f.toggleDataset}
-            onToggleType={f.toggleType}
-            onToggleActor={f.toggleActor}
-            onTogglePriority={f.togglePriority}
-            onToggleStatus={f.toggleStatus}
-            onToggleHeat={f.toggleHeat}
-            onReset={f.resetFilters}
-          />
+        {/* Visibility menu — above map controls */}
+        <div style={{
+          position: 'absolute',
+          bottom:   118,
+          right:    selectedItem ? 332 : 12,
+          zIndex:   10,
+          transition: 'right 0.22s cubic-bezier(0.4,0,0.2,1)',
+        }}>
+          <MapVisibilityMenu visibility={overlayVisibility} onToggle={toggleOverlay} />
         </div>
+
+        {/* Filter panel — top right */}
+        {overlayVisibility.filters && (
+          <div style={{ position: 'absolute', top: 12, right: selectedItem ? 332 : 12, zIndex: 10, transition: 'right 0.22s cubic-bezier(0.4,0,0.2,1)' }}>
+            <MapFilterPanel
+              state={f.state}
+              facets={f.facets}
+              isFiltered={f.isFiltered}
+              onToggleDataset={f.toggleDataset}
+              onToggleType={f.toggleType}
+              onToggleActor={f.toggleActor}
+              onTogglePriority={f.togglePriority}
+              onToggleStatus={f.toggleStatus}
+              onToggleHeat={f.toggleHeat}
+              onReset={f.resetFilters}
+            />
+          </div>
+        )}
 
         <MapDetailPanel item={selectedItem} onClose={() => dispatch(setSelectedItemAction(null))} onSelectItem={item => dispatch(setSelectedItemAction(item))} onActivateStory={story => dispatch(activateStoryAction(story))} />
 
         {/* Timeline scrubber — bottom */}
-        <MapTimeline
-          dataExtent={f.dataExtent} viewExtent={f.viewExtent} onViewExtent={f.setViewExtent}
-          timeRange={f.state.timeRange} onTimeRange={f.setTimeRange}
-        />
+        {overlayVisibility.timeline && (
+          <MapTimeline
+            dataExtent={f.dataExtent} viewExtent={f.viewExtent} onViewExtent={f.setViewExtent}
+            timeRange={f.state.timeRange} onTimeRange={f.setTimeRange}
+          />
+        )}
       </ResizablePanel>
     </ResizablePanelGroup>
   );
