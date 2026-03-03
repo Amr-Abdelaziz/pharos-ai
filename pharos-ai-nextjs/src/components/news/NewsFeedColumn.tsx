@@ -87,8 +87,19 @@ export function NewsFeedColumn({ feed, color, showImages = false, preloaded }: N
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Column header */}
-      <div className="px-3 py-2.5 border-b border-[var(--bd)] bg-[var(--bg-1)] flex items-center gap-2 shrink-0">
-        <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+      <div className="px-3 py-2.5 border-b border-[var(--bd)] bg-[var(--bg-1)] flex items-center gap-2.5 shrink-0">
+        <div className="w-7 h-7 rounded overflow-hidden shrink-0 bg-[var(--bg-3)] flex items-center justify-center">
+          <img
+            src={`/logos/feeds/${feed.id}.png`}
+            alt={feed.name}
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              const el = e.target as HTMLImageElement;
+              el.style.display = 'none';
+              el.parentElement!.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:${color}"></div>`;
+            }}
+          />
+        </div>
         <div className="flex-1 min-w-0">
           <h3 className="mono text-[11px] font-bold text-[var(--t1)] tracking-wide truncate">
             {feed.name}
@@ -159,13 +170,13 @@ export function NewsFeedColumn({ feed, color, showImages = false, preloaded }: N
               </div>
 
               {showImages && item.imageUrl && (
-                <div className="w-[72px] h-[50px] rounded overflow-hidden shrink-0 bg-[var(--bg-2)]">
+                <div className="w-[80px] h-[56px] rounded overflow-hidden shrink-0 bg-[var(--bg-2)]">
                   <img
                     src={item.imageUrl}
                     alt=""
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
                     loading="lazy"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
                   />
                 </div>
               )}
