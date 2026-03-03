@@ -189,11 +189,31 @@ export default function TimelinePage() {
                   rel="noopener noreferrer"
                   className="flex items-start gap-3 px-5 py-3 border-b border-[var(--bd)] hover:bg-[var(--bg-2)] transition-colors no-underline group"
                 >
-                  {/* Source dot */}
-                  <div className="w-[6px] h-[6px] rounded-full mt-[5px] shrink-0" style={{ backgroundColor: color }} />
+                  {/* Feed logo */}
+                  <div className="w-6 h-6 rounded shrink-0 mt-0.5 overflow-hidden bg-[var(--bg-3)] flex items-center justify-center">
+                    <img
+                      src={`/logos/feeds/${feedId}.png`}
+                      alt={feed?.name ?? feedId}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="mono text-[9px] font-bold shrink-0" style={{ color }}>
+                        {feed?.name ?? feedId}
+                      </span>
+                      <span className="mono text-[8px] text-[var(--t4)]">
+                        {timeAgo(item.isoDate ?? item.pubDate)}
+                      </span>
+                      {feed?.stateFunded && (
+                        <span className="mono text-[7px] font-bold text-amber-400/70 tracking-wider">STATE</span>
+                      )}
+                    </div>
                     <p className="text-[12px] text-[var(--t1)] leading-snug group-hover:text-white transition-colors">
                       {item.title}
                     </p>
@@ -204,18 +224,18 @@ export default function TimelinePage() {
                     )}
                   </div>
 
-                  {/* Meta — right side */}
-                  <div className="flex flex-col items-end gap-1 shrink-0 ml-4">
-                    <span className="mono text-[9px] font-bold" style={{ color }}>
-                      {feed?.name ?? feedId}
-                    </span>
-                    <span className="mono text-[8px] text-[var(--t4)]">
-                      {timeAgo(item.isoDate ?? item.pubDate)}
-                    </span>
-                    {feed?.stateFunded && (
-                      <span className="mono text-[7px] font-bold text-amber-400/70 tracking-wider">STATE</span>
-                    )}
-                  </div>
+                  {/* Article image — right side */}
+                  {item.imageUrl && (
+                    <div className="w-[88px] h-[60px] rounded overflow-hidden shrink-0 bg-[var(--bg-2)]">
+                      <img
+                        src={item.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                        loading="lazy"
+                        onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                      />
+                    </div>
+                  )}
                 </a>
               );
             })
