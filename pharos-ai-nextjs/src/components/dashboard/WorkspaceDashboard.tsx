@@ -67,9 +67,7 @@ const WIDGET_LABELS: Record<WidgetKey, string> = {
   brief:       'Daily Brief',
 };
 
-const SEV_C: Record<string, string> = {
-  CRITICAL: 'var(--danger)', HIGH: 'var(--warning)', STANDARD: 'var(--info)',
-};
+import { SEV_C } from '@/lib/severity-colors';
 const SEV_CLS: Record<string, string> = {
   CRITICAL: 'sev sev-crit', HIGH: 'sev sev-high', STANDARD: 'sev sev-std',
 };
@@ -277,7 +275,7 @@ function CommandersWidget() {
 }
 
 // ── Predictions ──
-import type { PredictionMarket as PMType } from '@/app/api/polymarket/route';
+import type { PredictionMarket as PMType } from '@/types/domain';
 import { getLeadProb, probColor, fmtVol, spreadColor, statusLabel } from '@/components/predictions/utils';
 import { assignGroup } from '@/data/predictionGroups';
 

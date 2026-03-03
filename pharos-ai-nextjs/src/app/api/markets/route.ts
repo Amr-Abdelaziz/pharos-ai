@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { MarketResult } from '@/types/domain';
 
 /**
  * Yahoo Finance chart proxy.
@@ -42,20 +43,11 @@ interface YFChartResult {
   };
 }
 
-export interface MarketChartPoint {
+export type { MarketResult } from '@/types/domain';
+
+interface MarketChartPoint {
   time: number;   // unix seconds
   value: number;
-}
-
-export interface MarketResult {
-  ticker: string;
-  price: number;
-  previousClose: number;
-  change: number;
-  changePct: number;
-  currency: string;
-  chart: MarketChartPoint[];
-  error?: string;
 }
 
 async function fetchTicker(ticker: string, range: string, interval: string): Promise<MarketResult> {

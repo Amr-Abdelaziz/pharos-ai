@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { PricePoint } from '@/app/api/polymarket/chart/route';
+import type { TimePoint } from '@/types/domain';
 import { probColor } from './utils';
 
 const MIN_W = 220, MIN_H = 80, MAX_W = 900, MAX_H = 400;
@@ -14,7 +14,7 @@ const SVG_FONT = 'SFMono-Regular, Menlo, monospace';
 type Props = { yesTokenId: string };
 
 export function PriceChart({ yesTokenId }: Props) {
-  const [history,  setHistory]  = useState<PricePoint[]>([]);
+  const [history,  setHistory]  = useState<TimePoint[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState(false);
   const [size,     setSize]     = useState({ w: 360, h: 130 });
@@ -27,7 +27,7 @@ export function PriceChart({ yesTokenId }: Props) {
     if (!yesTokenId) { setLoading(false); setError(true); return; }
     fetch(`/api/polymarket/chart?id=${encodeURIComponent(yesTokenId)}`)
       .then(r => r.json())
-      .then((d: { history?: PricePoint[] }) => { setHistory(d.history ?? []); setLoading(false); })
+      .then((d: { history?: TimePoint[] }) => { setHistory(d.history ?? []); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
   }, [yesTokenId]);
 

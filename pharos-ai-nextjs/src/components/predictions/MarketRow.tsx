@@ -5,7 +5,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import type { PredictionMarket } from '@/app/api/polymarket/route';
+import type { PredictionMarket } from '@/types/domain';
 import { PriceChart } from './PriceChart';
 import { SubMarketTable } from './SubMarketTable';
 import { fmtVol, fmtMarketDate, probColor, probBg, spreadColor, statusLabel, getLeadProb, COL } from './utils';

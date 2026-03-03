@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { createChart, ColorType, LineStyle, AreaSeries, type IChartApi } from 'lightweight-charts';
 import type { EconomicIndex } from '@/data/economicIndexes';
-import type { MarketResult } from '@/app/api/markets/route';
+import type { MarketResult } from '@/types/domain';
 import { ECON_CATEGORY_MAP } from '@/data/economicIndexes';
 
 const RANGES = [

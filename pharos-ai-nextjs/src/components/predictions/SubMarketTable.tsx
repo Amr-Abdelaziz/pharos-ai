@@ -1,7 +1,7 @@
 'use client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import type { SubMarket, PredictionMarket } from '@/app/api/polymarket/route';
+import type { SubMarket, PredictionMarket } from '@/types/domain';
 import { probColor, spreadColor, statusLabel } from './utils';
 
 type Props = {

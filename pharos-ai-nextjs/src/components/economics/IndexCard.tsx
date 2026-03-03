@@ -1,7 +1,7 @@
 'use client';
 
 import type { EconomicIndex } from '@/data/economicIndexes';
-import type { MarketResult } from '@/app/api/markets/route';
+import type { MarketResult } from '@/types/domain';
 import { ECON_CATEGORY_MAP } from '@/data/economicIndexes';
 import { MiniChart } from './MiniChart';
 

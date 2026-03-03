@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TimePoint } from '@/types/domain';
 
 const CLOB = 'https://clob.polymarket.com';
 
@@ -8,7 +9,8 @@ const FRESH_TTL  = 3  * 60 * 1000;
 const STALE_TTL  = 15 * 60 * 1000;
 const refetching = new Set<string>();
 
-export interface ProbPoint { t: number; p: number; }
+/** @deprecated Use TimePoint from @/types/domain */
+export type ProbPoint = TimePoint;
 
 const INTERVALS = {
   '1d':  { interval: '1d',  fidelity: 10  },
@@ -18,7 +20,7 @@ const INTERVALS = {
   'max': { interval: 'max', fidelity: 60  },
 } as const;
 
-async function fetchHistory(tokenId: string, range: string): Promise<ProbPoint[]> {
+async function fetchHistory(tokenId: string, range: string): Promise<TimePoint[]> {
   const cfg = INTERVALS[range as keyof typeof INTERVALS] ?? INTERVALS['7d'];
   const url = `${CLOB}/prices-history?market=${encodeURIComponent(tokenId)}&interval=${cfg.interval}&fidelity=${cfg.fidelity}`;
   const res = await fetch(url, {
@@ -26,16 +28,16 @@ async function fetchHistory(tokenId: string, range: string): Promise<ProbPoint[]
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = await res.json();
-  return (json.history ?? []) as ProbPoint[];
+  return (json.history ?? []) as TimePoint[];
 }
 
-async function getCached(tokenId: string, range: string): Promise<ProbPoint[]> {
+async function getCached(tokenId: string, range: string): Promise<TimePoint[]> {
   const key = `${tokenId}:${range}`;
   const cached = cache.get(key);
   const now = Date.now();
   if (cached) {
     const age = now - cached.ts;
-    if (age < FRESH_TTL) return cached.data as ProbPoint[];
+    if (age < FRESH_TTL) return cached.data as TimePoint[];
     if (age < STALE_TTL) {
       if (!refetching.has(key)) {
         refetching.add(key);
@@ -43,7 +45,7 @@ async function getCached(tokenId: string, range: string): Promise<ProbPoint[]> {
           .then(d => cache.set(key, { data: d, ts: Date.now() }))
           .finally(() => refetching.delete(key));
       }
-      return cached.data as ProbPoint[];
+      return cached.data as TimePoint[];
     }
   }
   const data = await fetchHistory(tokenId, range);

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { SubMarket, PredictionMarket } from '@/types/domain';
 
 const GAMMA = 'https://gamma-api.polymarket.com';
 
@@ -53,59 +54,8 @@ interface PolyEvent {
   markets: RawMarket[];
 }
 
-export interface SubMarket {
-  id: string;
-  question: string;
-  groupItemTitle: string;
-  outcomes: string[];
-  prices: number[];          // mid prices [YES, NO]
-  lastTradePrice: number;
-  bestBid: number;
-  bestAsk: number;
-  spread: number;
-  volume: number;
-  volume24hr: number;
-  volume1wk: number;
-  volume1mo: number;
-  active: boolean;
-  closed: boolean;
-  endDate: string;
-  yesTokenId: string;
-  conditionId: string;
-}
-
-export interface PredictionMarket {
-  id: string;
-  title: string;
-  description: string;       // up to 800 chars
-  category: string;          // empty — assigned manually by LLM pipeline
-  // primary market stats (from highest-volume sub-market)
-  outcomes: string[];
-  prices: number[];
-  lastTradePrice: number;
-  bestBid: number;
-  bestAsk: number;
-  spread: number;
-  // event-level aggregates
-  volume: number;
-  volume24hr: number;
-  volume1wk: number;
-  volume1mo: number;
-  volume1yr: number;
-  liquidity: number;
-  openInterest: number;
-  competitive: number;
-  active: boolean;
-  closed: boolean;
-  startDate: string;
-  endDate: string;
-  image: string;
-  polyUrl: string;
-  conditionId: string;
-  yesTokenId: string;
-  // all sub-markets in the event (group events have many)
-  subMarkets: SubMarket[];
-}
+// SubMarket and PredictionMarket are defined in @/types/domain
+export type { SubMarket, PredictionMarket } from '@/types/domain';
 
 function parseSubMarket(m: RawMarket): SubMarket {
   let outcomes: string[] = [];

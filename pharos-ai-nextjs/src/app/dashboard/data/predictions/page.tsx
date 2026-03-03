@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import type { PredictionMarket } from '@/app/api/polymarket/route';
+import type { PredictionMarket } from '@/types/domain';
 import { MARKET_GROUPS, UNCATEGORIZED_GROUP, assignGroup } from '@/data/predictionGroups';
 import { fmtVol, getLeadProb } from '@/components/predictions/utils';
 import { MarketCard } from '@/components/predictions/MarketCard';

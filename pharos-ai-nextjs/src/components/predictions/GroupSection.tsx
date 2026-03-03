@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
-import type { PredictionMarket } from '@/app/api/polymarket/route';
+import type { PredictionMarket } from '@/types/domain';
 import type { MarketGroup } from '@/data/predictionGroups';
 import { MarketRow } from './MarketRow';
 import { fmtVol, getLeadProb } from './utils';

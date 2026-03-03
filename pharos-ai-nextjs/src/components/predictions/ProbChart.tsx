@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from 'react';
 import { createChart, type IChartApi, ColorType, LineStyle, AreaSeries } from 'lightweight-charts';
+import type { TimePoint } from '@/types/domain';
 
 interface ProbChartProps {
-  data: { t: number; p: number }[];   // t=unix seconds, p=0..1
+  data: TimePoint[];
   color: string;
   height?: number;
   interactive?: boolean;

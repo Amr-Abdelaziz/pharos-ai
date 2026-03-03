@@ -3,7 +3,7 @@
  * fmtVol / fmtMarketDate are intentionally separate from @/lib/format —
  * they use market-specific precision and localization.
  */
-import type { PredictionMarket, SubMarket } from '@/app/api/polymarket/route';
+import type { PredictionMarket, SubMarket } from '@/types/domain';
 
 /** "$1.23M", "$340K", "$890" — two-decimal precision for market volumes */
 export function fmtVol(v: number): string {

@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { PredictionMarket } from '@/app/api/polymarket/route';
-import type { ProbPoint } from '@/app/api/polymarket/history/route';
-import type { MarketGroup } from '@/types/domain';
+import type { PredictionMarket, TimePoint, MarketGroup } from '@/types/domain';
 import { getLeadProb, probColor, fmtVol, fmtMarketDate, statusLabel } from './utils';
 import { ProbChart } from './ProbChart';
 
@@ -15,7 +13,7 @@ interface MarketCardProps {
 }
 
 export function MarketCard({ market, group, rank, onFocus }: MarketCardProps) {
-  const [history, setHistory] = useState<ProbPoint[]>([]);
+  const [history, setHistory] = useState<TimePoint[]>([]);
   const [chartLoading, setChartLoading] = useState(true);
 
   const prob   = getLeadProb(market);

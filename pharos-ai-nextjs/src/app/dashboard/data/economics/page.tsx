@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { ECONOMIC_INDEXES, ECON_CATEGORIES, type EconCategory } from '@/data/economicIndexes';
-import type { MarketResult } from '@/app/api/markets/route';
+import type { MarketResult } from '@/types/domain';
 import { IndexCard } from '@/components/economics/IndexCard';
 import { FocusedChart } from '@/components/economics/FocusedChart';
 

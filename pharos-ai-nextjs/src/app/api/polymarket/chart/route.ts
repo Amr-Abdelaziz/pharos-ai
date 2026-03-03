@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { TimePoint } from '@/types/domain';
 
-export interface PricePoint {
-  t: number;  // unix timestamp (seconds)
-  p: number;  // price 0–1
-}
+/** @deprecated Use TimePoint from @/types/domain */
+export type PricePoint = TimePoint;
 
 export async function GET(req: NextRequest) {
   const conditionId = req.nextUrl.searchParams.get('id');
@@ -17,7 +16,7 @@ export async function GET(req: NextRequest) {
     if (!res.ok) {
       return NextResponse.json({ error: `CLOB ${res.status}`, history: [] }, { status: res.status });
     }
-    const data = await res.json() as { history?: PricePoint[] };
+    const data = await res.json() as { history?: TimePoint[] };
     return NextResponse.json({ history: data.history ?? [] });
   } catch (err) {
     return NextResponse.json({ error: String(err), history: [] }, { status: 500 });

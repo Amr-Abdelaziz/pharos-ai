@@ -8,7 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
-import type { PredictionMarket } from '@/app/api/polymarket/route';
+import type { PredictionMarket } from '@/types/domain';
 import { assignGroup, MARKET_GROUPS, UNCATEGORIZED_GROUP } from '@/data/predictionGroups';
 import { GroupSection } from '@/components/predictions/GroupSection';
 import { fmtVol, getLeadProb, COL } from '@/components/predictions/utils';
