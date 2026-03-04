@@ -1,0 +1,31 @@
+'use client';
+
+import { useEffect } from 'react';
+
+function updateAppHeightVar() {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+  const vh = window.visualViewport?.height ?? window.innerHeight;
+  document.documentElement.style.setProperty('--app-height', `${Math.round(vh)}px`);
+}
+
+export function ViewportHeightSync() {
+  useEffect(() => {
+    updateAppHeightVar();
+
+    const onResize = () => updateAppHeightVar();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    window.visualViewport?.addEventListener('resize', onResize);
+    window.visualViewport?.addEventListener('scroll', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      window.visualViewport?.removeEventListener('resize', onResize);
+      window.visualViewport?.removeEventListener('scroll', onResize);
+    };
+  }, []);
+
+  return null;
+}
+
