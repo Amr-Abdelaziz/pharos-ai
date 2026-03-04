@@ -21,6 +21,8 @@ type Props = {
   onClose:         () => void;
   onSelectItem:    (item: SelectedItem) => void;
   onActivateStory: (story: MapStory) => void;
+  isMobile?:       boolean;
+  inline?:         boolean;
 };
 
 // ─── Config ───────────────────────────────────────────────────────────────────
@@ -47,7 +49,60 @@ function getTitle(item: SelectedItem): string {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function MapDetailPanel({ item, onClose, onSelectItem, onActivateStory }: Props) {
+export default function MapDetailPanel({ item, onClose, onSelectItem, onActivateStory, isMobile = false, inline = false }: Props) {
+  if (!item) return null;
+
+  const content = (
+    <>
+      {/* Header */}
+      <div className="panel-header" style={{ borderTop: `2px solid ${PANEL_ACCENT[item.type]}`, height: 44, minHeight: 44 }}>
+        <div className="flex-1 min-w-0">
+          <p className="label" style={{ color: PANEL_ACCENT[item.type], marginBottom: 2 }}>
+            {PANEL_LABEL[item.type]}
+          </p>
+          <p className="mono" style={{ color: 'var(--t1)', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {getTitle(item)}
+          </p>
+        </div>
+        <Button variant="ghost" size="xs" onClick={onClose}
+          className="h-5 w-5 p-0 text-[var(--t4)] hover:text-[var(--t2)] text-base leading-none shrink-0"
+        >✕</Button>
+      </div>
+
+      {/* Body */}
+      <div className="panel-body" style={{ padding: '14px 16px' }}>
+        {item.type === 'strike'  && <StrikeContent  d={item.data} onSelectItem={onSelectItem} onActivateStory={onActivateStory} />}
+        {item.type === 'missile' && <MissileContent d={item.data} onActivateStory={onActivateStory} />}
+        {item.type === 'target'  && <TargetContent  d={item.data} onSelectItem={onSelectItem} onActivateStory={onActivateStory} />}
+        {item.type === 'asset'   && <AssetContent   d={item.data} onActivateStory={onActivateStory} />}
+        {item.type === 'zone'    && <ZoneContent    d={item.data} />}
+      </div>
+
+      {/* Footer */}
+      <div style={{ height: 36, borderTop: '1px solid var(--bd-s)', display: 'flex', alignItems: 'center', padding: '0 14px', flexShrink: 0 }}>
+        <span className="mono" style={{ fontSize: 9, color: 'var(--t4)' }}>PHAROS INTEL · UNCLASSIFIED</span>
+      </div>
+    </>
+  );
+
+  // Inline mode: render as a normal flow element (used inside mobile bottom sheet)
+  if (inline) {
+    return (
+      <div style={{
+        background: 'var(--bg-app)',
+        borderBottom: '1px solid var(--bd)',
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
+        maxHeight: '50%',
+        overflowY: 'auto',
+      }}>
+        {content}
+      </div>
+    );
+  }
+
+  // Absolute positioned mode (desktop side panel)
   return (
     <div style={{
       position:   'absolute',
@@ -59,43 +114,11 @@ export default function MapDetailPanel({ item, onClose, onSelectItem, onActivate
       borderLeft: '1px solid var(--bd)',
       display:    'flex',
       flexDirection: 'column',
-      transform:  item ? 'translateX(0)' : 'translateX(100%)',
+      transform:  'translate(0,0)',
       transition: 'transform 0.22s cubic-bezier(0.4,0,0.2,1)',
       zIndex:     20,
-      pointerEvents: item ? 'auto' : 'none',
     }}>
-      {item && (
-        <>
-          {/* Header */}
-          <div className="panel-header" style={{ borderTop: `2px solid ${PANEL_ACCENT[item.type]}`, height: 44, minHeight: 44 }}>
-            <div className="flex-1 min-w-0">
-              <p className="label" style={{ color: PANEL_ACCENT[item.type], marginBottom: 2 }}>
-                {PANEL_LABEL[item.type]}
-              </p>
-              <p className="mono" style={{ color: 'var(--t1)', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {getTitle(item)}
-              </p>
-            </div>
-            <Button variant="ghost" size="xs" onClick={onClose}
-              className="h-5 w-5 p-0 text-[var(--t4)] hover:text-[var(--t2)] text-base leading-none shrink-0"
-            >✕</Button>
-          </div>
-
-          {/* Body */}
-          <div className="panel-body" style={{ padding: '14px 16px' }}>
-            {item.type === 'strike'  && <StrikeContent  d={item.data} onSelectItem={onSelectItem} onActivateStory={onActivateStory} />}
-            {item.type === 'missile' && <MissileContent d={item.data} onActivateStory={onActivateStory} />}
-            {item.type === 'target'  && <TargetContent  d={item.data} onSelectItem={onSelectItem} onActivateStory={onActivateStory} />}
-            {item.type === 'asset'   && <AssetContent   d={item.data} onActivateStory={onActivateStory} />}
-            {item.type === 'zone'    && <ZoneContent    d={item.data} />}
-          </div>
-
-          {/* Footer */}
-          <div style={{ height: 36, borderTop: '1px solid var(--bd-s)', display: 'flex', alignItems: 'center', padding: '0 14px', flexShrink: 0 }}>
-            <span className="mono" style={{ fontSize: 9, color: 'var(--t4)' }}>PHAROS INTEL · UNCLASSIFIED</span>
-          </div>
-        </>
-      )}
+      {content}
     </div>
   );
 }

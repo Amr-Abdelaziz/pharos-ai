@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 
+import { Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 import StoryTimeline from './StoryTimeline';
@@ -19,11 +20,13 @@ type Props = {
   onToggle:        () => void;
   onActivateStory: (story: MapStory) => void;
   onClearStory:    () => void;
+  expanded?:       boolean;
+  onToggleExpand?: () => void;
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function MapSidebar({ isOpen, stories, activeStory, onToggle, onActivateStory, onClearStory }: Props) {
+export default function MapSidebar({ isOpen, stories, activeStory, onToggle, onActivateStory, onClearStory, expanded, onToggleExpand }: Props) {
   const [openStoryId, setOpenStoryId] = useState<string | null>(null);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
   const bodyRef = useRef<HTMLDivElement>(null);
@@ -92,9 +95,17 @@ export default function MapSidebar({ isOpen, stories, activeStory, onToggle, onA
           background: 'var(--blue-dim)', color: 'var(--blue-l)',
           fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 10, marginLeft: 2,
         }}>{stories.length}</span>
+        {onToggleExpand && (
+          <Button variant="ghost" size="xs" onClick={onToggleExpand}
+            className="ml-auto h-5 w-5 p-0 text-[var(--t4)] hover:text-[var(--t1)] leading-none"
+            title={expanded ? 'Collapse' : 'Expand'}
+          >
+            {expanded ? <Minimize2 size={12} strokeWidth={2} /> : <Maximize2 size={12} strokeWidth={2} />}
+          </Button>
+        )}
         <Button variant="ghost" size="xs" onClick={onToggle}
-          className="ml-auto h-5 w-5 p-0 text-[var(--t4)] text-base leading-none"
-        >‹</Button>
+          className={`${onToggleExpand ? '' : 'ml-auto '}h-5 w-5 p-0 text-[var(--t4)] hover:text-[var(--t1)] text-base leading-none`}
+        >✕</Button>
       </div>
 
       {/* Timeline */}

@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-import { extractInitialState, extractTimeExtent } from '@/lib/map-filter-engine';
+import { extractInitialState } from '@/lib/map-filter-engine';
 import type { MapViewState } from '@deck.gl/core';
 import type { MapStory } from '@/types/domain';
 import type { SelectedItem } from '@/components/map/MapDetailPanel';
@@ -202,6 +202,8 @@ const mapSlice = createSlice({
     activateStory(state, action: PayloadAction<MapStory>) {
       const story = action.payload;
       state.activeStory = story;
+      state.sidebarOpen = true;
+      state.selectedItem = null;
       state.viewState = {
         ...state.viewState,
         ...story.viewState,
@@ -250,6 +252,9 @@ const mapSlice = createSlice({
     toggleSidebar(state) {
       state.sidebarOpen = !state.sidebarOpen;
     },
+    setSidebarOpen(state, action: PayloadAction<boolean>) {
+      state.sidebarOpen = action.payload;
+    },
     setMapStyle(state, action: PayloadAction<'dark' | 'satellite'>) {
       state.mapStyle = action.payload;
     },
@@ -272,6 +277,7 @@ export const {
   activateStory,
   setSelectedItem,
   toggleSidebar,
+  setSidebarOpen,
   setMapStyle,
 } = mapSlice.actions;
 
