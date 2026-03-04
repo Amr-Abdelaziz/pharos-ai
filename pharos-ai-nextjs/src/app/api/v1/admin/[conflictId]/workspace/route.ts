@@ -32,25 +32,14 @@ type ResearchTask = {
   hint: string;
 };
 
-// Daily content targets — how much content a full day should have
+// Daily content targets — add data continuously throughout the day
 const TARGETS = {
-  eventsPerDay: 18,       // ~18 events across the conflict day
-  xPostsPerDay: 12,       // ~12 X posts from key accounts
-  mapFeaturesPerDay: 12,  // ~12 kinetic + installation features
-  storiesPerDay: 3,       // 2-3 map stories
+  events: 50,
+  xPosts: 100,
+  mapFeatures: 40,
+  stories: 8,
+  actorActions: 40,   // 4+ per major actor
 };
-
-// Hour buckets for time-aware targets
-// Morning (06-12 UTC): 40% of day targets
-// Afternoon (12-18 UTC): 40%
-// Evening (18-24 UTC): 20% — less expected
-function getDayProgressFraction(): number {
-  const hour = new Date().getUTCHours();
-  if (hour < 6)  return 0.1;
-  if (hour < 12) return 0.4;
-  if (hour < 18) return 0.75;
-  return 1.0;
-}
 
 export async function GET(
   req: NextRequest,
@@ -67,10 +56,6 @@ export async function GET(
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
   const todayStart = new Date(today + 'T00:00:00Z');
-  const yesterday = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
-
-  const dayProgress = getDayProgressFraction();
-  const currentHourUTC = now.getUTCHours();
 
   // ── Parallel DB queries ───────────────────────────────────────────────────
 
@@ -183,15 +168,11 @@ export async function GET(
     f => !(MAP_ACTOR_KEYS as readonly string[]).includes(f.actor),
   );
 
-  // Time-adjusted targets (what's expected given the current time of day)
-  const adjustedEventTarget = Math.round(TARGETS.eventsPerDay * dayProgress);
-  const adjustedXPostTarget = Math.round(TARGETS.xPostsPerDay * dayProgress);
-  const adjustedMapFeatureTarget = Math.round(TARGETS.mapFeaturesPerDay * dayProgress);
-
-  const eventGap = Math.max(0, adjustedEventTarget - eventsToday.length);
-  const xPostGap = Math.max(0, adjustedXPostTarget - xPostsToday);
-  const mapFeatureGap = Math.max(0, adjustedMapFeatureTarget - mapFeaturesToday);
-  const storyGap = Math.max(0, TARGETS.storiesPerDay - storiesToday);
+  const eventGap = Math.max(0, TARGETS.events - eventsToday.length);
+  const xPostGap = Math.max(0, TARGETS.xPosts - xPostsToday);
+  const mapFeatureGap = Math.max(0, TARGETS.mapFeatures - mapFeaturesToday);
+  const storyGap = Math.max(0, TARGETS.stories - storiesToday);
+  const actionGap = Math.max(0, TARGETS.actorActions - actorActionsToday);
 
   // ── Build todo list ───────────────────────────────────────────────────────
 
@@ -204,8 +185,16 @@ export async function GET(
       priority: 'P1',
       category: 'Day Snapshot',
       title: `Create today's day snapshot (${today})`,
-      description: 'No day snapshot exists for today. Required for the dashboard to show current escalation, casualties, economic chips, and scenarios. Must be created first — everything else depends on it.',
+      description: 'No day snapshot exists for today. Required for the dashboard. Must be created first — everything else depends on it.',
       action: `POST /api/v1/admin/${conflictId}/days`,
+    });
+  } else {
+    todos.push({
+      priority: 'P2',
+      category: 'Day Snapshot',
+      title: 'Update day snapshot with latest casualties, escalation, and economic data',
+      description: 'The day snapshot should be updated multiple times per day as the situation evolves. Update: escalation score, casualty figures per faction, economic chips (oil price, markets, shipping), scenarios, keyFacts, summary. Use PUT /days/{day}.',
+      action: `PUT /api/v1/admin/${conflictId}/days/${today}`,
     });
   }
 
@@ -236,18 +225,15 @@ export async function GET(
   // ── P1/P2: Daily content production ──────────────────────────────────────
 
   if (eventGap > 0) {
-    const isUrgent = eventGap >= 5 && currentHourUTC >= 10;
     todos.push({
-      priority: isUrgent ? 'P1' : 'P2',
+      priority: eventsToday.length === 0 ? 'P1' : 'P2',
       category: 'Events',
-      title: `Add Day 5 events — ${eventsToday.length} created, target ${adjustedEventTarget} by now (${TARGETS.eventsPerDay} total for full day)`,
-      description: `Each event = one real intelligence development. Cover: airstrikes, retaliation, diplomatic moves, economic impacts, casualties, regional spillover. Each event needs: title, location, summary, fullContent (400+ chars), sources, then actor responses. Use ?enforcement=true before creating. `,
+      title: `Events — ${eventsToday.length} created, target ${TARGETS.events} (${eventGap} remaining)`,
+      description: `Add intelligence events continuously throughout the day. Cover every development: airstrikes, retaliation, missiles, diplomatic moves, casualties, economic shocks, regional spillover. Each event needs fullContent (400+ chars), sources, actor responses. Use ?enforcement=true before creating.`,
       action: `POST /api/v1/admin/${conflictId}/events?enforcement=true → POST /api/v1/admin/${conflictId}/events`,
       count: eventGap,
-      suggestSubagent: eventGap >= 8,
-      subagentHint: eventGap >= 8
-        ? `Consider spawning a research subagent to gather raw news material first, then write ${eventGap} events. While it works, main session can handle X posts and actor responses.`
-        : undefined,
+      suggestSubagent: eventGap >= 20,
+      subagentHint: eventGap >= 20 ? `Consider spawning a subagent to research and write events in parallel.` : undefined,
     });
   }
 
@@ -264,39 +250,37 @@ export async function GET(
   }
 
   if (xPostGap > 0) {
-    const isUrgent = xPostGap >= 6 && currentHourUTC >= 12;
     todos.push({
-      priority: isUrgent ? 'P1' : 'P2',
+      priority: xPostsToday === 0 ? 'P1' : 'P2',
       category: 'X Posts',
-      title: `Add Day 5 X posts — ${xPostsToday} created, target ${adjustedXPostTarget} by now (${TARGETS.xPostsPerDay} total for full day)`,
-      description: `Capture key statements from: CENTCOM, IDF Spokesperson, Trump, PM Netanyahu, IRGC, Iranian FM, UK MoD, Macron, relevant journalists. Each post needs: handle, displayName, accountType, significance (BREAKING/HIGH/STANDARD), content (full post text), pharosNote (why it matters), eventId (link to relevant event). Do not invent content — use real statements.`,
+      title: `X Posts — ${xPostsToday} created, target ${TARGETS.xPosts} (${xPostGap} remaining)`,
+      description: `Ingest X/social posts from all relevant accounts throughout the day: military (CENTCOM, IDF, IRGC, Pentagon), government (Trump, Netanyahu, Iranian FM, Macron, UK MoD), journalists, analysts. Link each post to an actorId and eventId where relevant. pharosNote explains the intelligence significance.`,
       action: `POST /api/v1/admin/${conflictId}/x-posts?enforcement=true → POST /api/v1/admin/${conflictId}/x-posts`,
       count: xPostGap,
+      suggestSubagent: xPostGap >= 50,
+      subagentHint: xPostGap >= 50 ? `Consider spawning a subagent to write X posts in parallel.` : undefined,
     });
   }
 
   if (mapFeatureGap > 0) {
-    const isUrgent = mapFeatureGap >= 8 && currentHourUTC >= 14;
     todos.push({
-      priority: isUrgent ? 'P1' : 'P2',
+      priority: mapFeaturesToday === 0 ? 'P1' : 'P2',
       category: 'Map Features',
-      title: `Add Day 5 map features — ${mapFeaturesToday} today, target ${adjustedMapFeatureTarget} by now (${TARGETS.mapFeaturesPerDay} total for full day)`,
-      description: `Add geographic features for today's events. Types needed: strike-arcs (US/Israel strikes on Iran), missile-tracks (Iranian retaliation), targets (struck installations), assets (US carriers, IDF positions), threat-zones (closure areas). Each needs: actor (UPPERCASE mapKey), priority (P1/P2/P3), type, geometry, properties, timestamp. Run ?enforcement=true first.`,
+      title: `Map Features — ${mapFeaturesToday} today, target ${TARGETS.mapFeatures} (${mapFeatureGap} remaining)`,
+      description: `Add kinetic and installation features for every geographic development: strike-arcs (US/Israel strikes), missile-tracks (Iranian/IRGC/Hezbollah retaliation), targets (struck sites), assets (carriers, bases, command posts), threat-zones (Hormuz closure, NFZs). Each feature needs actor (UPPERCASE mapKey), priority (P1/P2/P3), type, geometry, timestamp. Run ?enforcement=true first.`,
       action: `POST /api/v1/admin/${conflictId}/map/strike-arcs | missile-tracks | targets | assets | threat-zones`,
       count: mapFeatureGap,
-      suggestSubagent: mapFeatureGap >= 6,
-      subagentHint: mapFeatureGap >= 6
-        ? 'Consider spawning a subagent to write map features in parallel while main session handles X posts or actor responses.'
-        : undefined,
+      suggestSubagent: mapFeatureGap >= 15,
+      subagentHint: mapFeatureGap >= 15 ? 'Consider spawning a subagent to write map features in parallel.' : undefined,
     });
   }
 
-  if (storyGap > 0 && currentHourUTC >= 14) {
+  if (storyGap > 0) {
     todos.push({
-      priority: 'P2',
+      priority: storiesToday === 0 ? 'P1' : 'P2',
       category: 'Map Stories',
-      title: `Create map stories — ${storiesToday} today, target ${TARGETS.storiesPerDay}`,
-      description: `Map stories explain the narrative arc of a specific 2-6 hour event window on the map. Each story needs: title (event-focused, no "Day N"), tagline, iconName, narrative (400+ chars), keyFacts (3+), events[] (2-3 timeline points), highlightStrikeIds/highlightMissileIds/highlightTargetIds (map connections). Run ?enforcement=true first.`,
+      title: `Map Stories — ${storiesToday} today, target ${TARGETS.stories} (${storyGap} remaining)`,
+      description: `Stories explain the narrative arc of specific event windows on the map. Each story covers a 2-6 hour window — one key development, not the whole day. Needs: title (event-focused, no "Day N"), tagline, iconName, narrative (400+ chars), keyFacts (3+), timeline events[], highlight feature IDs (map connections). Run ?enforcement=true first.`,
       action: `POST /api/v1/admin/${conflictId}/map/stories?enforcement=true → POST /api/v1/admin/${conflictId}/map/stories`,
       count: storyGap,
     });
@@ -304,13 +288,14 @@ export async function GET(
 
   // ── P2: Actor actions (timeline entries per actor) ────────────────────────
 
-  if (actorActionsToday === 0 && eventsToday.length >= 3) {
+  if (actionGap > 0 && eventsToday.length >= 3) {
     todos.push({
-      priority: 'P2',
+      priority: actorActionsToday === 0 ? 'P1' : 'P2',
       category: 'Actor Actions',
-      title: `Add today's actor actions (0 created) — timeline entries per actor`,
-      description: `Actor actions are the timeline record of what each faction did today. Add 2-4 actions per major actor (US, IDF, IRAN, IRGC, HEZBOLLAH, NATO). Each needs: actorId, date (${today}), type (MILITARY/DIPLOMATIC/POLITICAL/ECONOMIC/INTELLIGENCE), description, significance (HIGH/MEDIUM/LOW), verified (true/false).`,
+      title: `Actor Actions — ${actorActionsToday} created, target ${TARGETS.actorActions} (${actionGap} remaining)`,
+      description: `Timeline entries for what each actor did today. Add actions for all major actors throughout the day: US, IDF, IRAN, IRGC, HEZBOLLAH, HOUTHI, NATO, PMF, RUSSIA. Each action needs: actorId, date (${today}), type (MILITARY/DIPLOMATIC/POLITICAL/ECONOMIC/INTELLIGENCE), description, significance (HIGH/MEDIUM/LOW), verified.`,
       action: `POST /api/v1/admin/${conflictId}/actors/{actorId}/actions`,
+      count: actionGap,
     });
   }
 
@@ -384,18 +369,9 @@ export async function GET(
   const p2Count = todos.filter(t => t.priority === 'P2').length;
   const p3Count = todos.filter(t => t.priority === 'P3').length;
 
-  const timeOfDay =
-    currentHourUTC < 6 ? 'early morning' :
-    currentHourUTC < 12 ? 'morning' :
-    currentHourUTC < 18 ? 'afternoon' :
-    'evening';
-
   return ok({
     conflictId,
     today,
-    timeOfDay,
-    currentHourUTC,
-    dayProgressPct: Math.round(dayProgress * 100),
     generatedAt: now.toISOString(),
     overview: {
       hasTodaySnapshot: !!todaySnapshot,
@@ -406,11 +382,12 @@ export async function GET(
       storiesToday,
       actorActionsToday,
     },
-    contentTargets: {
-      events: { current: eventsToday.length, adjustedTarget: adjustedEventTarget, fullDayTarget: TARGETS.eventsPerDay, gap: eventGap },
-      xPosts: { current: xPostsToday, adjustedTarget: adjustedXPostTarget, fullDayTarget: TARGETS.xPostsPerDay, gap: xPostGap },
-      mapFeatures: { current: mapFeaturesToday, adjustedTarget: adjustedMapFeatureTarget, fullDayTarget: TARGETS.mapFeaturesPerDay, gap: mapFeatureGap },
-      stories: { current: storiesToday, target: TARGETS.storiesPerDay, gap: storyGap },
+    targets: {
+      events: TARGETS.events,
+      xPosts: TARGETS.xPosts,
+      mapFeatures: TARGETS.mapFeatures,
+      stories: TARGETS.stories,
+      actorActions: TARGETS.actorActions,
     },
     todos,
     subagentHints,
@@ -422,8 +399,8 @@ export async function GET(
       allClear: todos.length === 0,
       message:
         todos.length === 0
-          ? `All clear — dashboard is fully populated for ${timeOfDay}.`
-          : `${p1Count} critical, ${p2Count} standard, ${p3Count} low-priority items. It is ${timeOfDay} (${currentHourUTC}:00 UTC) — targets are time-adjusted to ${Math.round(dayProgress * 100)}% of daily goal.`,
+          ? 'All clear — dashboard is fully populated.'
+          : `${p1Count} critical, ${p2Count} standard items need attention. Add data continuously throughout the day.`,
     },
   });
 }
