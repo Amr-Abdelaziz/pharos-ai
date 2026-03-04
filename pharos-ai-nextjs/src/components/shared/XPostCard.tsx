@@ -48,6 +48,8 @@ const IMG_LBL: Record<string, string> = {
   'uss-reagan-philippine-sea': 'USN · PHILIPPINE SEA',
 };
 
+const DEFAULT_AVATAR_COLOR = '#6B7280';
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /** Build the X post URL from handle + tweetId */
@@ -57,11 +59,47 @@ function xUrl(handle: string, tweetId?: string): string | null {
   return `https://x.com/${bare}/status/${tweetId}`;
 }
 
+function getInitials(displayName: string, handle: string, avatar?: string): string {
+  const explicit = (avatar ?? '').trim();
+  if (explicit) return explicit.slice(0, 2).toUpperCase();
+
+  const words = displayName
+    .replace(/[^A-Za-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length >= 2) return `${words[0][0]}${words[1][0]}`.toUpperCase();
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+
+  const bare = handle.replace(/^@/, '').trim();
+  return (bare.slice(0, 2) || '??').toUpperCase();
+}
+
+function hashToColor(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash + seed.charCodeAt(i)) | 0;
+  }
+  const hue = Math.abs(hash) % 360;
+  return `hsl(${hue} 58% 42%)`;
+}
+
+function resolveAvatarColor(post: XPost): string {
+  const hasCustom = !!post.avatarColor && post.avatarColor.toLowerCase() !== DEFAULT_AVATAR_COLOR.toLowerCase();
+  if (hasCustom) return post.avatarColor;
+
+  if (post.actorCssVar) return post.actorCssVar;
+  if (post.actorColorRgb && post.actorColorRgb.length === 3) {
+    const [r, g, b] = post.actorColorRgb;
+    return `rgb(${r} ${g} ${b})`;
+  }
+
+  return hashToColor(post.handle || post.displayName || post.id);
+}
+
 type Props = { post: XPost; compact?: boolean };
 
 export default function XPostCard({ post, compact }: Props) {
-  const isBreaking = post.significance === 'BREAKING';
-  const isHigh     = post.significance === 'HIGH';
   const acct       = ACCT[post.accountType] ?? ACCT.analyst;
   const border     = SIG_BORDER[post.significance] ?? SIG_BORDER.STANDARD;
   const postUrl    = xUrl(post.handle, post.tweetId);
@@ -69,24 +107,6 @@ export default function XPostCard({ post, compact }: Props) {
 
   return (
     <div className="card mb-2" style={{ borderLeft: `3px solid ${border}` }}>
-
-      {/* ── BREAKING banner ── */}
-      {isBreaking && (
-        <div className="flex items-center gap-2 px-3 py-[3px]" style={{ background: 'var(--danger)' }}>
-          <div className="dot" style={{ background: 'white' }} />
-          <span className="text-[9px] font-bold text-white tracking-[0.10em] uppercase">Breaking</span>
-        </div>
-      )}
-      {isHigh && !isBreaking && (
-        <div
-          className="px-3 py-0.5 border-b"
-          style={{ background: 'var(--warning-dim)', borderColor: 'var(--warning-bd)' }}
-        >
-          <span className="text-[9px] font-bold tracking-[0.08em] uppercase text-[var(--warning)]">
-            High Significance
-          </span>
-        </div>
-      )}
 
       {hasEmbed ? (
         /* ── Side-by-side: Original (left) | Pharos (right) ── */
@@ -130,19 +150,22 @@ function PharosView({
   postUrl: string | null;
   compact?: boolean;
 }) {
+  const avatarText = getInitials(post.displayName, post.handle, post.avatar);
+  const avatarBg = resolveAvatarColor(post);
+
   return (
     <>
       {/* ── HEADER ── */}
       <div className="card-header px-3 py-[9px]">
         <Avatar
           className="w-8 h-8 shrink-0"
-          style={{ background: post.avatarColor }}
+          style={{ background: avatarBg }}
         >
           <AvatarFallback
             className="text-[10px] font-bold text-white rounded-full"
-            style={{ background: post.avatarColor }}
+            style={{ background: avatarBg }}
           >
-            {post.avatar.slice(0, 2)}
+            {avatarText}
           </AvatarFallback>
         </Avatar>
 
@@ -227,6 +250,7 @@ function PharosView({
         <EngStat icon={<Heart   size={10} strokeWidth={1.5} />} val={fmt(post.likes)}    />
         <EngStat icon={<Repeat2 size={10} strokeWidth={1.5} />} val={fmt(post.retweets)} />
         <EngStat icon={<Eye     size={10} strokeWidth={1.5} />} val={fmt(post.views)}    />
+        <span className="mono text-[8px] text-[var(--t4)] ml-1">(OLD STATS)</span>
         <div className="ml-auto">
           {postUrl ? (
             <a href={postUrl} target="_blank" rel="noopener noreferrer" title="View on 𝕏">
@@ -275,7 +299,7 @@ function PharosNote({ note }: { note: string }) {
 
   return (
     <div
-      className="mx-3 mb-2.5 px-[10px] py-2"
+      className="mx-3 mt-2 mb-2.5 px-[10px] pt-2.5 pb-2"
       style={{ background: bg, border: `1px solid ${border}`, borderLeft: `3px solid ${color}` }}
     >
       <div className="flex gap-[7px] items-start">

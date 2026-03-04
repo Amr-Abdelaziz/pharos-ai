@@ -19,6 +19,7 @@ type Props = {
   pharosOnly:   boolean;
   totalShown:   number;
   totalAll:     number;
+  lastUpdated?: string;
   onSigChange:  (s: Significance, v: boolean) => void;
   onAcctChange: (a: AccountType, v: boolean) => void;
   onPharosOnly: (v: boolean) => void;
@@ -31,7 +32,7 @@ type Props = {
 };
 
 export function SignalFilterRail({
-  sigFilter, acctFilter, pharosOnly, totalShown, totalAll,
+  sigFilter, acctFilter, pharosOnly, totalShown, totalAll, lastUpdated,
   onSigChange, onAcctChange, onPharosOnly,
   currentDay, onDayChange, showAll, onAllClick,
   compact = false, pageScroll = false,
@@ -75,9 +76,14 @@ export function SignalFilterRail({
       </div>
       {pageScroll ? body : <ScrollArea className="flex-1">{body}</ScrollArea>}
       <div className="px-3 py-2 border-t border-[var(--bd)] shrink-0">
-        <span className="mono text-[9px] text-[var(--t3)]">
+        <span className="mono text-[9px] text-[var(--t3)] block">
           {totalShown} / {totalAll} SIGNALS
         </span>
+        {lastUpdated && (
+          <span className="mono text-[8px] text-[var(--t4)] block mt-1">
+            LAST UPDATED {lastUpdated}
+          </span>
+        )}
       </div>
     </div>
   );

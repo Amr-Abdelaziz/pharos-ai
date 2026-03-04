@@ -8,6 +8,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const posts = await prisma.xPost.findMany({
     where: { conflictId: id, eventId },
     orderBy: { timestamp: 'desc' },
+    include: {
+      actor: {
+        select: { cssVar: true, colorRgb: true },
+      },
+    },
   });
 
   return ok(posts.map(p => ({
@@ -30,6 +35,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     views: p.views,
     eventId: p.eventId,
     actorId: p.actorId,
+    actorCssVar: p.actor?.cssVar ?? null,
+    actorColorRgb: p.actor?.colorRgb ?? [],
     pharosNote: p.pharosNote,
   })));
 }

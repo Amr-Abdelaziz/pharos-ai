@@ -152,6 +152,8 @@ export interface XPost {
   views: number;
   eventId?: string;
   actorId?: string;
+  actorCssVar?: string | null;
+  actorColorRgb?: number[];
   pharosNote?: string;
 }
 

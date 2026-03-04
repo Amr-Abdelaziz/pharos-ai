@@ -6,6 +6,7 @@ import { usePanelLayout } from '@/hooks/use-panel-layout';
 import { useConflictDay } from '@/hooks/use-conflict-day';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { XPost } from '@/types/domain';
 import { useXPosts } from '@/api/x-posts';
@@ -13,11 +14,13 @@ import XPostCard from '@/components/shared/XPostCard';
 import { SignalFilterRail, type Significance, type AccountType } from '@/components/signals/SignalFilterRail';
 import { SectionHeader } from '@/components/signals/SectionHeader';
 import { getPostsForDay } from '@/lib/day-filter';
+import { timeAgo } from '@/lib/format';
 
 export function SignalsContent() {
   const isMobile = useIsMobile(1024);
   const isLandscapePhone = useIsLandscapePhone();
   const usePageScroll = isMobile && isLandscapePhone;
+  const onLandscapeScroll = useLandscapeScrollEmitter(usePageScroll);
   const [sigFilter,  setSigFilter]  = useState<Record<Significance, boolean>>({ BREAKING: true, HIGH: true, STANDARD: true });
   const [acctFilter, setAcctFilter] = useState<Record<AccountType, boolean>>({ military: true, government: true, journalist: true, analyst: true, official: true });
   const [pharosOnly, setPharosOnly] = useState(false);
@@ -41,6 +44,17 @@ export function SignalsContent() {
   const breaking = filtered.filter(p => p.significance === 'BREAKING');
   const high     = filtered.filter(p => p.significance === 'HIGH');
   const standard = filtered.filter(p => p.significance === 'STANDARD');
+
+  const lastUpdated = useMemo(() => {
+    const posts = allPosts ?? [];
+    if (posts.length === 0) return '';
+    const latest = posts.reduce((max, p) => {
+      const ts = Date.parse(p.timestamp);
+      return Number.isFinite(ts) && ts > max ? ts : max;
+    }, 0);
+    if (!latest) return '';
+    return timeAgo(new Date(latest).toISOString());
+  }, [allPosts]);
 
   const signalsList = (
     <>
@@ -78,6 +92,7 @@ export function SignalsContent() {
       pharosOnly={pharosOnly}
       totalShown={filtered.length}
       totalAll={allPosts?.length ?? 0}
+      lastUpdated={lastUpdated}
       onSigChange={(s, v) => setSigFilter(p => ({ ...p, [s]: v }))}
       onAcctChange={(a, v) => setAcctFilter(p => ({ ...p, [a]: v }))}
       onPharosOnly={setPharosOnly}
@@ -92,15 +107,18 @@ export function SignalsContent() {
 
   if (isMobile) {
     return (
-      <div className={`flex flex-col flex-1 min-h-0 min-w-0 ${usePageScroll ? 'overflow-y-auto' : 'overflow-hidden'}`}>
+      <div
+        className={`flex flex-col flex-1 min-h-0 min-w-0 ${usePageScroll ? 'overflow-y-auto' : 'overflow-hidden'}`}
+        onScroll={usePageScroll ? onLandscapeScroll : undefined}
+      >
         {/* Header */}
-        <div className={`panel-header shrink-0 ${usePageScroll ? 'h-8 min-h-8 px-3' : ''}`}>
+        <div className={`panel-header shrink-0 ${usePageScroll ? 'h-8 min-h-8 safe-px' : ''}`}>
           <span className="section-title">Field Signals — Operation Epic Fury</span>
           <span className="label ml-auto text-[var(--t4)]">PHAROS-CURATED</span>
         </div>
 
         {/* Compact filter bar */}
-        <div className={`shrink-0 flex items-center gap-2 px-3 border-b border-[var(--bd)] bg-[var(--bg-2)] ${usePageScroll ? 'py-1.5' : 'py-[6px]'}`}>
+        <div className={`shrink-0 flex items-center gap-2 border-b border-[var(--bd)] bg-[var(--bg-2)] ${usePageScroll ? 'py-1.5 safe-px' : 'px-3 py-[6px]'}`}>
           <button
             onClick={() => setFiltersOpen(p => !p)}
             className={`text-[10px] px-[10px] py-[4px] border font-semibold tracking-wide transition-colors mono ${
@@ -114,6 +132,12 @@ export function SignalsContent() {
           <span className="mono text-[9px] text-[var(--t4)]">{filtered.length} / {allPosts?.length ?? 0} signals</span>
           <span className="mono text-[9px] text-[var(--t4)]">·</span>
           <span className="mono text-[9px] text-[var(--t3)]">{showAll ? 'ALL DAYS' : currentDay}</span>
+          {lastUpdated && (
+            <>
+              <span className="mono text-[9px] text-[var(--t4)]">·</span>
+              <span className="mono text-[9px] text-[var(--t3)]">UPDATED {lastUpdated}</span>
+            </>
+          )}
         </div>
 
         {/* Collapsible filter rail */}
@@ -125,7 +149,7 @@ export function SignalsContent() {
 
         {/* Signals feed */}
         <div className={usePageScroll ? '' : 'flex-1 min-h-0 overflow-y-auto'}>
-          <div className="px-3 py-3">
+          <div className={usePageScroll ? 'safe-px py-3' : 'px-3 py-3'}>
             {signalsList}
           </div>
         </div>

@@ -24,6 +24,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const posts = await prisma.xPost.findMany({
     where,
     orderBy: { timestamp: 'desc' },
+    include: {
+      actor: {
+        select: { cssVar: true, colorRgb: true },
+      },
+    },
   });
 
   if (posts.length === 0 && !(await prisma.conflict.findUnique({ where: { id } }))) {
@@ -50,6 +55,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     views: p.views,
     eventId: p.eventId,
     actorId: p.actorId,
+    actorCssVar: p.actor?.cssVar ?? null,
+    actorColorRgb: p.actor?.colorRgb ?? [],
     pharosNote: p.pharosNote,
   }));
 

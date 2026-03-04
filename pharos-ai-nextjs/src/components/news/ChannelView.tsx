@@ -4,6 +4,7 @@ import { useRssFeeds } from '@/api/rss';
 import type { ConflictChannel, FeedItem } from '@/types/domain';
 import { NewsFeedColumn } from './NewsFeedColumn';
 import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 interface ChannelViewProps {
   channel: ConflictChannel;
@@ -14,6 +15,7 @@ interface ChannelViewProps {
 export function ChannelView({ channel, showImages, feedData }: ChannelViewProps) {
   const { data: allFeeds } = useRssFeeds();
   const isLandscapePhone = useIsLandscapePhone();
+  const isMobile = useIsMobile();
   const feeds = channel.feedIds
     .map(id => (allFeeds ?? []).find(f => f.id === id))
     .filter(Boolean) as import('@/types/domain').RssFeed[];
@@ -36,22 +38,43 @@ export function ChannelView({ channel, showImages, feedData }: ChannelViewProps)
         </div>
       </div>
 
-      {/* Feed columns — equal width grid, fills available space */}
-      <div
-        className="flex-1 min-h-0 grid"
-        style={{ gridTemplateColumns: `repeat(${feeds.length}, 1fr)` }}
-      >
-        {feeds.map(feed => (
-          <div key={feed.id} className="min-w-0 border-r border-[var(--bd)] last:border-r-0 overflow-hidden">
-            <NewsFeedColumn
-              feed={feed}
-              color={channel.color}
-              showImages={showImages}
-              preloaded={feedData.get(feed.id)}
-            />
+      {/* Feed columns */}
+      {isMobile ? (
+        <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden">
+          <div className="flex h-full" style={{ width: `max(100%, ${feeds.length * 320}px)` }}>
+            {feeds.map(feed => (
+              <div
+                key={feed.id}
+                className="border-r border-[var(--bd)] last:border-r-0 h-full overflow-hidden"
+                style={{ width: '85vw', minWidth: '280px', maxWidth: '360px', flexShrink: 0 }}
+              >
+                <NewsFeedColumn
+                  feed={feed}
+                  color={channel.color}
+                  showImages={showImages}
+                  preloaded={feedData.get(feed.id)}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div
+          className="flex-1 min-h-0 grid"
+          style={{ gridTemplateColumns: `repeat(${feeds.length}, 1fr)` }}
+        >
+          {feeds.map(feed => (
+            <div key={feed.id} className="min-w-0 border-r border-[var(--bd)] last:border-r-0 overflow-hidden">
+              <NewsFeedColumn
+                feed={feed}
+                color={channel.color}
+                showImages={showImages}
+                preloaded={feedData.get(feed.id)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
