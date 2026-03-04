@@ -9,6 +9,8 @@ import { useConflictDay } from '@/hooks/use-conflict-day';
 import { useConflictDaySnapshot } from '@/api/conflicts';
 import { useActors } from '@/api/actors';
 import { BRIEF_SOURCES, TIER_C } from '@/components/brief/brief-constants';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
 
 const MAJOR_IDS = ['us', 'idf', 'iran', 'irgc', 'houthis'];
 
@@ -16,14 +18,15 @@ export function BriefContent() {
   const { currentDay, setDay, dayLabel, dayIndex } = useConflictDay();
   const { data: snapshot } = useConflictDaySnapshot(undefined, currentDay || undefined);
   const { data: actors } = useActors(undefined, currentDay || undefined);
+  const isLandscapePhone = useIsLandscapePhone();
+  const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
 
   const majorActors = actors?.filter(a => MAJOR_IDS.includes(a.id)) ?? [];
 
   if (!snapshot) return null;
 
-  return (
-    <ScrollArea className="flex-1 bg-[var(--bg-1)]">
-      <div className="max-w-[720px] mx-auto px-6 pt-8 pb-[60px]">
+  const content = (
+    <div className={`max-w-[720px] mx-auto ${isLandscapePhone ? 'safe-px pt-4 pb-8' : 'px-6 pt-8 pb-[60px]'}`}>
 
         {/* Classification header */}
         <div className="text-center mb-8 pb-5 border-b-2 border-[var(--bd)]">
@@ -144,7 +147,18 @@ export function BriefContent() {
             UNCLASSIFIED // PHAROS ANALYTICAL // OPERATION EPIC FURY // {currentDay}
           </span>
         </div>
+    </div>
+  );
+
+  return (
+    isLandscapePhone ? (
+      <div className="flex-1 bg-[var(--bg-1)] overflow-y-auto" onScroll={onLandscapeScroll}>
+        {content}
       </div>
-    </ScrollArea>
+    ) : (
+      <ScrollArea className="flex-1 bg-[var(--bg-1)]">
+        {content}
+      </ScrollArea>
+    )
   );
 }

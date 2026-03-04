@@ -8,6 +8,9 @@ import type { FeedItem } from '@/types/domain';
 import { PERSPECTIVE_COLORS } from '@/lib/news-colors';
 import { timeAgo } from '@/lib/format';
 import { clientCache, CLIENT_FRESH_TTL } from '@/lib/client-cache';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 type ViewMode = 'feed' | 'timeline';
 
@@ -19,6 +22,13 @@ export default function TimelinePage() {
   const [lastRefresh, setLastRefresh] = useState<number>(0);
   const [view,        setView]        = useState<ViewMode>('feed');
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isLandscapePhone = useIsLandscapePhone();
+  const isMobile = useIsMobile();
+  const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
+
+  useEffect(() => {
+    if (isMobile && view !== 'feed') setView('feed');
+  }, [isMobile, view]);
 
   const fetchFeeds = useCallback(async () => {
     setRefreshing(true);
@@ -82,9 +92,12 @@ export default function TimelinePage() {
   const totalArticles = allArticles.length;
 
   return (
-    <div className="flex flex-col w-full h-full min-h-0">
+    <div
+      className={`flex flex-col w-full h-full min-h-0 ${isLandscapePhone ? 'overflow-y-auto' : ''}`}
+      onScroll={isLandscapePhone ? onLandscapeScroll : undefined}
+    >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--bd)] bg-[var(--bg-app)] shrink-0">
+      <div className={`flex items-center justify-between py-2 border-b border-[var(--bd)] bg-[var(--bg-app)] shrink-0 ${isLandscapePhone ? 'safe-px' : 'px-5'}`}>
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard/data/news"
@@ -93,12 +106,12 @@ export default function TimelinePage() {
             ← FEEDS
           </Link>
           <div className="w-px h-4 bg-[var(--bd)]" />
-          <span className="mono text-[10px] font-bold text-[var(--t1)] tracking-wider">
-            {view === 'feed' ? 'ALL ARTICLES' : 'TIMELINE VIEW'}
-          </span>
-          {view === 'feed' && (
-            <span className="mono text-[9px] text-[var(--t4)]">{totalArticles} articles</span>
-          )}
+            <span className="mono text-[10px] font-bold text-[var(--t1)] tracking-wider">
+              {isMobile || view === 'feed' ? 'ALL ARTICLES' : 'TIMELINE VIEW'}
+            </span>
+            {(isMobile || view === 'feed') && (
+              <span className="mono text-[9px] text-[var(--t4)]">{totalArticles} articles</span>
+            )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -112,15 +125,19 @@ export default function TimelinePage() {
             >
               ☰ FEED
             </button>
-            <div className="w-px bg-[var(--bd)]" />
-            <button
-              onClick={() => setView('timeline')}
-              className={`px-3 py-1 mono text-[9px] font-bold tracking-wider transition-colors ${
-                view === 'timeline' ? 'bg-white/10 text-white' : 'text-[var(--t4)] hover:text-[var(--t2)]'
-              }`}
-            >
-              ↔ TIMELINE
-            </button>
+            {!isMobile && (
+              <>
+                <div className="w-px bg-[var(--bd)]" />
+                <button
+                  onClick={() => setView('timeline')}
+                  className={`px-3 py-1 mono text-[9px] font-bold tracking-wider transition-colors ${
+                    view === 'timeline' ? 'bg-white/10 text-white' : 'text-[var(--t4)] hover:text-[var(--t2)]'
+                  }`}
+                >
+                  ↔ TIMELINE
+                </button>
+              </>
+            )}
           </div>
 
           <button
@@ -145,10 +162,10 @@ export default function TimelinePage() {
       </div>
 
       {/* Content */}
-      {view === 'timeline' ? (
+      {!isMobile && view === 'timeline' ? (
         <NewsTimeline feedData={feedData} />
       ) : (
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className={isLandscapePhone ? '' : 'flex-1 overflow-y-auto min-h-0'}>
           {refreshing && allArticles.length === 0 ? (
             <div className="flex items-center justify-center py-20">
               <div className="w-5 h-5 border-2 border-white/10 border-t-white/30 rounded-full animate-spin" />

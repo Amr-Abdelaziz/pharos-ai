@@ -8,6 +8,8 @@ import { useEconomicIndexes } from '@/api/economics';
 import type { MarketResult } from '@/types/domain';
 import { IndexCard } from '@/components/economics/IndexCard';
 import { FocusedChart } from '@/components/economics/FocusedChart';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
 
 const RANGES = [
   { key: '1d',  label: '1D',  interval: '5m'  },
@@ -35,6 +37,8 @@ export default function EconomicsPage() {
   const [catFilter, setCatFilter] = useState<EconCategory | 'ALL'>('ALL');
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isLandscapePhone = useIsLandscapePhone();
+  const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
 
   const { data: econIndexes } = useEconomicIndexes();
   const ECONOMIC_INDEXES: EconomicIndex[] = econIndexes ?? [];
@@ -80,9 +84,12 @@ export default function EconomicsPage() {
   const timeSince = lastRefresh ? `${Math.floor((Date.now() - lastRefresh) / 1000)}s ago` : 'loading…';
 
   return (
-    <div className="flex flex-col w-full h-full min-h-0">
+    <div
+      className={`flex flex-col w-full h-full min-h-0 ${isLandscapePhone ? 'overflow-y-auto' : ''}`}
+      onScroll={isLandscapePhone ? onLandscapeScroll : undefined}
+    >
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--bd)] bg-[var(--bg-app)] shrink-0">
+      <div className={`flex items-center justify-between py-2 border-b border-[var(--bd)] bg-[var(--bg-app)] shrink-0 ${isLandscapePhone ? 'safe-px' : 'px-5'}`}>
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard/data"
@@ -141,7 +148,7 @@ export default function EconomicsPage() {
       </div>
 
       {/* ── Filter bar ── */}
-      <div className="flex items-center gap-3 px-5 py-2 border-b border-[var(--bd)] bg-[var(--bg-2)] shrink-0 overflow-x-auto">
+      <div className={`flex items-center gap-3 py-2 border-b border-[var(--bd)] bg-[var(--bg-2)] shrink-0 overflow-x-auto ${isLandscapePhone ? 'safe-px' : 'px-5'}`}>
         {/* Tier filters */}
         <span className="mono text-[8px] text-[var(--t4)] shrink-0">TIER:</span>
         <div className="flex gap-1">
@@ -198,7 +205,7 @@ export default function EconomicsPage() {
       </div>
 
       {/* ── Grid ── */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className={isLandscapePhone ? 'p-3 safe-px' : 'flex-1 overflow-y-auto p-4'}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {filtered.map(idx => (
             <IndexCard

@@ -3,10 +3,12 @@
 import { fmtDate }  from '@/lib/format';
 import { useConflict } from '@/api/conflicts';
 import { useEvents } from '@/api/events';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
 
 export function SummaryBar() {
   const { data: conflict } = useConflict();
   const { data: events } = useEvents();
+  const isLandscapePhone = useIsLandscapePhone();
 
   if (!conflict || !events) return null;
 
@@ -29,7 +31,7 @@ export function SummaryBar() {
 
   return (
     <div
-      className="flex items-center gap-1.5 px-4 shrink-0 overflow-x-auto touch-scroll hide-scrollbar h-9 bg-[var(--bg-app)] border-b border-[var(--bd)]"
+      className={`flex items-center gap-1.5 shrink-0 overflow-x-auto touch-scroll hide-scrollbar bg-[var(--bg-app)] border-b border-[var(--bd)] ${isLandscapePhone ? 'h-8 safe-px' : 'h-9 px-4'}`}
     >
       <span className="label shrink-0 text-[8px] text-[var(--t4)]">KEY FACTS</span>
       <div className="shrink-0 w-px h-3.5 bg-[var(--bd)]" />

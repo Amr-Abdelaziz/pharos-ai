@@ -9,6 +9,7 @@ import { usePanelLayout } from '@/hooks/use-panel-layout';
 import { useConflictDay } from '@/hooks/use-conflict-day';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
 import type { Severity, EventType } from '@/types/domain';
 import { useEvents } from '@/api/events';
 import { FeedFilterRail, ALL_TYPES } from '@/components/feed/FeedFilterRail';
@@ -23,6 +24,7 @@ export function FeedContent() {
   const isMobile = useIsMobile(1024);
   const isLandscapePhone = useIsLandscapePhone();
   const usePageScroll = isMobile && isLandscapePhone;
+  const onLandscapeScroll = useLandscapeScrollEmitter(usePageScroll);
   const { currentDay, setDay, allDays } = useConflictDay();
   const { data: allEvents } = useEvents();
   const [showAllDays, setShowAllDays] = useState(true);
@@ -52,10 +54,13 @@ export function FeedContent() {
 
   if (isMobile) {
     return (
-      <div className={`flex flex-col flex-1 min-h-0 min-w-0 ${usePageScroll ? 'overflow-y-auto' : 'overflow-hidden'}`}>
+      <div
+        className={`flex flex-col flex-1 min-h-0 min-w-0 ${usePageScroll ? 'overflow-y-auto' : 'overflow-hidden'}`}
+        onScroll={usePageScroll ? onLandscapeScroll : undefined}
+      >
         {selected ? (
           <>
-            <div className={`panel-header ${usePageScroll ? 'h-8 min-h-8 px-3' : ''}`}>
+            <div className={`panel-header ${usePageScroll ? 'h-8 min-h-8 safe-px' : ''}`}>
               <Button
                 variant="ghost"
                 size="xs"
@@ -71,7 +76,7 @@ export function FeedContent() {
         ) : (
           <>
             {/* Compact filter bar */}
-            <div className={`shrink-0 flex items-center gap-2 px-3 border-b border-[var(--bd)] bg-[var(--bg-2)] ${usePageScroll ? 'py-1.5' : 'py-[6px]'}`}>
+            <div className={`shrink-0 flex items-center gap-2 border-b border-[var(--bd)] bg-[var(--bg-2)] ${usePageScroll ? 'py-1.5 safe-px' : 'px-3 py-[6px]'}`}>
               <button
                 onClick={() => setFiltersOpen(p => !p)}
                 className={`text-[10px] px-[10px] py-[4px] border font-semibold tracking-wide transition-colors mono ${

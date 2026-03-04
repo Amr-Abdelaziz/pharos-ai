@@ -7,6 +7,7 @@ import { useEvents } from '@/api/events';
 import { useConflict } from '@/api/conflicts';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeHeaderVisibility } from '@/hooks/use-landscape-header-visibility';
 
 const NAV = [
   { label: 'OVERVIEW',    href: '/dashboard'              },
@@ -26,6 +27,9 @@ export function Header() {
   const isMobile = useIsMobile();
   const isLandscapePhone = useIsLandscapePhone();
   const isLandscapeNonMap = isLandscapePhone && !path.startsWith('/dashboard/map');
+  const showLandscapeHeader = useLandscapeHeaderVisibility(isLandscapeNonMap, path);
+
+  if (isLandscapeNonMap && !showLandscapeHeader) return null;
 
   // Hide header on map page in landscape phone mode — map has its own navigation
   if (isLandscapePhone && path.startsWith('/dashboard/map')) return null;

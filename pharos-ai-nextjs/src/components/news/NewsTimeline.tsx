@@ -3,6 +3,7 @@
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { useRssFeeds } from '@/api/rss';
 import type { RssFeed, FeedItem } from '@/types/domain';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
 
 // ─── Types ────────────────────────────────────────────────────
 
@@ -77,6 +78,7 @@ function proxyImg(url: string): string {
 
 export function NewsTimeline({ feedData }: NewsTimelineProps) {
   const { data: allFeeds } = useRssFeeds();
+  const isLandscapePhone = useIsLandscapePhone();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [selectedTiers, setSelectedTiers] = useState<Set<number>>(new Set([1, 2, 3, 4]));
@@ -362,7 +364,7 @@ export function NewsTimeline({ feedData }: NewsTimelineProps) {
   return (
     <div className="flex flex-col w-full h-full min-h-0">
       {/* Header */}
-      <div className="px-5 py-2 bg-[var(--bg-2)] border-b border-[var(--bd)] flex items-center gap-3 shrink-0 z-10">
+      <div className={`${isLandscapePhone ? 'safe-px' : 'px-5'} py-2 bg-[var(--bg-2)] border-b border-[var(--bd)] flex items-center gap-3 shrink-0 z-10`}>
         <span className="mono text-[11px] font-bold text-white tracking-wider">TIMELINE</span>
         <div className="w-px h-4 bg-white/20" />
 

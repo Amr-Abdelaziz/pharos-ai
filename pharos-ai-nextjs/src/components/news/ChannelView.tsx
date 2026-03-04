@@ -3,6 +3,7 @@
 import { useRssFeeds } from '@/api/rss';
 import type { ConflictChannel, FeedItem } from '@/types/domain';
 import { NewsFeedColumn } from './NewsFeedColumn';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
 
 interface ChannelViewProps {
   channel: ConflictChannel;
@@ -12,6 +13,7 @@ interface ChannelViewProps {
 
 export function ChannelView({ channel, showImages, feedData }: ChannelViewProps) {
   const { data: allFeeds } = useRssFeeds();
+  const isLandscapePhone = useIsLandscapePhone();
   const feeds = channel.feedIds
     .map(id => (allFeeds ?? []).find(f => f.id === id))
     .filter(Boolean) as import('@/types/domain').RssFeed[];
@@ -19,7 +21,7 @@ export function ChannelView({ channel, showImages, feedData }: ChannelViewProps)
   return (
     <div className="flex-1 flex flex-col min-h-0 w-full">
       {/* Channel description bar */}
-      <div className="px-5 py-2 bg-[var(--bg-2)] border-b border-[var(--bd)] flex items-center gap-3 shrink-0">
+      <div className={`${isLandscapePhone ? 'safe-px' : 'px-5'} py-2 bg-[var(--bg-2)] border-b border-[var(--bd)] flex items-center gap-3 shrink-0`}>
         <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: channel.color }} />
         <div className="min-w-0">
           <span className="mono text-[10px] font-bold text-[var(--t2)] tracking-wider">

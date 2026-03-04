@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
 
 const DATA_SOURCES = [
   {
@@ -55,8 +57,14 @@ const DATA_SOURCES = [
 ];
 
 export default function DataIndexPage() {
+  const isLandscapePhone = useIsLandscapePhone();
+  const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
+
   return (
-    <div className="flex-1 overflow-y-auto p-6">
+    <div
+      className={`flex-1 ${isLandscapePhone ? 'overflow-y-auto safe-px py-3' : 'overflow-y-auto p-6'}`}
+      onScroll={isLandscapePhone ? onLandscapeScroll : undefined}
+    >
       <div className="max-w-4xl mx-auto">
         <div className="flex items-baseline gap-3 mb-6">
           <h1 className="mono text-[16px] font-bold text-[var(--t1)] tracking-[0.1em]">DATA SOURCES</h1>

@@ -5,6 +5,7 @@ import { NewsFeedColumn } from './NewsFeedColumn';
 import { useState, useMemo } from 'react';
 import { PERSPECTIVE_COLORS } from '@/lib/news-colors';
 import type { FeedItem } from '@/types/domain';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
 
 const PERSPECTIVES = ['ALL', 'WESTERN', 'US_GOV', 'ISRAELI', 'IRANIAN', 'ARAB', 'RUSSIAN', 'CHINESE', 'INDEPENDENT'] as const;
 
@@ -17,6 +18,7 @@ export function AllFeedsView({ showImages, feedData }: AllFeedsViewProps) {
   const { data: feeds } = useRssFeeds();
   const allFeeds = feeds ?? [];
   const [filter, setFilter] = useState<string>('ALL');
+  const isLandscapePhone = useIsLandscapePhone();
 
   const filtered = useMemo(
     () => filter === 'ALL' ? allFeeds : allFeeds.filter(f => f.perspective === filter),
@@ -26,7 +28,7 @@ export function AllFeedsView({ showImages, feedData }: AllFeedsViewProps) {
   return (
     <div className="flex-1 flex flex-col min-h-0 w-full">
       {/* Filter bar */}
-      <div className="px-5 py-2 bg-[var(--bg-2)] border-b border-[var(--bd)] flex items-center gap-2 shrink-0">
+      <div className={`${isLandscapePhone ? 'safe-px' : 'px-5'} py-2 bg-[var(--bg-2)] border-b border-[var(--bd)] flex items-center gap-2 shrink-0`}>
         <span className="text-[9px] mono text-[var(--t4)] mr-2 shrink-0">FILTER:</span>
         <div className="flex gap-1 overflow-x-auto">
           {PERSPECTIVES.map(p => (

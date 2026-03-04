@@ -3,6 +3,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import type { RssFeed, FeedItem, FeedResult } from '@/types/domain';
 import { timeAgo } from '@/lib/format';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
 
 interface NewsFeedColumnProps {
   feed: RssFeed;
@@ -17,6 +19,8 @@ export function NewsFeedColumn({ feed, color, showImages = true, preloaded }: Ne
   const [loading, setLoading] = useState(!preloaded);
   const [error, setError] = useState<string | null>(null);
   const fetchedRef = useRef(!!preloaded);
+  const isLandscapePhone = useIsLandscapePhone();
+  const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
 
   const loadFeed = useCallback(async () => {
     try {
@@ -87,7 +91,10 @@ export function NewsFeedColumn({ feed, color, showImages = true, preloaded }: Ne
       </div>
 
       {/* Scrollable item list */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div
+        className="flex-1 overflow-y-auto min-h-0"
+        onScroll={isLandscapePhone ? onLandscapeScroll : undefined}
+      >
         {loading && (
           <div className="flex items-center justify-center py-12">
             <div className="w-5 h-5 border-2 border-white/10 border-t-white/40 rounded-full animate-spin" />

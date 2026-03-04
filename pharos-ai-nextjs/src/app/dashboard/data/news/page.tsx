@@ -8,6 +8,9 @@ import { clientCache, CLIENT_FRESH_TTL, type CachedFeed } from '@/lib/client-cac
 import { ConflictBanner } from '@/components/news/ConflictBanner';
 import { ChannelView } from '@/components/news/ChannelView';
 import { AllFeedsView } from '@/components/news/AllFeedsView';
+import { useIsLandscapePhone } from '@/hooks/use-is-landscape-phone';
+import { useLandscapeScrollEmitter } from '@/hooks/use-landscape-scroll-emitter';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 
 type ViewMode = 'conflict' | 'all';
 
@@ -19,6 +22,9 @@ export default function NewsPage() {
   const [lastRefresh, setLastRefresh] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isLandscapePhone = useIsLandscapePhone();
+  const isMobile = useIsMobile();
+  const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
 
   const { data: feeds } = useRssFeeds();
   const { data: collections } = useRssCollections();
@@ -111,9 +117,12 @@ export default function NewsPage() {
     : 'loading...';
 
   return (
-    <div className="flex flex-col w-full h-full min-h-0">
+    <div
+      className={`flex flex-col w-full h-full min-h-0 ${isLandscapePhone ? 'overflow-y-auto' : ''}`}
+      onScroll={isLandscapePhone ? onLandscapeScroll : undefined}
+    >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-5 py-2 border-b border-[var(--bd)] bg-[var(--bg-app)] shrink-0">
+      <div className={`flex items-center justify-between py-2 border-b border-[var(--bd)] bg-[var(--bg-app)] shrink-0 ${isLandscapePhone ? 'safe-px' : 'px-5'}`}>
         <div className="flex items-center gap-3">
           <span className="mono text-[10px] font-bold text-[var(--t3)] tracking-wider">
             RSS MONITOR
@@ -140,12 +149,14 @@ export default function NewsPage() {
             >
               ALL FEEDS
             </button>
-            <Link
-              href="/dashboard/data/news/timeline"
-              className="px-3 py-1 rounded text-[9px] mono font-bold tracking-wider text-[var(--t4)] hover:text-[var(--t2)] no-underline transition-colors"
-            >
-              TIMELINE →
-            </Link>
+            {!isMobile && (
+              <Link
+                href="/dashboard/data/news/timeline"
+                className="px-3 py-1 rounded text-[9px] mono font-bold tracking-wider text-[var(--t4)] hover:text-[var(--t2)] no-underline transition-colors"
+              >
+                TIMELINE →
+              </Link>
+            )}
           </div>
         </div>
 
