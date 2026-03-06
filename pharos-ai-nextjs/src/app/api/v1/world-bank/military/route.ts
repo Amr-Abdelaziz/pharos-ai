@@ -44,7 +44,7 @@ const END_YEAR = new Date().getUTCFullYear();
 const START_YEAR = END_YEAR - 14;
 const DATE_RANGE = `${START_YEAR}:${END_YEAR}`;
 const PER_PAGE = 200;
-const FETCH_TIMEOUT_MS = 5000;
+const FETCH_TIMEOUT_MS = 15_000;
 
 async function fetchWithTimeout(url: string): Promise<Response | null> {
   try {
