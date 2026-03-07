@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
+import { usePredictionHistory } from '@/features/predictions/queries';
 import { getLeadProb, probColor, fmtVol, fmtMarketDate, statusLabel, spreadColor } from './utils';
 import { ProbChart } from './ProbChart';
-import type { PredictionMarket, TimePoint, MarketGroup } from '@/types/domain';
+import type { PredictionMarket, MarketGroup } from '@/types/domain';
 
 const RANGES = [
   { key: '1d',  label: '1D'  },
@@ -23,9 +24,11 @@ type Props = {
 export function FocusedMarket({ market, group, onClose }: Props) {
   const [open,         setOpen]         = useState(false);
   const [rangeIdx,     setRangeIdx]     = useState(1); // default 7D
-  const [history,      setHistory]      = useState<TimePoint[]>([]);
-  const [chartLoading, setChartLoading] = useState(true);
   const [crosshairPct, setCrosshairPct] = useState<number | null>(null);
+
+  const range = RANGES[rangeIdx].key;
+  const { data: historyData, isLoading: chartLoading } = usePredictionHistory(market.yesTokenId ?? '', range);
+  const history = historyData?.history ?? [];
 
   const prob   = getLeadProb(market);
   const pColor = probColor(prob);
@@ -39,24 +42,6 @@ export function FocusedMarket({ market, group, onClose }: Props) {
     const raf = requestAnimationFrame(() => setOpen(true));
     return () => cancelAnimationFrame(raf);
   }, []);
-
-  // Fetch history when range changes
-  const fetchHistory = useCallback(async (idx: number) => {
-    if (!market.yesTokenId) { setChartLoading(false); return; }
-    setChartLoading(true);
-    try {
-      const r = RANGES[idx];
-      const res = await fetch(`/api/v1/predictions/history?tokenId=${encodeURIComponent(market.yesTokenId)}&range=${r.key}`);
-      const d = await res.json();
-      setHistory(d.history ?? []);
-    } catch { /* network error — user sees stale data */ }
-    finally { setChartLoading(false); }
-  }, [market.yesTokenId]);
-
-  useEffect(() => {
-    fetchHistory(rangeIdx);
-    setCrosshairPct(null);
-  }, [rangeIdx, fetchHistory]);
 
   const handleClose = useCallback(() => {
     setOpen(false);
@@ -188,7 +173,7 @@ export function FocusedMarket({ market, group, onClose }: Props) {
                   key={r.key}
                   variant="ghost"
                   size="sm"
-                  onClick={() => setRangeIdx(i)}
+                  onClick={() => { setRangeIdx(i); setCrosshairPct(null); }}
                   disabled={chartLoading}
                   className={`px-2 py-1 h-auto rounded text-[8px] mono font-bold tracking-wider disabled:opacity-40 ${
                     i === rangeIdx

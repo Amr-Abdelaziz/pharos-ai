@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { publicConflictId } from '@/shared/lib/env';
-import type { RssFeed, ConflictCollection } from '@/types/domain';
+import type { RssFeed, ConflictCollection, FeedResult } from '@/types/domain';
 
 import { api, buildUrl } from '@/shared/lib/query/client';
 import { queryKeys, STALE } from '@/shared/lib/query/keys';
@@ -24,4 +24,21 @@ export function useRssCollections(conflictId?: string) {
       api.get<ConflictCollection[]>(buildUrl('/rss/collections', { conflictId: id })),
     staleTime: STALE.LONG,
   });
+}
+
+export async function fetchFeedItems(ids: string[]): Promise<FeedResult[]> {
+  if (ids.length === 0) return [];
+  const res = await fetch('/api/v1/rss/fetch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids }),
+  });
+  const data = await res.json();
+  return data?.feeds ?? [];
+}
+
+export async function fetchSingleFeed(id: string): Promise<FeedResult | null> {
+  const res = await fetch(`/api/v1/rss/fetch?ids=${id}`);
+  const data = await res.json();
+  return data?.feeds?.[0] ?? null;
 }

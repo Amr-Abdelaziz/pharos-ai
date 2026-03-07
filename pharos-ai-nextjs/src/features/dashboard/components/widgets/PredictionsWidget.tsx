@@ -1,26 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 
 import { getLeadProb, probColor, fmtVol, spreadColor, statusLabel } from '@/features/predictions/components/utils';
+import { usePredictionMarkets } from '@/features/predictions/queries';
 import { assignGroup } from '@/data/prediction-groups';
-import type { PredictionMarket } from '@/types/domain';
 
 export function PredictionsWidget() {
-  const [markets, setMarkets] = useState<PredictionMarket[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = usePredictionMarkets();
 
-  useEffect(() => {
-    fetch('/api/v1/predictions/markets')
-      .then(r => r.json())
-      .then((d: { markets: PredictionMarket[]; error?: string }) => {
-        if (d.error) throw new Error(d.error);
-        setMarkets(d.markets.filter(m => m.active && !m.closed).sort((a, b) => b.volume - a.volume).slice(0, 20));
-      })
-      .catch(e => setError(e instanceof Error ? e.message : String(e)))
-      .finally(() => setIsLoading(false));
-  }, []);
+  const markets = useMemo(
+    () =>
+      (data?.markets ?? [])
+        .filter(m => m.active && !m.closed)
+        .sort((a, b) => b.volume - a.volume)
+        .slice(0, 20),
+    [data?.markets],
+  );
 
   if (isLoading) {
     return (
@@ -33,7 +29,7 @@ export function PredictionsWidget() {
   if (error) {
     return (
       <div className="h-full flex items-center justify-center">
-        <span className="mono text-[10px] text-[var(--danger)]">{error}</span>
+        <span className="mono text-[10px] text-[var(--danger)]">{error.message}</span>
       </div>
     );
   }

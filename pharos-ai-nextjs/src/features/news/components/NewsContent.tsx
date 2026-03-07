@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ConflictBanner } from '@/features/news/components/ConflictBanner';
 import { ChannelView } from '@/features/news/components/ChannelView';
 import { AllFeedsView } from '@/features/news/components/AllFeedsView';
-import { useRssFeeds, useRssCollections } from '@/features/news/queries';
+import { useRssFeeds, useRssCollections, fetchFeedItems } from '@/features/news/queries';
 import { clientCache, CLIENT_FRESH_TTL } from '@/features/news/lib/client-cache';
 import { useIsLandscapePhone } from '@/shared/hooks/use-is-landscape-phone';
 import { useLandscapeScrollEmitter } from '@/shared/hooks/use-landscape-scroll-emitter';
@@ -55,17 +55,12 @@ export function NewsContent() {
       }
 
       // Fetch stale from server
-      const res = await fetch('/api/v1/rss/fetch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: staleIds }),
-      });
-      const data = await res.json();
+      const feeds = await fetchFeedItems(staleIds);
 
       // Update client cache — always update if items present; for empty/error
       // feeds, only update if we don't already have cached items (preserve stale data)
       const now = Date.now();
-      for (const feed of data.feeds ?? []) {
+      for (const feed of feeds) {
         if (feed.items?.length > 0) {
           clientCache.set(feed.feedId, {
             feedId: feed.feedId,

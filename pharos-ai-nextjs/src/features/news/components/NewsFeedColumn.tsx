@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import type { RssFeed, FeedItem, FeedResult } from '@/types/domain';
+import { fetchSingleFeed } from '@/features/news/queries';
 import { timeAgo } from '@/shared/lib/format';
 import { useIsLandscapePhone } from '@/shared/hooks/use-is-landscape-phone';
 import { useLandscapeScrollEmitter } from '@/shared/hooks/use-landscape-scroll-emitter';
@@ -26,9 +27,7 @@ export function NewsFeedColumn({ feed, color, showImages = true, preloaded }: Ne
 
   const loadFeed = useCallback(async () => {
     try {
-      const res = await fetch(`/api/v1/rss/fetch?ids=${feed.id}`);
-      const data = await res.json();
-      const result: FeedResult = data.feeds?.[0];
+      const result: FeedResult | null = await fetchSingleFeed(feed.id);
       if (result?.error) {
         if (!items.length) setError(result.error);
       } else if (result?.items) {

@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { IndexCard } from '@/features/economics/components/IndexCard';
 import { FocusedChart } from '@/features/economics/components/FocusedChart';
 import { ECON_CATEGORIES } from '@/data/economic-indexes';
-import { useEconomicIndexes } from '@/features/economics/queries';
+import { useEconomicIndexes, useMarketData } from '@/features/economics/queries';
 import { useIsLandscapePhone } from '@/shared/hooks/use-is-landscape-phone';
 import { useLandscapeScrollEmitter } from '@/shared/hooks/use-landscape-scroll-emitter';
 import type { EconCategory, EconomicIndex, MarketResult } from '@/types/domain';
@@ -28,15 +28,10 @@ const TIER_FILTERS = [
 ] as const;
 
 export function EconomicsContent() {
-  const [marketData, setMarketData] = useState<Map<string, MarketResult>>(new Map());
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState(0);
   const [rangeIdx, setRangeIdx] = useState(1); // default 5D
   const [tierFilter, setTierFilter] = useState(0); // 0 = all
   const [catFilter, setCatFilter] = useState<EconCategory | 'ALL'>('ALL');
   const [focusedId, setFocusedId] = useState<string | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isLandscapePhone = useIsLandscapePhone();
   const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
 
@@ -44,35 +39,17 @@ export function EconomicsContent() {
   const ECONOMIC_INDEXES: EconomicIndex[] = useMemo(() => econIndexes ?? [], [econIndexes]);
 
   const range = RANGES[rangeIdx];
+  const tickers = useMemo(() => ECONOMIC_INDEXES.map(i => i.ticker), [ECONOMIC_INDEXES]);
 
-  const fetchAll = useCallback(async () => {
-    if (ECONOMIC_INDEXES.length === 0) return;
-    setRefreshing(true);
-    try {
-      const tickers = ECONOMIC_INDEXES.map(i => i.ticker).join(',');
-      const res = await fetch(`/api/v1/markets?tickers=${encodeURIComponent(tickers)}&range=${range.key}&interval=${range.interval}`);
-      const json = await res.json();
+  const { data: marketResponse, isLoading: loading, isFetching: refreshing, dataUpdatedAt: lastRefresh, refetch: fetchAll } = useMarketData(tickers, range);
 
-      const map = new Map<string, MarketResult>();
-      for (const r of (json.results ?? []) as MarketResult[]) {
-        map.set(r.ticker, r);
-      }
-      setMarketData(map);
-      setLastRefresh(Date.now());
-    } catch (err) {
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+  const marketData = useMemo(() => {
+    const map = new Map<string, MarketResult>();
+    for (const r of (marketResponse?.results ?? []) as MarketResult[]) {
+      map.set(r.ticker, r);
     }
-  }, [ECONOMIC_INDEXES, range]);
-
-  useEffect(() => { fetchAll(); }, [fetchAll]);
-
-  // Auto-refresh every 2 min
-  useEffect(() => {
-    intervalRef.current = setInterval(() => fetchAll(), 2 * 60 * 1000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [fetchAll]);
+    return map;
+  }, [marketResponse]);
 
   const filtered = ECONOMIC_INDEXES.filter(idx => {
     if (tierFilter > 0 && idx.tier !== tierFilter) return false;
@@ -80,7 +57,7 @@ export function EconomicsContent() {
     return true;
   });
 
-  const timeSince = lastRefresh ? `${Math.floor((Date.now() - lastRefresh) / 1000)}s ago` : 'loading…';
+  const timeSince = lastRefresh > 0 ? `${Math.floor((Date.now() - lastRefresh) / 1000)}s ago` : 'loading…';
 
   return (
     <div
@@ -127,7 +104,7 @@ export function EconomicsContent() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => fetchAll()}
+            onClick={() => void fetchAll()}
             disabled={refreshing}
             className="flex items-center gap-2 h-auto px-2 py-1 text-[9px] mono text-[var(--t4)] hover:text-[var(--t2)] disabled:opacity-40"
           >

@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { MarketCard } from '@/features/predictions/components/MarketCard';
 import { FocusedMarket } from '@/features/predictions/components/FocusedMarket';
+import { usePredictionMarkets } from '@/features/predictions/queries';
 import { MARKET_GROUPS, UNCATEGORIZED_GROUP, assignGroup } from '@/data/prediction-groups';
 import { fmtVol, getLeadProb } from '@/features/predictions/components/utils';
 import { useIsLandscapePhone } from '@/shared/hooks/use-is-landscape-phone';
 import { useLandscapeScrollEmitter } from '@/shared/hooks/use-landscape-scroll-emitter';
-import type { PredictionMarket } from '@/types/domain';
 
 const ALL_GROUPS = [...MARKET_GROUPS, UNCATEGORIZED_GROUP];
 
@@ -23,43 +23,17 @@ const SORT_OPTS = [
 type SortKey = typeof SORT_OPTS[number]['key'];
 
 export function PredictionsDataContent() {
-  const [markets,      setMarkets]      = useState<PredictionMarket[]>([]);
-  const [loading,      setLoading]      = useState(true);
-  const [refreshing,   setRefreshing]   = useState(false);
-  const [error,        setError]        = useState<string | null>(null);
-  const [fetchedAt,    setFetchedAt]    = useState(0);
+  const { data, isLoading: loading, isFetching: refreshing, error: queryError, dataUpdatedAt, refetch } = usePredictionMarkets();
+  const markets = data?.markets ?? [];
+  const error = queryError?.message ?? null;
+  const fetchedAt = dataUpdatedAt;
+
   const [sortBy,       setSortBy]       = useState<SortKey>('volume');
   const [liveOnly,     setLiveOnly]     = useState(true);
   const [groupFilter,  setGroupFilter]  = useState<string>('ALL');
   const [focusedId,    setFocusedId]    = useState<string | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isLandscapePhone = useIsLandscapePhone();
   const onLandscapeScroll = useLandscapeScrollEmitter(isLandscapePhone);
-
-  const fetch_ = useCallback(async () => {
-    setRefreshing(true);
-    setError(null);
-    try {
-      const res  = await fetch('/api/v1/predictions/markets');
-      const data = await res.json() as { markets: PredictionMarket[]; fetchedAt: string; error?: string };
-      if (data.error) throw new Error(data.error);
-      setMarkets(data.markets);
-      setFetchedAt(Date.now());
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
-
-  useEffect(() => { fetch_(); }, [fetch_]);
-
-  // Auto-refresh every 3 min
-  useEffect(() => {
-    intervalRef.current = setInterval(() => fetch_(), 3 * 60 * 1000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [fetch_]);
 
   // Filtered + sorted markets
   const processed = useMemo(() => {
@@ -141,7 +115,7 @@ export function PredictionsDataContent() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => fetch_()}
+            onClick={() => refetch()}
             disabled={refreshing}
             className="flex items-center gap-2 h-auto px-2 py-1 text-[9px] mono text-[var(--t4)] hover:text-[var(--t2)] disabled:opacity-40"
           >
@@ -262,7 +236,7 @@ export function PredictionsDataContent() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => fetch_()}
+            onClick={() => refetch()}
                 className="mt-4 mono text-[9px] h-auto px-3 py-1.5 border-[var(--bd)] text-[var(--t3)] hover:text-[var(--t1)] hover:border-white/20"
               >
                 RETRY

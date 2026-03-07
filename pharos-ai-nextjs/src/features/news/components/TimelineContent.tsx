@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { NewsTimeline } from '@/features/news/components/NewsTimeline';
-import { useRssFeeds } from '@/features/news/queries';
+import { useRssFeeds, fetchFeedItems } from '@/features/news/queries';
 import { PERSPECTIVE_COLORS } from '@/features/news/lib/news-colors';
 import { timeAgo } from '@/shared/lib/format';
 import { clientCache, CLIENT_FRESH_TTL } from '@/features/news/lib/client-cache';
@@ -49,14 +49,9 @@ export function TimelineContent() {
         return;
       }
 
-      const res = await fetch('/api/v1/rss/fetch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: staleIds }),
-      });
-      const data = await res.json();
+      const feeds = await fetchFeedItems(staleIds);
       const now = Date.now();
-      for (const feed of data.feeds ?? []) {
+      for (const feed of feeds) {
         if (feed.items?.length > 0) clientCache.set(feed.feedId, { feedId: feed.feedId, items: feed.items, fetchedAt: now });
       }
       const map = new Map<string, FeedItem[]>();

@@ -50,13 +50,19 @@ export const queryKeys = {
   rss: {
     feeds: () => ['rss-feeds'] as const,
     collections: (id = CONFLICT_ID) => ['rss-collections', id] as const,
+    fetchItems: (ids: string[]) => ['rss-fetch', ...ids.sort()] as const,
   },
   economics: {
     indexes: (filters?: object) =>
       ['economic-indexes', filters] as const,
+    markets: (tickers: string, range: string, interval: string) =>
+      ['markets', tickers, range, interval] as const,
   },
   predictions: {
     groups: () => ['prediction-groups'] as const,
+    markets: () => ['prediction-markets'] as const,
+    history: (tokenId: string, range: string) => ['prediction-history', tokenId, range] as const,
+    chart: (tokenId: string) => ['prediction-chart', tokenId] as const,
   },
   worldBank: {
     military: (countries?: string[]) =>

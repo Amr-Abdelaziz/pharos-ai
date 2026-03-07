@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { RefreshCw, TrendingUp, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { GroupSection } from '@/features/predictions/components/GroupSection';
 import { MarketCard } from '@/features/predictions/components/MarketCard';
 import { FocusedMarket } from '@/features/predictions/components/FocusedMarket';
+import { usePredictionMarkets } from '@/features/predictions/queries';
 import { assignGroup, MARKET_GROUPS, UNCATEGORIZED_GROUP } from '@/data/prediction-groups';
 import { fmtVol, getLeadProb, COL } from '@/features/predictions/components/utils';
 import { useIsMobile } from '@/shared/hooks/use-is-mobile';
@@ -28,13 +29,13 @@ const SORT_OPTS = [
 type SortBy = typeof SORT_OPTS[number]['key'];
 
 export function PredictionsContent() {
-  const [markets,        setMarkets]        = useState<PredictionMarket[]>([]);
-  const [loading,        setLoading]        = useState(true);
-  const [error,          setError]          = useState<string | null>(null);
+  const { data, isLoading: loading, error: queryError, isFetching: isRefreshing, refetch } = usePredictionMarkets();
+  const markets = data?.markets ?? [];
+  const fetchedAt = data?.fetchedAt ?? '';
+  const error = queryError?.message ?? null;
+
   const [sortBy,         setSortBy]         = useState<SortBy>('volume');
   const [showActiveOnly, setShowActiveOnly] = useState(true);
-  const [fetchedAt,      setFetchedAt]      = useState('');
-  const [isRefreshing,   setIsRefreshing]   = useState(false);
   const [expandedId,     setExpandedId]     = useState<string | null>(null);
   const [focusedId,      setFocusedId]      = useState<string | null>(null);
   const isMobile = useIsMobile(1024);
@@ -42,25 +43,15 @@ export function PredictionsContent() {
   const usePageScroll = isMobile && isLandscapePhone;
   const onLandscapeScroll = useLandscapeScrollEmitter(usePageScroll);
 
-  const fetchMarkets = async (isManual = false) => {
-    setLoading(true); setIsRefreshing(true); setError(null);
+  const handleRefresh = async () => {
     try {
-      const res  = await fetch('/api/v1/predictions/markets');
-      const data = await res.json() as { markets: PredictionMarket[]; fetchedAt: string; error?: string };
-      if (data.error) throw new Error(data.error);
-      setMarkets(data.markets);
-      setFetchedAt(data.fetchedAt);
-      if (isManual) toast.success(`${data.markets.length} markets loaded`);
+      const result = await refetch();
+      toast.success(`${result.data?.markets.length ?? 0} markets loaded`);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      setError(msg);
-      if (isManual) toast.error(`Fetch failed: ${msg}`);
-    } finally {
-      setLoading(false); setIsRefreshing(false);
+      toast.error(`Fetch failed: ${msg}`);
     }
   };
-
-  useEffect(() => { fetchMarkets(); }, []);
 
   const filtered = useMemo(() => {
     let m = markets;
@@ -140,7 +131,7 @@ export function PredictionsContent() {
         {/* Refresh + timestamp */}
         <div className="flex items-center gap-2.5 ml-auto">
           <span className="mono text-[9px] text-[var(--t4)]">{lastUpdated}</span>
-          <Button variant="outline" size="icon-sm" onClick={() => fetchMarkets(true)} disabled={loading} className="border-[var(--bd)] bg-transparent text-[var(--t3)]">
+          <Button variant="outline" size="icon-sm" onClick={handleRefresh} disabled={loading} className="border-[var(--bd)] bg-transparent text-[var(--t3)]">
             <RefreshCw size={12} style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} />
           </Button>
         </div>

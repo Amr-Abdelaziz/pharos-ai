@@ -1,6 +1,6 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
-import type { TimePoint } from '@/types/domain';
+import { useState, useRef, useCallback } from 'react';
+import { usePredictionChart } from '@/features/predictions/queries';
 import { probColor } from './utils';
 
 const MIN_W = 220, MIN_H = 80, MAX_W = 900, MAX_H = 400;
@@ -25,22 +25,13 @@ function Placeholder({ msg, w, h }: { msg: string; w: number; h: number }) {
 }
 
 export function PriceChart({ yesTokenId }: Props) {
-  const [history,  setHistory]  = useState<TimePoint[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(false);
+  const { data: chartData, isLoading: loading, isError: error } = usePredictionChart(yesTokenId ?? '');
+  const history = chartData?.history ?? [];
   const [size,     setSize]     = useState({ w: 360, h: 130 });
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
 
   const svgRef    = useRef<SVGSVGElement>(null);
   const resizeRef = useRef<{ sx: number; sy: number; sw: number; sh: number } | null>(null);
-
-  useEffect(() => {
-    if (!yesTokenId) return;
-    fetch(`/api/v1/predictions/chart?id=${encodeURIComponent(yesTokenId)}`)
-      .then(r => r.json())
-      .then((d: { history?: TimePoint[] }) => { setHistory(d.history ?? []); setLoading(false); })
-      .catch(() => { setError(true); setLoading(false); });
-  }, [yesTokenId]);
 
   const onResizeDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

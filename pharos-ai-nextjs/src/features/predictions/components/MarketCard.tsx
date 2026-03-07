@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { PredictionMarket, TimePoint, MarketGroup } from '@/types/domain';
+import { useState } from 'react';
+import { usePredictionHistory } from '@/features/predictions/queries';
 import { getLeadProb, probColor, fmtVol, fmtMarketDate, statusLabel } from './utils';
 import { ProbChart } from './ProbChart';
+import type { PredictionMarket, MarketGroup } from '@/types/domain';
 
 type MarketCardProps = {
   market: PredictionMarket;
@@ -13,8 +14,8 @@ type MarketCardProps = {
 };
 
 export function MarketCard({ market, group, rank, onFocus }: MarketCardProps) {
-  const [history, setHistory] = useState<TimePoint[]>([]);
-  const [chartLoading, setChartLoading] = useState(() => !!market.yesTokenId);
+  const { data: historyData, isLoading: chartLoading } = usePredictionHistory(market.yesTokenId ?? '', '7d');
+  const history = historyData?.history ?? [];
   const [nowMs] = useState(() => Date.now());
 
   const prob   = getLeadProb(market);
@@ -24,18 +25,6 @@ export function MarketCard({ market, group, rank, onFocus }: MarketCardProps) {
   const daysLeft = market.endDate
     ? Math.max(0, Math.floor((new Date(market.endDate).getTime() - nowMs) / 86_400_000))
     : null;
-
-  // Lazy-load 7-day history
-  useEffect(() => {
-    if (!market.yesTokenId) return;
-    let cancelled = false;
-    fetch(`/api/v1/predictions/history?tokenId=${encodeURIComponent(market.yesTokenId)}&range=7d`)
-      .then(r => r.json())
-      .then(d => { if (!cancelled) setHistory(d.history ?? []); })
-      .catch(() => { /* network error — chart stays empty */ })
-      .finally(() => { if (!cancelled) setChartLoading(false); });
-    return () => { cancelled = true; };
-  }, [market.yesTokenId]);
 
   return (
     <div
