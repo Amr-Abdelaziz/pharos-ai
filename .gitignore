@@ -1,75 +1,52 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Backups
-# Certificates
-# Coverage reports
-# Docker override files
-# Docker volumes
-# Environment files
-# IDE files
-# Logs
-# Node
-# OS files
-# Python
-# Secrets
-# Temporary files
-# Terraform (if used later)
-# Testing
-*$py.class
-*.cover
-*.env
-*.log
-*.py[cod]
-*.secretpharos-arc-arrows
-*.so
-*.sublime-project
-*.sublime-workspace
-*.swo
-*.swp
-*.tfstate
-*.tfstate.*
-*.tmp
-*~
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
-.Python
-.coverage
-.coverage.*
-.env
-.env.*.local
-.env.local
-.idea/
-.phpunit.result.cache
-.pytest_cache/
-.temp/
-.terraform/
-.vercel/
-.vscode/
-ENV/
-Thumbs.db
-__pycache__/
-backend_media/
-backend_static/
-backups/*.sql
-backups/*.tar.gz
-backups/*.zip
-build/
-coverage.xml
-dist/
-docker-compose.*.override.yml
-docker-compose.override.yml
-env/
-frontend_dist/
-htmlcov/
-logs/
-nginx/certs/*.crt
-nginx/certs/*.key
-nginx/certs/*.pem
-node_modules/
+*.pem
+
+# debug
 npm-debug.log*
-pharos-arc-arrows
-postgres_data/
-redis_data/
-secrets/
-tmp/
-venv/
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.local.example
+
+# prisma generated client
+/src/generated/prisma
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# temp / scratch files
+temp.txt
+API-diff.diff
+
+# Electron build output
+dist/
