@@ -4,7 +4,7 @@ import { publicConflictId } from '@/shared/lib/env';
 import type { IntelEvent, EventFilters } from '@/types/domain';
 
 import { api, buildUrl } from '@/shared/lib/query/client';
-import { queryKeys } from '@/shared/lib/query/keys';
+import { queryKeys, STALE } from '@/shared/lib/query/keys';
 
 const CONFLICT_ID = publicConflictId;
 
@@ -21,7 +21,7 @@ export function useEvents(id: string = CONFLICT_ID, filters?: EventFilters) {
           lite: true,
         }),
       ),
-    staleTime: 60_000,
+    staleTime: STALE.SHORT,
   });
 }
 
@@ -30,6 +30,6 @@ export function useEvent(id: string = CONFLICT_ID, eventId?: string) {
     queryKey: queryKeys.events.detail(id, eventId),
     queryFn: () => api.get<IntelEvent>(`/conflicts/${id}/events/${eventId}`),
     enabled: !!eventId,
-    staleTime: 60_000,
+    staleTime: STALE.SHORT,
   });
 }

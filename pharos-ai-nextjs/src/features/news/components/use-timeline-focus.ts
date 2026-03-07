@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback, type RefObject, type MutableR
 
 import { type TimelineArticle, CARD_W, SPINE_Y, DEFAULT_ZOOM } from './timeline-constants';
 
-// ─── Types ────────────────────────────────────────────────────
+// Types
 
 type Layout = {
   positioned: { article: TimelineArticle; x: number; above: boolean; yOffset: number }[];
@@ -19,15 +19,12 @@ type TransformRefs = {
   commitTransform: () => void;
 };
 
-// ─── Hook ─────────────────────────────────────────────────────
-
 export function useTimelineFocus(layout: Layout, transform: TransformRefs) {
   const { viewportRef, zoomRef, panRef, commitTransform } = transform;
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const savedTransform = useRef<{ zoom: number; pan: { x: number; y: number } } | null>(null);
   const initialCenterDone = useRef(false);
 
-  // ─── Center on newest ───────────────────────────────────────
   const centerOnNewest = useCallback(() => {
     const vp = viewportRef.current;
     if (!vp || layout.positioned.length === 0) return;
@@ -42,7 +39,6 @@ export function useTimelineFocus(layout: Layout, transform: TransformRefs) {
     commitTransform();
   }, [layout, commitTransform, viewportRef, zoomRef, panRef]);
 
-  // Initial center
   useEffect(() => {
     if (initialCenterDone.current || layout.positioned.length === 0) return;
     initialCenterDone.current = true;
@@ -65,7 +61,6 @@ export function useTimelineFocus(layout: Layout, transform: TransformRefs) {
     });
   }, [layout, commitTransform, viewportRef, zoomRef, panRef]);
 
-  // ─── Focus / defocus ────────────────────────────────────────
   const focusCard = useCallback((article: TimelineArticle, cardX: number, cardTop: number) => {
     const vp = viewportRef.current;
     if (!vp) return;

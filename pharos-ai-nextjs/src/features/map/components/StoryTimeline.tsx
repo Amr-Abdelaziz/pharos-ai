@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import StoryIcon from './StoryIcon';
+import { StoryIcon } from './StoryIcon';
 import { Button } from '@/components/ui/button';
 import { groupByDay } from './story-utils';
 
@@ -20,7 +20,7 @@ const DAY_W = 80; // px per day column
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 
-export default function StoryTimeline({ stories, activeId, onActivate }: Props) {
+export function StoryTimeline({ stories, activeId, onActivate }: Props) {
   const days = useMemo(
     () => groupByDay(stories, { dayOrder: 'asc', storyOrder: 'asc' }),
     [stories],

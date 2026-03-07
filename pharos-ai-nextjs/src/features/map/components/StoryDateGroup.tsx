@@ -2,7 +2,7 @@
 
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import StoryCard from './StoryCard';
+import { StoryCard } from './StoryCard';
 
 import type { MapStory } from '@/types/domain';
 import type { DayGroup } from './story-utils';
@@ -16,7 +16,7 @@ type Props = {
   onFlyTo:       (story: MapStory) => void;
 };
 
-export default function StoryDateGroup({
+export function StoryDateGroup({
   group,
   isExpanded,
   onToggle,

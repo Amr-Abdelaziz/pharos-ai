@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { api, buildUrl } from '@/shared/lib/query/client';
-import { queryKeys } from '@/shared/lib/query/keys';
+import { queryKeys, STALE } from '@/shared/lib/query/keys';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -28,7 +28,7 @@ export function useMilitarySpending(iso3Codes: string[]) {
       api.get<Record<string, MilitarySpendingData>>(
         buildUrl('/world-bank/military', { countries: iso3Codes.join(',') }),
       ),
-    staleTime: 24 * 60 * 60 * 1000,
+    staleTime: STALE.DAY,
     enabled: iso3Codes.length > 0,
   });
 }

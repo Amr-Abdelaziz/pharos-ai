@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 
-import FilterRow from '@/features/map/components/FilterRow';
+import { FilterRow } from '@/features/map/components/FilterRow';
 
 import type { FacetOption } from '@/features/map/lib/map-filter-engine';
 
@@ -18,7 +18,7 @@ type Props = {
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 
-export default function FilterSection({ title, options, activeKeys, onToggle, isGrouped }: Props) {
+export function FilterSection({ title, options, activeKeys, onToggle, isGrouped }: Props) {
   if (options.length === 0) return null;
 
   const allOn = options.every(o => activeKeys.has(o.key));

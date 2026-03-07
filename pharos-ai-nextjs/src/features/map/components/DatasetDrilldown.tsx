@@ -1,6 +1,6 @@
 'use client';
 
-import FilterSection from '@/features/map/components/FilterSection';
+import { FilterSection } from '@/features/map/components/FilterSection';
 import { DATASET_LABEL } from '@/features/map/hooks/use-map-filters';
 
 import type { DatasetFacets, FilterState } from '@/features/map/lib/map-filter-engine';
@@ -15,7 +15,7 @@ type Props = {
   onTogglePriority: (p: string) => void;
 };
 
-export default function DatasetDrilldown({ dataset, facets, state, onToggleType, onToggleActor, onToggleStatus, onTogglePriority }: Props) {
+export function DatasetDrilldown({ dataset, facets, state, onToggleType, onToggleActor, onToggleStatus, onTogglePriority }: Props) {
   const label = DATASET_LABEL[dataset as keyof typeof DATASET_LABEL] ?? dataset;
 
   return (

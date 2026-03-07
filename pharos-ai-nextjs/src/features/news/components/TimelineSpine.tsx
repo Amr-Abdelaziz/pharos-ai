@@ -21,19 +21,19 @@ export function TimelineSpine({ hourMarkers }: Props) {
 
       {/* Axis labels */}
       <div
-        className="absolute mono text-[12px] text-white/60 tracking-widest font-bold"
+        className="absolute mono text-xs text-white/60 tracking-widest font-bold"
         style={{ top: `${SPINE_Y - 30}px`, left: '24px' }}
       >
         ▲ IMPORTANT
       </div>
       <div
-        className="absolute mono text-[12px] text-white/60 tracking-widest font-bold"
+        className="absolute mono text-xs text-white/60 tracking-widest font-bold"
         style={{ top: `${SPINE_Y + 16}px`, left: '24px' }}
       >
         ▼ NICHE
       </div>
       <div
-        className="absolute mono text-[12px] text-white/60 font-bold"
+        className="absolute mono text-xs text-white/60 font-bold"
         style={{ top: `${SPINE_Y - 8}px`, right: '30px' }}
       >
         NOW →
@@ -48,14 +48,14 @@ export function TimelineSpine({ hourMarkers }: Props) {
           />
           {/* Above spine */}
           <div
-            className="absolute mono text-[16px] font-bold text-white whitespace-nowrap"
+            className="absolute mono text-base font-bold text-white whitespace-nowrap"
             style={{ left: `${x - 22}px`, top: `${SPINE_Y - 50}px` }}
           >
             {formatHour(hour)}
           </div>
           {/* Below spine */}
           <div
-            className="absolute mono text-[16px] font-bold text-white whitespace-nowrap"
+            className="absolute mono text-base font-bold text-white whitespace-nowrap"
             style={{ left: `${x - 22}px`, top: `${SPINE_Y + 26}px` }}
           >
             {formatHour(hour)}

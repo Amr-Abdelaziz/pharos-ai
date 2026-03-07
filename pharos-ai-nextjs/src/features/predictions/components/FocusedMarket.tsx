@@ -144,7 +144,7 @@ export function FocusedMarket({ market, group, onClose }: Props) {
               variant="ghost"
               size="icon"
               onClick={handleClose}
-              className="w-8 h-8 text-[var(--t4)] hover:text-[var(--t1)] hover:bg-white/10 mono text-[14px] mt-1"
+              className="w-8 h-8 text-[var(--t4)] hover:text-[var(--t1)] hover:bg-white/10 mono text-sm mt-1"
             >
               ✕
             </Button>

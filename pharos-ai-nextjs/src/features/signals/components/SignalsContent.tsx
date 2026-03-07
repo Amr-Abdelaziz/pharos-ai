@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { XPost } from '@/types/domain';
 import { useXPosts } from '@/features/events/queries/x-posts';
-import XPostCard from '@/shared/components/shared/XPostCard';
+import { XPostCard } from '@/shared/components/shared/XPostCard';
 import { SignalFilterRail, type Significance, type AccountType } from '@/features/signals/components/SignalFilterRail';
 import { SectionHeader } from '@/features/signals/components/SectionHeader';
 import { getPostsForDay } from '@/shared/lib/day-filter';
@@ -82,7 +82,7 @@ export function SignalsContent() {
       )}
       {filtered.length === 0 && (
         <div className="p-[60px] text-center">
-          <span className="text-[24px] text-[var(--t3)]">𝕏</span>
+          <span className="text-2xl text-[var(--t3)]">𝕏</span>
           <p className="label text-[var(--t3)] mt-3">No signals match current filters</p>
         </div>
       )}

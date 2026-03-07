@@ -53,14 +53,14 @@ export function StoryDetailScreen({ story, onBack, onSeeOnMap }: Props) {
             </span>
             <span className="mono text-[8px] text-[var(--t4)]">{fmtTimeZ(story.timestamp)}</span>
           </div>
-          <h2 className="text-[14px] font-bold text-[var(--t1)] leading-snug mb-1">{story.title}</h2>
+          <h2 className="text-sm font-bold text-[var(--t1)] leading-snug mb-1">{story.title}</h2>
           <p className="text-[11px] text-[var(--t3)] leading-snug">{story.tagline}</p>
         </div>
 
         {/* Narrative */}
         <div className="safe-px py-3 border-b border-[var(--bd)]">
           <div className="label text-[8px] text-[var(--t4)] mb-2 tracking-[0.10em]">NARRATIVE</div>
-          <p className="text-[12px] text-[var(--t2)] leading-relaxed whitespace-pre-line">{story.narrative}</p>
+          <p className="text-xs text-[var(--t2)] leading-relaxed whitespace-pre-line">{story.narrative}</p>
         </div>
 
         {/* Key Facts */}

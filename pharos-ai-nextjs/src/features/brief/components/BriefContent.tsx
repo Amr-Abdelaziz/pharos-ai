@@ -2,7 +2,7 @@
 
 import { ACT_C, STA_C } from '@/data/iran-actors';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import Flag from '@/shared/components/shared/Flag';
+import { Flag } from '@/shared/components/shared/Flag';
 import { DaySelector } from '@/shared/components/shared/DaySelector';
 import { BriefSection, EconChip, ScenarioCard } from '@/features/brief/components/BriefSection';
 import { useConflictDay } from '@/shared/hooks/use-conflict-day';

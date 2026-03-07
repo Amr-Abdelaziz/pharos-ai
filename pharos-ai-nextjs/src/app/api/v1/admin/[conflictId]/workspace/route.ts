@@ -1,10 +1,4 @@
-/**
- * GET /api/v1/admin/{conflictId}/workspace
- *
- * Returns a complete daily work plan for the Pharos agent.
- * This is the FULL session guide — not just a gap checker.
- * Covers every data model the dashboard consumes.
- */
+/** GET workspace — daily work plan for the Pharos agent. */
 
 import { NextRequest } from 'next/server';
 import { prisma } from '@/server/lib/db';

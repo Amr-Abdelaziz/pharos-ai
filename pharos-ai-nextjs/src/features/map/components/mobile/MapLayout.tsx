@@ -9,13 +9,13 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { MAP_STYLE_DARK, MAP_STYLE_SAT } from '@/features/map/components/map-styles';
 
-import MapSidebar        from '@/features/map/components/MapSidebar';
-import MapControls       from '@/features/map/components/MapControls';
-import MapOverlays       from '@/features/map/components/MapOverlays';
-import MapLegend         from '@/features/map/components/MapLegend';
-import MapFilterPanel    from '@/features/map/components/MapFilterPanel';
-import MapTimeline       from '@/features/map/components/MapTimeline';
-import MapVisibilityMenu from '@/features/map/components/MapVisibilityMenu';
+import { MapSidebar }    from '@/features/map/components/MapSidebar';
+import { MapControls }   from '@/features/map/components/MapControls';
+import { MapOverlays }   from '@/features/map/components/MapOverlays';
+import { MapLegend }     from '@/features/map/components/MapLegend';
+import { MapFilterPanel } from '@/features/map/components/MapFilterPanel';
+import { MapTimeline }   from '@/features/map/components/MapTimeline';
+import { MapVisibilityMenu } from '@/features/map/components/MapVisibilityMenu';
 import { MobileDetailPanel } from '@/features/map/components/mobile/MapDetailPanel';
 
 import type { MapPageContext } from '@/features/map/components/use-map-page';
@@ -27,7 +27,7 @@ type Props = {
   embedded?: boolean;
 };
 
-export default function MobileMapLayout({ ctx, embedded = false }: Props) {
+export function MobileMapLayout({ ctx, embedded = false }: Props) {
   const {
     viewState, activeStory, selectedItem, sidebarOpen, mapStyle, stories,
     overlayVisibility, toggleOverlay, f, tooltip, layers, handleMapClick, showTimeline,

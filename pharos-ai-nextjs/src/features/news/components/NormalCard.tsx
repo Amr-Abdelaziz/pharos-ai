@@ -78,7 +78,7 @@ export function NormalCard({ article, x, cardTop, isHovered, onMouseEnter, onMou
               {formatTimeAgo(article.time)}
             </span>
           </div>
-          <h4 className="text-[12px] text-white font-semibold leading-snug line-clamp-2">
+          <h4 className="text-xs text-white font-semibold leading-snug line-clamp-2">
             {article.title}
           </h4>
           {article.snippet && (

@@ -70,7 +70,7 @@ export function FocusedChartHeader({ index, data, rangeIdx, setRangeIdx, fetchin
       {/* Price */}
       <div className="flex items-center gap-4">
         <div className="text-right">
-          <div className="mono text-[20px] font-bold text-[var(--t1)] leading-none">
+          <div className="mono text-xl font-bold text-[var(--t1)] leading-none">
             {fmtPrice(data.price, index.unit)}
           </div>
           <div
@@ -86,7 +86,7 @@ export function FocusedChartHeader({ index, data, rangeIdx, setRangeIdx, fetchin
           variant="ghost"
           size="icon"
           onClick={handleClose}
-          className="w-8 h-8 text-[var(--t4)] hover:text-[var(--t1)] hover:bg-white/10 mono text-[14px]"
+          className="w-8 h-8 text-[var(--t4)] hover:text-[var(--t1)] hover:bg-white/10 mono text-sm"
         >
           ✕
         </Button>

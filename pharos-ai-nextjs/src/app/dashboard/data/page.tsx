@@ -42,7 +42,7 @@ export default function DataIndexPage() {
     >
       <div className="max-w-4xl mx-auto">
         <div className="flex items-baseline gap-3 mb-6">
-          <h1 className="mono text-[16px] font-bold text-[var(--t1)] tracking-[0.1em]">DATA SOURCES</h1>
+          <h1 className="mono text-base font-bold text-[var(--t1)] tracking-[0.1em]">DATA SOURCES</h1>
           <span className="text-[10px] text-[var(--t4)]">Open-source intelligence feeds</span>
         </div>
 

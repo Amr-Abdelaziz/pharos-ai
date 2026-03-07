@@ -2,8 +2,8 @@
 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { IntelTabBar, TabsContent } from '@/shared/components/shared/IntelTabs';
-import Flag from '@/shared/components/shared/Flag';
-import XPostCard from '@/shared/components/shared/XPostCard';
+import { Flag } from '@/shared/components/shared/Flag';
+import { XPostCard } from '@/shared/components/shared/XPostCard';
 import { ActorIntelTab } from '@/features/actors/components/ActorIntelTab';
 import { ActorMilitaryTab } from '@/features/actors/components/ActorMilitaryTab';
 import { ACT_C, STA_C } from '@/data/iran-actors';

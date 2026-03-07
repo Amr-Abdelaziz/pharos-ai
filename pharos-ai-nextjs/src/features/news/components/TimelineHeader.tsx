@@ -62,14 +62,14 @@ export function TimelineHeader({
             variant="ghost"
             size="sm"
             onClick={() => { zoomRef.current = Math.max(MIN_ZOOM, zoomRef.current - ZOOM_STEP * 2); commitTransform(); }}
-            className="mono text-[12px] h-auto p-0 text-white/70 hover:text-white w-4 text-center"
+            className="mono text-xs h-auto p-0 text-white/70 hover:text-white w-4 text-center"
           >−</Button>
           <span className="mono text-[9px] text-white/70 w-10 text-center font-bold">{zoomPct}%</span>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => { zoomRef.current = Math.min(MAX_ZOOM, zoomRef.current + ZOOM_STEP * 2); commitTransform(); }}
-            className="mono text-[12px] h-auto p-0 text-white/70 hover:text-white w-4 text-center"
+            className="mono text-xs h-auto p-0 text-white/70 hover:text-white w-4 text-center"
           >+</Button>
         </div>
         <Button

@@ -7,7 +7,7 @@ import type { DataArrays } from '@/features/map/lib/map-filter-engine';
 import type { ActorMeta } from '@/data/map-tokens';
 
 import { api } from '@/shared/lib/query/client';
-import { queryKeys } from '@/shared/lib/query/keys';
+import { queryKeys, STALE } from '@/shared/lib/query/keys';
 
 const CONFLICT_ID = publicConflictId;
 
@@ -39,7 +39,7 @@ export function useMapData(id: string = CONFLICT_ID) {
   return useQuery({
     queryKey: queryKeys.map.data(id),
     queryFn: () => api.get<MapDataResponse>(`/conflicts/${id}/map/data`),
-    staleTime: 5 * 60 * 1000,
+    staleTime: STALE.MEDIUM,
     select: toDataArrays,
   });
 }
@@ -48,6 +48,6 @@ export function useMapStories(id: string = CONFLICT_ID) {
   return useQuery({
     queryKey: queryKeys.map.stories(id),
     queryFn: () => api.get<MapStory[]>(`/conflicts/${id}/map/stories`),
-    staleTime: 5 * 60 * 1000,
+    staleTime: STALE.MEDIUM,
   });
 }

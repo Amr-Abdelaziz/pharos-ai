@@ -34,7 +34,7 @@ type Props = {
   style?: React.CSSProperties;
 }
 
-export default function StoryIcon({
+export function StoryIcon({
   iconName,
   category,
   size = 16,

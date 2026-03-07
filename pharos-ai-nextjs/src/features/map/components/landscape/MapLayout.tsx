@@ -25,7 +25,7 @@ type Props = {
   embedded?: boolean;
 };
 
-export default function LandscapeMapLayout({ ctx }: Props) {
+export function LandscapeMapLayout({ ctx }: Props) {
   const {
     stories, activeStory,
     activateStory, setSelectedItem, setActiveStory,

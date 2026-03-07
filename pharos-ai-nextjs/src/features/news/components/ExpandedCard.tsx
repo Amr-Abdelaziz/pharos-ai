@@ -78,7 +78,7 @@ export function ExpandedCard({ article, x, cardTop, color, defocus }: Props) {
               variant="ghost"
               size="icon"
               onClick={(e) => { e.stopPropagation(); defocus(); }}
-              className="ml-auto w-6 h-6 text-white/40 hover:text-white text-[20px] leading-none"
+              className="ml-auto w-6 h-6 text-white/40 hover:text-white text-xl leading-none"
             >
               ×
             </Button>
@@ -92,12 +92,12 @@ export function ExpandedCard({ article, x, cardTop, color, defocus }: Props) {
             <span className="mono text-[11px] text-white/50">{formatTimeAgo(article.time)}</span>
           </div>
           {/* Title */}
-          <h3 className="text-[16px] font-bold text-white leading-snug mb-2">
+          <h3 className="text-base font-bold text-white leading-snug mb-2">
             {article.title}
           </h3>
           {/* Snippet */}
           {article.snippet && (
-            <p className="text-[12px] text-white/75 leading-relaxed mb-4">
+            <p className="text-xs text-white/75 leading-relaxed mb-4">
               {article.snippet}
             </p>
           )}

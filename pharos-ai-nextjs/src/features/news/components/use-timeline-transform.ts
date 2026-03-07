@@ -4,8 +4,6 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 import { MIN_ZOOM, MAX_ZOOM, ZOOM_STEP, DEFAULT_ZOOM } from './timeline-constants';
 
-// ─── Hook ─────────────────────────────────────────────────────
-
 export function useTimelineTransform() {
   const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +24,7 @@ export function useTimelineTransform() {
   const [isDragging, setIsDragging] = useState(false);
   const dragState = useRef({ active: false, startX: 0, startY: 0, panX: 0, panY: 0, moved: false });
 
-  // ─── Drag to pan (registered once — reads refs, no deps) ────
+  // Drag-to-pan (stable, ref-based)
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
@@ -81,9 +79,9 @@ export function useTimelineTransform() {
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
     };
-  }, [commitTransform]); // commitTransform is stable
+  }, [commitTransform]);
 
-  // ─── Scroll to zoom (registered once — reads refs, no deps) ─
+  // Scroll-to-zoom (stable, ref-based)
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
@@ -110,7 +108,7 @@ export function useTimelineTransform() {
 
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
-  }, [commitTransform]); // commitTransform is stable
+  }, [commitTransform]);
 
   return { viewportRef, zoom, pan, isDragging, zoomRef, panRef, commitTransform };
 }

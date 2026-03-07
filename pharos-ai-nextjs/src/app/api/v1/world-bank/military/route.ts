@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { ok, err, parseQueryArray } from '@/server/lib/api-utils';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// Types
 
 type CacheEntry = {
   data: Record<string, CountryWorldBankData>;
@@ -23,12 +23,12 @@ type WorldBankRow = {
   value: number | null;
 };
 
-// ─── In-memory cache (24 h TTL) ────────────────────────────────────────────
+// Cache (24h TTL)
 
 const cache = new Map<string, CacheEntry>();
 const TTL = 24 * 60 * 60 * 1000;
 
-// ─── World Bank indicator IDs ───────────────────────────────────────────────
+// World Bank indicator IDs
 
 const INDICATORS = {
   spending: 'MS.MIL.XPND.CD',
@@ -61,8 +61,6 @@ async function fetchWithTimeout(url: string): Promise<Response | null> {
   }
 }
 
-// ─── Fetch one indicator for one country ────────────────────────────────────
-
 async function fetchIndicator(
   iso3: string,
   indicator: string,
@@ -85,8 +83,6 @@ async function fetchIndicator(
     .sort((a, b) => a.year - b.year);
 }
 
-// ─── Route handler ──────────────────────────────────────────────────────────
-
 export async function GET(req: NextRequest) {
   const countries = parseQueryArray(req.nextUrl.searchParams.get('countries'));
 
@@ -94,7 +90,6 @@ export async function GET(req: NextRequest) {
     return err('BAD_REQUEST', 'countries query param required (comma-separated ISO3 codes)');
   }
 
-  // Normalize + deduplicate country codes
   const normalized = [...new Set(countries.map(c => c.toUpperCase()))].sort();
   const cacheKey = normalized.join(',');
   const cached = cache.get(cacheKey);
@@ -102,7 +97,6 @@ export async function GET(req: NextRequest) {
     return ok(cached.data);
   }
 
-  // Fetch all indicators for all countries in parallel
   const results: Record<string, CountryWorldBankData> = {};
 
   await Promise.all(

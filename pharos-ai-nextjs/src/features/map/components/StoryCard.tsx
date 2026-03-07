@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { fmtDate, fmtTimeZ } from '@/shared/lib/format';
-import StoryIcon from './StoryIcon';
+import { StoryIcon } from './StoryIcon';
 import { useMapData } from '@/features/map/queries';
 
 import type { StrikeArc, MissileTrack, Target, Asset } from '@/data/map-data';
@@ -141,7 +141,7 @@ type Props = {
   onFlyTo:  () => void;
 };
 
-export default function StoryCard({ story, isOpen, onToggle, onFlyTo }: Props) {
+export function StoryCard({ story, isOpen, onToggle, onFlyTo }: Props) {
   const catColor = CATEGORY_COLORS[story.category];
   const [modalOpen, setModalOpen] = useState(false);
 

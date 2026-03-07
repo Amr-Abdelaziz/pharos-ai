@@ -32,19 +32,17 @@ export function NewsContent() {
   const collection = collections?.[0];
   const channel = collection?.channels[activeChannel];
 
-  // Batch fetch all feeds (or just the ones needed)
   const fetchFeeds = useCallback(async (ids?: string[]) => {
     setRefreshing(true);
     try {
       const feedIds = ids ?? allFeeds.map(f => f.id);
 
-      // Check client cache — only fetch stale ones
+      // Only fetch stale feeds
       const staleIds = feedIds.filter(id => {
         const cached = clientCache.get(id);
         return !cached || Date.now() - cached.fetchedAt > CLIENT_FRESH_TTL;
       });
 
-      // If all are fresh in client cache, just use cache
       if (staleIds.length === 0) {
         const map = new Map<string, FeedItem[]>();
         feedIds.forEach(id => {
@@ -56,7 +54,7 @@ export function NewsContent() {
         return;
       }
 
-      // Batch fetch stale ones from server (server has its own cache too)
+      // Fetch stale from server
       const res = await fetch('/api/v1/rss/fetch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -83,7 +81,6 @@ export function NewsContent() {
         }
       }
 
-      // Build combined map (all requested ids)
       const map = new Map<string, FeedItem[]>();
       feedIds.forEach(id => {
         const cached = clientCache.get(id);
@@ -97,7 +94,7 @@ export function NewsContent() {
     }
   }, [allFeeds]);
 
-  // Initial load — prefetch all feeds in one batch
+  // Initial fetch
   useEffect(() => {
     fetchFeeds();
   }, [fetchFeeds]);
@@ -119,7 +116,6 @@ export function NewsContent() {
       className={`flex flex-col w-full h-full min-h-0 ${isLandscapePhone ? 'overflow-y-auto' : ''}`}
       onScroll={isLandscapePhone ? onLandscapeScroll : undefined}
     >
-      {/* Top bar */}
       <div className={`py-2 border-b border-[var(--bd)] bg-[var(--bg-app)] shrink-0 overflow-x-auto ${isLandscapePhone ? 'safe-px' : 'px-5'}`}>
         <div className="flex items-center justify-between gap-6 min-w-max">
           <div className="flex items-center gap-3">
@@ -162,7 +158,6 @@ export function NewsContent() {
           </div>
 
           <div className="flex items-center gap-4">
-          {/* Image toggle */}
           <Button
             variant="outline"
             size="sm"
@@ -181,7 +176,6 @@ export function NewsContent() {
             {showImages ? 'ON' : 'OFF'}
           </Button>
 
-          {/* Manual refresh */}
           <Button
             variant="ghost"
             size="sm"
@@ -209,7 +203,6 @@ export function NewsContent() {
         </div>
       </div>
 
-      {/* Content */}
       {viewMode === 'conflict' && collection && channel && (
         <>
           <ConflictBanner

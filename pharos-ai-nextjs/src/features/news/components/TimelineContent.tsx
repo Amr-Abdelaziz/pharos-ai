@@ -219,7 +219,7 @@ export function TimelineContent() {
                         <span className="mono text-[7px] font-bold text-amber-400/70 tracking-wider">STATE</span>
                       )}
                     </div>
-                    <p className="text-[12px] text-[var(--t1)] leading-snug group-hover:text-white transition-colors">
+                    <p className="text-xs text-[var(--t1)] leading-snug group-hover:text-white transition-colors">
                       {item.title}
                     </p>
                     {item.contentSnippet && (

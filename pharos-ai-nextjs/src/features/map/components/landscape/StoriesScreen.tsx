@@ -2,8 +2,8 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { LandscapeHeader } from './LandscapeHeader';
-import StoryTimeline from '@/features/map/components/StoryTimeline';
-import StoryDateGroup from '@/features/map/components/StoryDateGroup';
+import { StoryTimeline } from '@/features/map/components/StoryTimeline';
+import { StoryDateGroup } from '@/features/map/components/StoryDateGroup';
 import { groupByDay } from '@/features/map/components/story-utils';
 import type { MapStory } from '@/types/domain';
 

@@ -9,10 +9,10 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { FlyToInterpolator } from '@deck.gl/core';
 import { MAP_STYLE_DARK, MAP_STYLE_SAT } from '@/features/map/components/map-styles';
-import MapLegend         from '@/features/map/components/MapLegend';
-import MapFilterPanel    from '@/features/map/components/MapFilterPanel';
-import MapTimeline       from '@/features/map/components/MapTimeline';
-import MapVisibilityMenu from '@/features/map/components/MapVisibilityMenu';
+import { MapLegend }     from '@/features/map/components/MapLegend';
+import { MapFilterPanel } from '@/features/map/components/MapFilterPanel';
+import { MapTimeline }   from '@/features/map/components/MapTimeline';
+import { MapVisibilityMenu } from '@/features/map/components/MapVisibilityMenu';
 import { Button } from '@/components/ui/button';
 
 import type { MapPageContext } from '@/features/map/components/use-map-page';

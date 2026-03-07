@@ -13,7 +13,7 @@ const LEGEND_ITEMS = [
   { color: '#DC9632', shape: 'zone', label: 'PATROL ZONE' },
 ] as const;
 
-export default function IntelMapLegend() {
+export function IntelMapLegend() {
   return (
     <div
       style={{

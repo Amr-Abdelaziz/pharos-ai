@@ -9,7 +9,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import type { PickingInfo, MapViewState } from '@deck.gl/core';
 
 import { Button } from '@/components/ui/button';
-import IntelMapLegend from './IntelMapLegend';
+import { IntelMapLegend } from './IntelMapLegend';
 import { useMapData } from '@/features/map/queries';
 import { useMapLayers, type LayerVisibility, type TooltipObject } from './intel-map-layers';
 import { getMapTooltip } from './intel-map-tooltip';
@@ -37,7 +37,7 @@ const DEFAULT_VISIBILITY: LayerVisibility = {
   strikes: true, missiles: true, targets: true, assets: true, zones: true, heat: true,
 };
 
-export default function IntelMap() {
+export function IntelMap() {
   const { data: mapData } = useMapData();
   const [viewState, setViewState] = useState<MapViewState>(INITIAL_VIEW_STATE);
   const [visibility, setVisibility] = useState<LayerVisibility>(DEFAULT_VISIBILITY);

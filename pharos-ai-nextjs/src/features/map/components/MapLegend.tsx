@@ -23,7 +23,7 @@ const ITEMS: LegendItem[] = [
 
 type Props = { hasPanel: boolean; timelineVisible?: boolean; isMobile?: boolean };
 
-export default function MapLegend({ hasPanel, timelineVisible = true, isMobile = false }: Props) {
+export function MapLegend({ hasPanel, timelineVisible = true, isMobile = false }: Props) {
   const bottom = isMobile
     ? (timelineVisible ? 'calc(126px + var(--safe-bottom))' : 'calc(12px + var(--safe-bottom))')
     : (timelineVisible ? 56 : 12);

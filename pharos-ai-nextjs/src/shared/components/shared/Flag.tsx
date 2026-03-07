@@ -7,7 +7,7 @@ type FlagProps = {
   style?: React.CSSProperties;
 };
 
-export default function Flag({ code, size = 20, style }: FlagProps) {
+export function Flag({ code, size = 20, style }: FlagProps) {
   return (
     <span
       className={`fi fi-${code.toLowerCase()} inline-block rounded-sm shrink-0 leading-none`}

@@ -70,7 +70,6 @@ export function persistMapPrefs(state: MapState): void {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-// Convert Set-based initial state to serializable arrays
 export function toSerializable(fs: ReturnType<typeof extractInitialState>): SerializableFilterState {
   return {
     datasets:   [...fs.datasets],
@@ -83,7 +82,7 @@ export function toSerializable(fs: ReturnType<typeof extractInitialState>): Seri
   };
 }
 
-// Toggle helper — prevents empty arrays
+// Prevents empty arrays
 function toggleArr(arr: string[], item: string): string[] {
   const has = arr.includes(item);
   const next = has ? arr.filter(x => x !== item) : [...arr, item];

@@ -5,8 +5,8 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-import StoryTimeline from './StoryTimeline';
-import StoryDateGroup from './StoryDateGroup';
+import { StoryTimeline } from './StoryTimeline';
+import { StoryDateGroup } from './StoryDateGroup';
 import { groupByDay } from './story-utils';
 
 import type { MapStory } from '@/types/domain';
@@ -26,7 +26,7 @@ type Props = {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function MapSidebar({ isOpen, stories, activeStory, onToggle, onActivateStory, onClearStory, expanded, onToggleExpand }: Props) {
+export function MapSidebar({ isOpen, stories, activeStory, onToggle, onActivateStory, onClearStory, expanded, onToggleExpand }: Props) {
   const [openStoryId, setOpenStoryId] = useState<string | null>(null);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
   const bodyRef = useRef<HTMLDivElement>(null);

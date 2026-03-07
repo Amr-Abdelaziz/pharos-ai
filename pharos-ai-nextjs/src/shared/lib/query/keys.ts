@@ -1,5 +1,17 @@
 import { publicConflictId } from '@/shared/lib/env';
 
+/** Shared staleTime constants for React Query */
+export const STALE = {
+  /** 1 minute — fast-moving data (events, x-posts) */
+  SHORT: 60_000,
+  /** 5 minutes — moderate data (bootstrap, map) */
+  MEDIUM: 5 * 60_000,
+  /** 1 hour — slow-moving data (RSS, economics, predictions) */
+  LONG: 60 * 60_000,
+  /** 24 hours — near-static data (World Bank indicators) */
+  DAY: 24 * 60 * 60_000,
+} as const;
+
 const CONFLICT_ID = publicConflictId;
 
 export const queryKeys = {

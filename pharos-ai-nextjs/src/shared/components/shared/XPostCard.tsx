@@ -1,13 +1,13 @@
 'use client';
 import { Suspense } from 'react';
 import { Tweet } from 'react-tweet';
-import PharosView, { EmbedSkeleton } from './PharosView';
+import { PharosView, EmbedSkeleton } from './PharosView';
 import { ACCT, SIG_BORDER, xUrl } from './x-post-constants';
 import type { XPost } from '@/types/domain';
 
 type Props = { post: XPost; compact?: boolean };
 
-export default function XPostCard({ post, compact }: Props) {
+export function XPostCard({ post, compact }: Props) {
   const acct       = ACCT[post.accountType] ?? ACCT.analyst;
   const border     = SIG_BORDER[post.significance] ?? SIG_BORDER.STANDARD;
   const postUrl    = xUrl(post.handle, post.tweetId);

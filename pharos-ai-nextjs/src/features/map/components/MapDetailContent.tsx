@@ -7,7 +7,7 @@ import { useMapData, useMapStories } from '@/features/map/queries';
 import { CATEGORY_LABEL, STATUS_META } from '@/data/map-tokens';
 import { fmtDate, fmtTimeZ } from '@/shared/lib/format';
 import type { ActorMeta } from '@/data/map-tokens';
-import StoryIcon from './StoryIcon';
+import { StoryIcon } from './StoryIcon';
 
 import type { StrikeArc, MissileTrack, Target, Asset, ThreatZone } from '@/data/map-data';
 import type { MapStory } from '@/types/domain';

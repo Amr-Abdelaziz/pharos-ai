@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import type { EconomicIndex, EconFilters } from '@/types/domain';
 import { api, buildUrl } from '@/shared/lib/query/client';
-import { queryKeys } from '@/shared/lib/query/keys';
+import { queryKeys, STALE } from '@/shared/lib/query/keys';
 
 export function useEconomicIndexes(filters?: EconFilters) {
   return useQuery({
@@ -13,6 +13,6 @@ export function useEconomicIndexes(filters?: EconFilters) {
           category: filters?.category,
         }),
       ),
-    staleTime: 60 * 60 * 1000,
+    staleTime: STALE.LONG,
   });
 }

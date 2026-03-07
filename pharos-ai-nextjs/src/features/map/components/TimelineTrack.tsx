@@ -19,7 +19,7 @@ const BUCKETS = 80;
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 
-export default function TimelineTrack({ histogram, ticks, leftPct, rightPct, isActive, isMobile = false, trackRef, onClick, onTouchStart, onHandleDown }: Props) {
+export function TimelineTrack({ histogram, ticks, leftPct, rightPct, isActive, isMobile = false, trackRef, onClick, onTouchStart, onHandleDown }: Props) {
   const handleW = isMobile ? 14 : 6;
   const handleOffset = handleW / 2;
   const trackHeight = isMobile ? 38 : 32;

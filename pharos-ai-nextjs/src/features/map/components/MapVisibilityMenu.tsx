@@ -22,7 +22,7 @@ const LABELS: { key: keyof OverlayVisibility; label: string }[] = [
   { key: 'legend',   label: 'LEGEND'   },
 ];
 
-export default function MapVisibilityMenu({ visibility, onToggle, direction = 'up' }: Props) {
+export function MapVisibilityMenu({ visibility, onToggle, direction = 'up' }: Props) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 

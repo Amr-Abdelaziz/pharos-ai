@@ -24,11 +24,9 @@ import { applyFilters, extractInitialState, extractTimeExtent } from '@/features
 import type { ActorMeta } from '@/data/map-tokens';
 import type { DataArrays, FilterState, FilteredData, FilterFacets } from '@/features/map/lib/map-filter-engine';
 
-// ─── Re-exports ─────────────────────────────────────────────────────────────────
-
 export type { FilterState, FilteredData, FilterFacets };
 
-// ─── Dataset names (for the top bar) ────────────────────────────────────────────
+// Dataset names
 
 export type DatasetName = 'strikes' | 'missiles' | 'targets' | 'assets' | 'zones';
 
@@ -62,14 +60,12 @@ function buildFingerprint(rawData: DataArrays): string {
   ].join('|');
 }
 
-// ─── Empty fallback ─────────────────────────────────────────────────────────────
+// Empty fallback
 
 const EMPTY_RESULT: { filtered: FilteredData; facets: FilterFacets } = {
   filtered: { strikes: [], missiles: [], targets: [], assets: [], zones: [], heat: [] },
   facets:   { datasets: [], perDataset: {}, totalVisible: 0, totalAll: 0 },
 };
-
-// ─── Return type ────────────────────────────────────────────────────────────────
 
 export type UseMapFiltersReturn = {
   state:    FilterState;
@@ -94,8 +90,6 @@ export type UseMapFiltersReturn = {
   isLoading:      boolean;
 };
 
-// ─── Hook ───────────────────────────────────────────────────────────────────────
-
 export function useMapFilters(): UseMapFiltersReturn {
   const dispatch   = useAppDispatch();
   const dataExtent = useAppSelector(s => s.map.dataExtent);
@@ -103,7 +97,6 @@ export function useMapFilters(): UseMapFiltersReturn {
   const isFiltered = useAppSelector(selectIsFiltered);
   const filterState: FilterState = useAppSelector(selectFilterState);
 
-  // Server state via TanStack Query
   const { data: mapResult, isLoading } = useMapData();
   const rawData = mapResult;
   const actorMeta = useMemo(() => mapResult?.actorMeta ?? {}, [mapResult]);
@@ -127,7 +120,6 @@ export function useMapFilters(): UseMapFiltersReturn {
     [rawData, filterState, actorMeta],
   );
 
-  // Extract dataset types from rawData for toggleDataset
   const datasetTypesMap = useMemo(() => {
     if (!rawData) return {} as Record<string, string[]>;
     const map: Record<string, string[]> = {};

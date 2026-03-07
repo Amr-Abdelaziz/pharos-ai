@@ -5,7 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import Flag from '@/shared/components/shared/Flag';
+import { Flag } from '@/shared/components/shared/Flag';
 import { DaySelector } from '@/shared/components/shared/DaySelector';
 import { ACT_C, STA_C } from '@/data/iran-actors';
 import { getActorForDay } from '@/shared/lib/day-filter';

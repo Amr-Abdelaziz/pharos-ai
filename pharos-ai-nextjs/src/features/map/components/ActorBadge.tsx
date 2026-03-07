@@ -13,7 +13,7 @@ type Props = {
   isActive?:  boolean;  // true = opaque chip, false = muted/ghost
 };
 
-export default function ActorBadge({ actor, actorMeta, isActive = true }: Props) {
+export function ActorBadge({ actor, actorMeta, isActive = true }: Props) {
   const meta = actorMeta[actor] ?? FALLBACK_META;
 
   return (

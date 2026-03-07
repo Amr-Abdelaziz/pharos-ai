@@ -61,7 +61,7 @@ export function Header() {
             style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
           >
             <Link href="/dashboard" className="no-underline flex items-center gap-2 min-w-0">
-              <span className="mono text-[12px] font-bold text-[var(--t1)] tracking-[0.14em]">PHAROS</span>
+              <span className="mono text-xs font-bold text-[var(--t1)] tracking-[0.14em]">PHAROS</span>
               <span className="mono text-[8px] text-[var(--warning)] shrink-0">{latestLabel}</span>
             </Link>
             <span className="mono text-[8px] text-[var(--t4)] truncate">{displayDate} · UTC</span>

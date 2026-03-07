@@ -5,7 +5,7 @@ import { SlidersHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
-import DatasetDrilldown from '@/features/map/components/DatasetDrilldown';
+import { DatasetDrilldown } from '@/features/map/components/DatasetDrilldown';
 
 import { LAYER_DISPLAY } from '@/data/map-tokens';
 import { ALL_DATASETS, DATASET_LABEL } from '@/features/map/hooks/use-map-filters';
@@ -54,7 +54,7 @@ function DatasetBtn({ name, isOn, isActive, onToggle, onDrill }: {
   );
 }
 
-export default function MapFilterPanel(props: Props) {
+export function MapFilterPanel(props: Props) {
   const { state, facets, isFiltered } = props;
   const { onToggleDataset, onToggleType, onToggleActor, onTogglePriority, onToggleStatus, onToggleHeat, onReset, defaultExpanded = false } = props;
   const [expanded, setExpanded] = useState(defaultExpanded);

@@ -4,7 +4,7 @@ import { useCallback, useMemo } from 'react';
 
 import { Button } from '@/components/ui/button';
 
-import TimelineTrack from '@/features/map/components/TimelineTrack';
+import { TimelineTrack } from '@/features/map/components/TimelineTrack';
 import { useTimelineDrag } from '@/features/map/hooks/use-timeline-drag';
 
 import type { DataArrays } from '@/features/map/lib/map-filter-engine';
@@ -44,7 +44,7 @@ function fmt(ms: number) {
 
 // ─── Component ──────────────────────────────────────────────────────────────────
 
-export default function MapTimeline({ rawData, dataExtent, viewExtent, onViewExtent, timeRange, onTimeRange, isMobile = false }: Props) {
+export function MapTimeline({ rawData, dataExtent, viewExtent, onViewExtent, timeRange, onTimeRange, isMobile = false }: Props) {
 
   const [rawMin, rawMax] = viewExtent;
   const [vMin, vMax] = rawMin <= rawMax ? [rawMin, rawMax] : [rawMax, rawMin];

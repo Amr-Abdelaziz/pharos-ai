@@ -8,7 +8,7 @@ import { fmtTimeZ } from '@/shared/lib/format';
 import { SEV_C } from '@/shared/lib/severity-colors';
 import { getConflictForDay, getEventsForDay, getPostsForDay } from '@/shared/lib/day-filter';
 import { CasChip } from '@/features/dashboard/components/CasChip';
-import XPostCard from '@/shared/components/shared/XPostCard';
+import { XPostCard } from '@/shared/components/shared/XPostCard';
 
 import { useBootstrap } from '@/features/dashboard/queries';
 import { useConflictDays } from '@/features/dashboard/queries/conflicts';
@@ -63,7 +63,7 @@ export function MobileOverview() {
           <div className="mono text-[8px] text-[var(--t4)] tracking-[0.10em] mb-1">
             {snap.dayLabel} — SITUATION
           </div>
-          <p className="text-[12px] text-[var(--t2)] leading-relaxed line-clamp-3">{snap.summary}</p>
+          <p className="text-xs text-[var(--t2)] leading-relaxed line-clamp-3">{snap.summary}</p>
 
           {/* Escalation */}
           <div className="flex items-center gap-3 mt-2.5">
@@ -71,7 +71,7 @@ export function MobileOverview() {
             <div className="flex-1 h-[4px] bg-[var(--bg-3)] rounded-sm overflow-hidden">
               <div className="h-full bg-[var(--danger)] rounded-sm" style={{ width: `${snap.escalation}%` }} />
             </div>
-            <span className="mono text-[12px] font-bold text-[var(--danger)]">{snap.escalation}</span>
+            <span className="mono text-xs font-bold text-[var(--danger)]">{snap.escalation}</span>
           </div>
 
           {/* Casualty chips */}
@@ -89,7 +89,7 @@ export function MobileOverview() {
           <div className="flex items-center gap-3">
             <MapIcon size={20} strokeWidth={2} className="text-[var(--blue-l)]" />
             <div>
-              <span className="mono text-[12px] font-bold text-[var(--blue-l)] tracking-[0.06em]">OPEN LIVE MAP</span>
+              <span className="mono text-xs font-bold text-[var(--blue-l)] tracking-[0.06em]">OPEN LIVE MAP</span>
               <p className="mono text-[9px] text-[var(--t3)] mt-0.5">{totalStories} stories · {totalEvents} events tracked</p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export function MobileOverview() {
           { label: 'STORIES', val: totalStories, icon: BookOpen, color: 'var(--info)' },
         ].map(s => (
           <div key={s.label} className="bg-[var(--bg-2)] px-2 py-2.5 flex flex-col items-center gap-1">
-            <span className="mono text-[16px] font-bold" style={{ color: s.color }}>{s.val}</span>
+            <span className="mono text-base font-bold" style={{ color: s.color }}>{s.val}</span>
             <span className="mono text-[7px] text-[var(--t4)] tracking-[0.08em]">{s.label}</span>
           </div>
         ))}

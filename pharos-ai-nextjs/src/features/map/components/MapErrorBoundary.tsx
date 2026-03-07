@@ -9,7 +9,7 @@ type State = { error: Error | null; key: number };
  * Catches the luma.gl HMR crash (maxTextureDimension2D)
  * and auto-remounts the DeckGL tree after a short delay.
  */
-export default class MapErrorBoundary extends Component<Props, State> {
+export class MapErrorBoundary extends Component<Props, State> {
   state: State = { error: null, key: 0 };
 
   static getDerivedStateFromError(error: Error) {

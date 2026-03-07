@@ -15,11 +15,11 @@
 
 import dynamic from 'next/dynamic';
 
-import MapErrorBoundary from '@/features/map/components/MapErrorBoundary';
+import { MapErrorBoundary } from '@/features/map/components/MapErrorBoundary';
 import { MapScreenSkeleton } from '@/shared/components/loading/screen-skeletons';
 
 const MapPageContent = dynamic(
-  () => import('@/features/map/components/MapPageContent'),
+  () => import('@/features/map/components/MapPageContent').then(m => ({ default: m.FullMapPage })),
   { ssr: false, loading: () => <MapScreenSkeleton /> },
 );
 

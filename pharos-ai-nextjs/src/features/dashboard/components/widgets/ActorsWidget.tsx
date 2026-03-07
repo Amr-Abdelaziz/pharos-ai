@@ -4,7 +4,7 @@ import { useContext } from 'react';
 import Link from 'next/link';
 
 import { ACT_C, STA_C } from '@/data/iran-actors';
-import Flag from '@/shared/components/shared/Flag';
+import { Flag } from '@/shared/components/shared/Flag';
 import { getActorForDay } from '@/shared/lib/day-filter';
 import { DashCtx } from '../DashCtx';
 

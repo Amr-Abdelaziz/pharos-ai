@@ -10,7 +10,7 @@ type Props = {
   onToggle: () => void;
 };
 
-export default function FilterRow({ option, isOn, onToggle }: Props) {
+export function FilterRow({ option, isOn, onToggle }: Props) {
   const dotColor = option.color ?? 'var(--t4)';
 
   return (

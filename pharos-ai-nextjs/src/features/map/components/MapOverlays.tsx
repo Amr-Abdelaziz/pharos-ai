@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { X, PanelLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import StoryIcon from './StoryIcon';
+import { StoryIcon } from './StoryIcon';
 
 import type { MapStory } from '@/types/domain';
 
@@ -83,7 +83,7 @@ type Props = {
   isMobile?: boolean;
 };
 
-export default function MapOverlays({ activeStory, onClearStory, sidebarOpen, onToggleSidebar, embedded = false, isMobile = false }: Props) {
+export function MapOverlays({ activeStory, onClearStory, sidebarOpen, onToggleSidebar, embedded = false, isMobile = false }: Props) {
   const safeTop = isMobile && !embedded;
 
   return (

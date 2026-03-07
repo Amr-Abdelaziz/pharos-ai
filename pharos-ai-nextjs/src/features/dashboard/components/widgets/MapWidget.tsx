@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 
-const FullMapPage = dynamic(() => import('@/features/map/components/MapPageContent'), { ssr: false });
+const FullMapPage = dynamic(() => import('@/features/map/components/MapPageContent').then(m => ({ default: m.FullMapPage })), { ssr: false });
 
 export function MapWidget() {
   return (

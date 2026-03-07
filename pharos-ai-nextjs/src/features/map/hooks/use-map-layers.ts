@@ -30,13 +30,11 @@ type RGBA = [number, number, number, number];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Returns full-opacity alpha for the current render mode. */
 const activeAlpha = (isSatellite: boolean) => (isSatellite ? 255 : 220);
 
-/** Wraps an RGB array with a given alpha. */
 const withAlpha = (rgb: number[], a: number): RGBA => [rgb[0] ?? 0, rgb[1] ?? 0, rgb[2] ?? 0, a];
 
-/** Dim alpha when story is active and this item is not highlighted. */
+/** Alpha for non-highlighted items */
 const DIM = 40;
 
 /** Actor-driven color, dimmed when not in active story's highlight set. */
@@ -51,7 +49,6 @@ function actorColor(
   return withAlpha(rgb, alpha);
 }
 
-/** Status-driven fill for target/asset scatter dots. */
 function statusFill(status: Target['status'] | Asset['status']): [number, number, number] {
   switch (status) {
     case 'DESTROYED': return [220, 50,  50 ];
@@ -70,7 +67,6 @@ export function useMapLayers({ filtered, actorMeta, activeStory, isSatellite, is
     const alpha    = activeAlpha(isSatellite);
     const dimActive = activeStory !== null;
 
-    // Convenience: check if id is highlighted in active story's array
     const highlighted = (id: string, arr: string[]) => !dimActive || arr.includes(id);
 
     // Label appearance boosts in satellite mode

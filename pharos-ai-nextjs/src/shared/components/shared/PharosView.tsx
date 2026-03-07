@@ -18,7 +18,7 @@ type Props = {
   compact?: boolean;
 };
 
-export default function PharosView({ post, acct, postUrl, compact }: Props) {
+export function PharosView({ post, acct, postUrl, compact }: Props) {
   const avatarText = getInitials(post.displayName, post.handle, post.avatar);
   const avatarBg = resolveAvatarColor(post);
 
