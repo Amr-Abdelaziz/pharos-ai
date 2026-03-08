@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -55,6 +55,8 @@ export function MobileOverview() {
   const totalActors = actors?.length ?? 0;
   const totalStories = stories.length;
   const critCount = recentEvents.filter(e => e.severity === 'CRITICAL').length;
+  const [expandedSummary, setExpandedSummary] = useState(false);
+  const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
 
   return (
     <div className="flex-1 min-h-0 overflow-y-auto bg-[var(--bg-1)] safe-pb">
@@ -65,7 +67,10 @@ export function MobileOverview() {
           <div className="mono text-[8px] text-[var(--t4)] tracking-[0.10em] mb-1">
             {snap.dayLabel} — SITUATION
           </div>
-          <p className="text-xs text-[var(--t2)] leading-relaxed line-clamp-3">{snap.summary}</p>
+          <p
+            className={`text-xs text-[var(--t2)] leading-relaxed cursor-pointer ${expandedSummary ? '' : 'line-clamp-3'}`}
+            onClick={() => setExpandedSummary(p => !p)}
+          >{snap.summary}</p>
 
           {/* Escalation */}
           <div className="flex items-center gap-3 mt-2.5">
@@ -139,7 +144,7 @@ export function MobileOverview() {
                   <div className="mono text-[8px] text-[var(--t4)] mt-0.5">{fmtTimeZ(evt.timestamp)}</div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] text-[var(--t1)] leading-snug line-clamp-2">{evt.title}</p>
+                  <p className="text-[11px] text-[var(--t1)] leading-snug">{evt.title}</p>
                   <span className="mono text-[8px] text-[var(--t4)]">{evt.location}</span>
                 </div>
                 <ArrowRight size={10} className="text-[var(--t4)] shrink-0 mt-1" />
@@ -185,7 +190,7 @@ export function MobileOverview() {
                       <span className="mono text-[8px] text-[var(--t4)]">{fmtTimeZ(story.timestamp)}</span>
                     </div>
                     <p className="text-[11px] font-bold text-[var(--t1)] leading-snug">{story.title}</p>
-                    <p className="text-[10px] text-[var(--t3)] leading-snug mt-0.5 line-clamp-1">{story.tagline}</p>
+                    <p className="text-[10px] text-[var(--t3)] leading-snug mt-0.5">{story.tagline}</p>
                   </div>
                   <ArrowRight size={10} className="text-[var(--t4)] shrink-0 mt-1" />
                 </div>
