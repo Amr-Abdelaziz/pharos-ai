@@ -64,7 +64,7 @@ export function BrowseNav({ hamburgerSlot }: Props) {
             className="flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--t1)] text-[var(--bg-app)] hover:bg-[var(--t2)] transition-colors"
           >
             <Github size={13} fill="currentColor" strokeWidth={0} />
-            <span className="mono text-[10px] font-bold tracking-[0.04em]">STAR</span>
+            <span className="mono text-[10px] font-bold tracking-[0.04em] text-[var(--bg-app)]">STAR</span>
           </a>
         </div>
       </div>

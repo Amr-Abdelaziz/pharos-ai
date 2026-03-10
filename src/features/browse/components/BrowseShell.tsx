@@ -15,6 +15,7 @@ import {
 
 import { useIsMobile } from '@/shared/hooks/use-is-mobile';
 
+import { BrowseArticleBanner } from './BrowseArticleBanner';
 import { BrowseFooter } from './BrowseFooter';
 import { BrowseNav } from './BrowseNav';
 import { BrowseSidebar } from './BrowseSidebar';
@@ -30,6 +31,7 @@ export function BrowseShell({ children }: Props) {
   const [open, setOpen] = useState(false);
 
   const isLanding = pathname === '/browse';
+  const isDetailPage = pathname.split('/').filter(Boolean).length >= 3;
 
   const handleNavigate = useCallback(() => setOpen(false), []);
 
@@ -67,6 +69,7 @@ export function BrowseShell({ children }: Props) {
         )}
 
         <main className="flex-1 overflow-y-auto">
+          {isDetailPage && <BrowseArticleBanner />}
           {children}
           {isLanding && <BrowseFooter />}
         </main>
