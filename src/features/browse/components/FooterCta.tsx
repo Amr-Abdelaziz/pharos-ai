@@ -9,7 +9,11 @@ export function FooterCta() {
         <p className="text-sm text-[var(--t2)] mb-4">
           No login required. No paywall.
         </p>
-        <Button variant="default" size="sm" asChild>
+        <Button
+          size="sm"
+          asChild
+          className="bg-[var(--blue)] text-[var(--bg-app)] font-bold hover:bg-[var(--blue-l)]"
+        >
           <Link href="/dashboard">Open the dashboard &rarr;</Link>
         </Button>
       </div>
