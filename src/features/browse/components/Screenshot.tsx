@@ -13,6 +13,10 @@ export function Screenshot() {
           priority
         />
       </div>
+      <p className="text-xs text-[var(--t2)] mt-3 text-center">
+        The Pharos dashboard on conflicts.app showing live conflict map, event
+        timeline, and actor intelligence panels.
+      </p>
     </section>
   );
 }

@@ -1,28 +1,32 @@
 import type { Metadata } from 'next';
 
 import { Capabilities } from '@/features/browse/components/Capabilities';
+import { Faq } from '@/features/browse/components/Faq';
 import { FooterCta } from '@/features/browse/components/FooterCta';
 import { Hero } from '@/features/browse/components/Hero';
+import { HowItWorks } from '@/features/browse/components/HowItWorks';
 import { JsonLd } from '@/features/browse/components/JsonLd';
 import { OpenSource } from '@/features/browse/components/OpenSource';
 import { Screenshot } from '@/features/browse/components/Screenshot';
+import { StatsBar } from '@/features/browse/components/StatsBar';
+import { WhoItsFor } from '@/features/browse/components/WhoItsFor';
 
 export const metadata: Metadata = {
-  title: 'Pharos — Open-Source Iran Conflict Intelligence Dashboard',
+  title: 'Conflicts.app — Free Open-Source Iran Conflict Dashboard | Pharos',
   description:
-    'Track the Iran conflict in real time. Open-source intelligence dashboard with events, actors, signals, map overlays, RSS feeds, and daily briefings.',
+    'Free open-source dashboard tracking the Iran conflict in real time. Interactive strike map, AI intelligence briefs, escalation scoring, and actor tracking across 10+ factions. No signup required.',
   openGraph: {
-    title: 'Pharos — Open-Source Iran Conflict Intelligence Dashboard',
+    title: 'Conflicts.app — Free Open-Source Iran Conflict Dashboard',
     description:
-      'Track the Iran conflict in real time. Events, actors, signals, map overlays, and daily briefings — all open source.',
+      'Track the Iran conflict in real time. Interactive strike map, AI briefs, escalation scoring, actor intelligence. Free and open source.',
     url: 'https://www.conflicts.app/browse',
     images: [{ url: '/og-image-1200x630.jpg', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Pharos — Open-Source Iran Conflict Intelligence Dashboard',
+    title: 'Conflicts.app — Free Open-Source Iran Conflict Dashboard',
     description:
-      'Track the Iran conflict in real time. Events, actors, signals, map overlays, and daily briefings.',
+      'Track the Iran conflict in real time. Interactive strike map, AI briefs, escalation scoring, actor intelligence. Free and open source.',
     images: ['/og-image-1200x630.jpg'],
   },
   alternates: {
@@ -36,8 +40,12 @@ export default function BrowsePage() {
       <JsonLd />
       <Hero />
       <Screenshot />
+      <StatsBar />
       <Capabilities />
+      <HowItWorks />
+      <WhoItsFor />
       <OpenSource />
+      <Faq />
       <FooterCta />
     </>
   );

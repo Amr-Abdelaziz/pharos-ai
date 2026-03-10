@@ -46,6 +46,7 @@ next-env.d.ts
 
 # temp / scratch files
 temp.txt
+temp/
 API-diff.diff
 
 # Electron build output

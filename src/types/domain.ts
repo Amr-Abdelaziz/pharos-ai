@@ -93,9 +93,9 @@ export type EventType = 'MILITARY' | 'DIPLOMATIC' | 'INTELLIGENCE' | 'ECONOMIC' 
 
 export type Source = {
   name: string;
-  tier: 1 | 2 | 3;
+  tier: number;
   reliability: number;
-  url?: string;
+  url?: string | null;
 };
 
 export type ActorResponse = {
@@ -379,4 +379,43 @@ export type MarketGroup = {
   bg: string;
   border: string;
   titleMatches: string[];
+};
+
+// Browse view types (server-rendered /browse pages)
+
+export type BrowseCasualty = {
+  faction: string;
+  killed: number;
+  wounded: number;
+  civilians: number;
+  injured: number;
+};
+
+export type BrowseEconChip = {
+  label: string;
+  val: string;
+  sub: string;
+  color: string;
+};
+
+export type BrowseScenario = {
+  label: string;
+  subtitle: string;
+  color: string;
+  prob: string;
+  body: string;
+};
+
+export type BrowseStoryEvent = {
+  id: string;
+  ord: number;
+  time: string;
+  label: string;
+  type: 'STRIKE' | 'RETALIATION' | 'INTEL' | 'NAVAL' | 'POLITICAL';
+};
+
+export type BrowseEventFilters = {
+  severity?: string[];
+  date?: string;
+  page?: number;
 };

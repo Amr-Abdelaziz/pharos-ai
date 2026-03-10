@@ -1,12 +1,9 @@
-import { BrowseFooter } from '@/features/browse/components/BrowseFooter';
-import { BrowseNav } from '@/features/browse/components/BrowseNav';
+import { BrowseShell } from '@/features/browse/components/BrowseShell';
 
 export default function BrowseLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-app)]">
-      <BrowseNav />
-      <main className="flex-1">{children}</main>
-      <BrowseFooter />
+    <div data-theme="auto" className="h-screen flex flex-col bg-[var(--bg-app)]">
+      <BrowseShell>{children}</BrowseShell>
     </div>
   );
 }

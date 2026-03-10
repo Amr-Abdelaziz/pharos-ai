@@ -1,48 +1,59 @@
 const CAPABILITIES = [
   {
-    title: 'Conflict map',
+    title: 'Interactive conflict map',
     description:
-      'DeckGL-powered map with live event markers, actor positions, strike zones, and military infrastructure layers. Filter by day, severity, or actor.',
+      'Every airstrike, missile launch, and troop movement plotted on a map. Filter by day, severity, or actor. Built with DeckGL and MapLibre.',
   },
   {
-    title: 'Events timeline',
+    title: 'Event timeline',
     description:
-      'Tracks every airstrike, missile launch, diplomatic response, and field report. Each event tagged with severity, actors involved, and source links.',
+      'Airstrikes, diplomatic moves, field reports. Each event scored by severity with actors involved and source links. Browse by day or search across the full conflict.',
   },
   {
-    title: 'Actor dossiers',
+    title: 'AI intelligence briefs',
     description:
-      'Profiles for state and non-state actors — Iran, Israel, Hezbollah, Houthis, US CENTCOM, and more. Capabilities, alliances, and recent activity.',
+      'An AI pipeline continuously processes incoming events and generates situation reports. Key developments, escalation risks, and scenario analysis updated throughout the day.',
   },
   {
-    title: 'Intel signals',
+    title: 'Actor intelligence',
     description:
-      'Curated posts from X/Twitter by OSINT analysts, journalists, and official accounts. Scored by significance and grouped by day.',
+      'Profiles for every major faction. Iran, Israel, Hezbollah, Houthis, US CENTCOM, NATO, and more. Capabilities, alliances, recent actions, and current stance.',
+  },
+  {
+    title: 'OSINT signals',
+    description:
+      'Curated posts from analysts, journalists, and official accounts on X. Scored by significance and grouped by day so you see what matters, not everything.',
   },
   {
     title: 'RSS monitor',
     description:
-      '30 RSS feeds from Reuters to Press TV. Western, Iranian, Israeli, Arab, Russian, Chinese outlets. Searchable, sortable, always current.',
+      '30 feeds from Reuters to Press TV. Western, Iranian, Israeli, Arab, Russian, and Chinese outlets. One place instead of 30 tabs.',
   },
   {
-    title: 'Daily briefings',
+    title: 'Escalation scoring',
     description:
-      'AI-generated situation reports summarizing each day\'s key developments, escalation risks, and notable shifts in the conflict.',
+      'AI calculates a daily escalation score from 0 to 100 based on event severity, frequency, and actor behavior. Currently at 96.',
   },
   {
-    title: 'Economic data',
+    title: 'Economic indicators',
     description:
-      'Currency rates, oil prices, and market indicators relevant to the conflict. Tracks sanctions impact and regional economic disruption.',
+      'Oil prices, currency rates, and market data tied to the conflict. Tracks sanctions impact and regional disruption.',
   },
 ] as const;
 
-function CapabilityCard({ title, description }: { title: string; description: string }) {
+function CapabilityCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
   return (
     <div className="p-4 border border-[var(--bd)] bg-[var(--bg-1)]">
       <h3 className="text-xs font-bold text-[var(--t1)] tracking-wide mb-2">
         {title}
       </h3>
-      <p className="text-xs text-[var(--t3)] leading-relaxed">
+      <p className="text-xs text-[var(--t2)] leading-relaxed">
         {description}
       </p>
     </div>
@@ -52,7 +63,7 @@ function CapabilityCard({ title, description }: { title: string; description: st
 export function Capabilities() {
   return (
     <section className="px-5 py-12 max-w-3xl mx-auto">
-      <p className="label mb-6">What it does</p>
+      <h2 className="section-title mb-6">What you can track</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {CAPABILITIES.map((cap) => (

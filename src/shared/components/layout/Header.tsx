@@ -1,7 +1,16 @@
 'use client';
-import { Github } from 'lucide-react';
 import Link           from 'next/link';
 import { usePathname } from 'next/navigation';
+
+import { Github, MoreHorizontal } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 import { useBootstrap } from '@/features/dashboard/queries';
 import { useConflict } from '@/features/dashboard/queries/conflicts';
@@ -81,6 +90,7 @@ export function Header() {
                 </Link>
               );
             })}
+            <MoreDropdown />
           </nav>
         </div>
       )}
@@ -144,6 +154,7 @@ export function Header() {
                 </Link>
               );
             })}
+            <MoreDropdown />
           </nav>
 
           {/* ── Right side ── */}
@@ -178,5 +189,26 @@ export function Header() {
         </div>
       )}
     </header>
+  );
+}
+
+function MoreDropdown() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="nav-item flex items-center shrink-0 px-3" aria-label="More">
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        data-theme="auto"
+        className="bg-[var(--bg-1)] border-[var(--bd)] text-[var(--t1)] [--accent:var(--bg-3)] [--accent-foreground:var(--t1)]"
+      >
+        <DropdownMenuItem asChild>
+          <Link href="/browse" className="no-underline">Browse</Link>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
