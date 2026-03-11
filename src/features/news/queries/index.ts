@@ -32,18 +32,12 @@ export function useRssCollections(conflictId?: string) {
 
 export async function fetchFeedItems(ids: string[]): Promise<FeedResult[]> {
   if (ids.length === 0) return [];
-  const res = await fetch('/api/v1/rss/fetch', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ids }),
-  });
-  const data = await res.json();
+  const data = await api.post<{ feeds: FeedResult[] }>('/rss/fetch', { ids });
   return data?.feeds ?? [];
 }
 
 export async function fetchSingleFeed(id: string): Promise<FeedResult | null> {
-  const res = await fetch(`/api/v1/rss/fetch?ids=${id}`);
-  const data = await res.json();
+  const data = await api.get<{ feeds: FeedResult[] }>(`/rss/fetch?ids=${id}`);
   return data?.feeds?.[0] ?? null;
 }
 
