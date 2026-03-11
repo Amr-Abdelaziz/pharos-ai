@@ -11,7 +11,13 @@ import {
   PHAROS_RUNTIME_POLICY,
   SOFT_COVERAGE_GUIDANCE,
 } from '@/server/lib/pharos-doctrine';
-import { getConflictDayRange, getConflictLocalNow, getConflictTimezone } from '@/server/lib/pharos-time';
+import {
+  getConflictDayRange,
+  getConflictLocalNow,
+  getConflictTimezone,
+  toConflictLocalDateString,
+  zonedDateTimeToUtc,
+} from '@/server/lib/pharos-time';
 
 type TodoItem = {
   priority: 'P1' | 'P2' | 'P3';
@@ -59,6 +65,14 @@ export async function GET(
   const localNow = getConflictLocalNow(timezone);
   const { today, dayDate, start: todayStart, end: todayEnd } = getConflictDayRange(timezone);
 
+  const RECENT_WINDOW_DAYS = 8;
+  const recentWindowStart = zonedDateTimeToUtc(
+    Number(localNow.today.slice(0, 4)),
+    Number(localNow.today.slice(5, 7)),
+    Number(localNow.today.slice(8, 10)) - RECENT_WINDOW_DAYS,
+    0, 0, 0, timezone,
+  );
+
   const actors = await prisma.actor.findMany({
     where: { conflictId },
     select: { id: true, name: true, mapKey: true },
@@ -79,6 +93,7 @@ export async function GET(
     allMapStories,
     unlinkedBreakingXPosts,
     highCriticalEventsToday,
+    recentEventsRaw,
   ] = await Promise.all([
     prisma.conflictDaySnapshot.findFirst({
       where: { conflictId, day: dayDate },
@@ -199,7 +214,32 @@ export async function GET(
       select: { id: true, title: true, severity: true, type: true, timestamp: true },
       orderBy: { timestamp: 'desc' },
     }),
+    prisma.intelEvent.findMany({
+      where: {
+        conflictId,
+        timestamp: { gte: recentWindowStart },
+      },
+      select: {
+        id: true,
+        title: true,
+        timestamp: true,
+        location: true,
+        severity: true,
+        type: true,
+      },
+      orderBy: { timestamp: 'desc' },
+    }),
   ]);
+
+  const recentEvents = recentEventsRaw.map(event => ({
+    id: event.id,
+    title: event.title,
+    timestamp: event.timestamp.toISOString(),
+    day: toConflictLocalDateString(event.timestamp, timezone),
+    location: event.location,
+    severity: event.severity,
+    type: event.type,
+  }));
 
   const actorIdsWithSnapshot = new Set(actorSnapshotsToday.map(snapshot => snapshot.actorId));
   const actorsWithoutSnapshot = actors.filter(actor => !actorIdsWithSnapshot.has(actor.id));
@@ -448,6 +488,12 @@ export async function GET(
         title: event.title,
         severity: event.severity,
       })),
+    },
+    recentEvents: {
+      windowDays: RECENT_WINDOW_DAYS,
+      count: recentEvents.length,
+      note: 'Review before creating new events. If a candidate overlaps in incident, time, location, or actor with an existing item, prefer UPDATE over CREATE.',
+      items: recentEvents,
     },
     maintenance: {
       eventsWithoutSourcesToday: eventsWithoutSourcesToday.length,
