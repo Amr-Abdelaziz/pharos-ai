@@ -13,6 +13,7 @@ export type { ActorKey };
 
 export type StrikeArc = {
   id:        string;
+  sourceEventId?: string | null;
   actor:     ActorKey;
   priority:  Priority;
   category:  Extract<MarkerCategory, 'KINETIC'>;
@@ -27,6 +28,7 @@ export type StrikeArc = {
 
 export type MissileTrack = {
   id:        string;
+  sourceEventId?: string | null;
   actor:     ActorKey;
   priority:  Priority;
   category:  Extract<MarkerCategory, 'KINETIC'>;
@@ -41,6 +43,7 @@ export type MissileTrack = {
 
 export type Target = {
   id:          string;
+  sourceEventId?: string | null;
   actor:       ActorKey;
   priority:    Priority;
   category:    Extract<MarkerCategory, 'INSTALLATION'>;
@@ -54,6 +57,7 @@ export type Target = {
 
 export type Asset = {
   id:          string;
+  sourceEventId?: string | null;
   actor:       ActorKey;
   priority:    Priority;
   category:    Extract<MarkerCategory, 'INSTALLATION'>;
@@ -67,6 +71,7 @@ export type Asset = {
 
 export type ThreatZone = {
   id:          string;
+  sourceEventId?: string | null;
   actor:       ActorKey;
   priority:    Priority;
   category:    Extract<MarkerCategory, 'ZONE'>;

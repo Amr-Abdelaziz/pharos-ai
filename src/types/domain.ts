@@ -43,6 +43,7 @@ export type Conflict = {
   status: ConflictStatus;
   threatLevel: ThreatLevel;
   region: string;
+  timezone: string;
   escalation: number;
   summary: string;
   keyFacts: string[];
@@ -206,6 +207,8 @@ export type StoryEvent = {
 
 export type MapStory = {
   id: string;
+  primaryEventId?: string | null;
+  sourceEventIds?: string[];
   title: string;
   tagline: string;
   iconName: string;

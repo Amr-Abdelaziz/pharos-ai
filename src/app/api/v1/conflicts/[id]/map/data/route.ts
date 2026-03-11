@@ -17,6 +17,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       select: {
         id: true,
         featureType: true,
+        sourceEventId: true,
         actor: true,
         priority: true,
         category: true,
@@ -44,60 +45,60 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const strikes = features
     .filter(f => f.featureType === 'STRIKE_ARC')
     .map(f => {
-      const geo = f.geometry as Geo;
-      const props = f.properties as Props;
-      return {
-        id: f.id, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
-        status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
-        from: geo.from, to: geo.to, label: props.label, severity: props.severity,
-      };
+        const geo = f.geometry as Geo;
+        const props = f.properties as Props;
+        return {
+          id: f.id, sourceEventId: f.sourceEventId, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
+          status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
+          from: geo.from, to: geo.to, label: props.label, severity: props.severity,
+        };
     });
 
   const missiles = features
     .filter(f => f.featureType === 'MISSILE_TRACK')
     .map(f => {
-      const geo = f.geometry as Geo;
-      const props = f.properties as Props;
-      return {
-        id: f.id, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
-        status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
-        from: geo.from, to: geo.to, label: props.label, severity: props.severity,
-      };
+        const geo = f.geometry as Geo;
+        const props = f.properties as Props;
+        return {
+          id: f.id, sourceEventId: f.sourceEventId, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
+          status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
+          from: geo.from, to: geo.to, label: props.label, severity: props.severity,
+        };
     });
 
   const targets = features
     .filter(f => f.featureType === 'TARGET')
     .map(f => {
-      const geo = f.geometry as Geo;
-      const props = f.properties as Props;
-      return {
-        id: f.id, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
-        status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
-        position: geo.position, name: props.name, description: props.description,
-      };
+        const geo = f.geometry as Geo;
+        const props = f.properties as Props;
+        return {
+          id: f.id, sourceEventId: f.sourceEventId, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
+          status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
+          position: geo.position, name: props.name, description: props.description,
+        };
     });
 
   const assets = features
     .filter(f => f.featureType === 'ASSET')
     .map(f => {
-      const geo = f.geometry as Geo;
-      const props = f.properties as Props;
-      return {
-        id: f.id, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
-        status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
-        position: geo.position, name: props.name, description: props.description,
-      };
+        const geo = f.geometry as Geo;
+        const props = f.properties as Props;
+        return {
+          id: f.id, sourceEventId: f.sourceEventId, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
+          status: f.status, timestamp: f.timestamp?.toISOString() ?? '',
+          position: geo.position, name: props.name, description: props.description,
+        };
     });
 
   const threatZones = features
     .filter(f => f.featureType === 'THREAT_ZONE')
     .map(f => {
-      const geo = f.geometry as Geo;
-      const props = f.properties as Props;
-      return {
-        id: f.id, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
-        timestamp: f.timestamp?.toISOString() ?? '', coordinates: geo.coordinates, name: props.name, color: props.color,
-      };
+        const geo = f.geometry as Geo;
+        const props = f.properties as Props;
+        return {
+          id: f.id, sourceEventId: f.sourceEventId, actor: f.actor, priority: f.priority, category: f.category, type: f.type,
+          timestamp: f.timestamp?.toISOString() ?? '', coordinates: geo.coordinates, name: props.name, color: props.color,
+        };
     });
 
   const heatPoints = features
