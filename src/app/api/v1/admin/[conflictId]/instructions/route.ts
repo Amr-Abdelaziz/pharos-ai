@@ -14,11 +14,7 @@ import {
 import { err, ok } from '@/server/lib/api-utils';
 import { prisma } from '@/server/lib/db';
 import {
-  buildAgentRulesMd,
-  buildBootstrapMessage,
-  buildHeartbeatMd,
   buildPharosInstructionsMarkdown,
-  buildToolsMd,
   PHAROS_RUNTIME_POLICY,
 } from '@/server/lib/pharos-doctrine';
 import { getConflictDayRange, getConflictLocalNow, getConflictTimezone } from '@/server/lib/pharos-time';
@@ -100,20 +96,6 @@ export async function GET(
       adminBaseUrl: `${adminBaseUrl}/${conflictId}`,
       localNow: localNow.label,
     },
-    openClawFiles: {
-      agentsMd: buildAgentRulesMd(),
-      heartbeatMd: buildHeartbeatMd(),
-      toolsMd: buildToolsMd({
-        conflictId,
-        dashboardUrl,
-        adminBaseUrl,
-      }),
-    },
-    bootstrapMessage: buildBootstrapMessage({
-      conflictId,
-      dashboardUrl,
-      adminBaseUrl,
-    }),
     markdown,
     meta: {
       conflictId,

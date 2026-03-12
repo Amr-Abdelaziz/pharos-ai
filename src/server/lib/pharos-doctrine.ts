@@ -407,9 +407,34 @@ POST /actors/{id}/snapshots: {day, activityLevel, activityScore, stance, saying,
 POST /actors/{id}/responses: {eventId, stance, type, statement}
 POST /actors/{id}/actions: {date, type, description, significance, verified?}
 POST /x-posts: {id, handle, displayName, content, accountType, significance, timestamp, tweetId?, postType?, eventId?, actorId?, pharosNote?}
-POST /map/strike-arcs: {id, actor, priority, category, type, geometry: {from, to}, status?, timestamp?, sourceEventId?, properties?}
-POST /map/stories: {id, title, tagline, iconName, category, narrative, viewState, timestamp, primaryEventId?, sourceEventIds?[], keyFacts?[], events?[]}
+POST /verify/search: find real tweet IDs before creating XPOST signals
 PUT /conflict: {status?, threatLevel?, escalation?, summary?, keyFacts?[], timezone?}
+
+### Map feature endpoints — use the correct one by feature type
+
+There is NO generic "POST /map/features" endpoint. Use these concrete routes:
+
+STRIKE_ARC     → POST /map/strike-arcs      (air/missile path between two points)
+MISSILE_TRACK  → POST /map/missile-tracks    (ballistic/cruise trajectory)
+TARGET         → POST /map/targets           (fixed location that was struck)
+ASSET          → POST /map/assets            (military installation or vessel)
+THREAT_ZONE    → POST /map/threat-zones      (area polygon — closure, NFZ, etc.)
+HEAT_POINT     → POST /map/heat-points       (intensity/concentration marker)
+
+POST /map/strike-arcs: {id, actor (MAP_ACTOR_KEY), priority (P1|P2|P3), category, type (AIRSTRIKE|NAVAL_STRIKE|BALLISTIC|CRUISE|DRONE), geometry: {from: {lat, lng}, to: {lat, lng}}, status?, timestamp?, sourceEventId?, properties?}
+POST /map/missile-tracks: same schema as strike-arcs
+POST /map/targets: {id, actor, priority, category, type (CARRIER|AIR_BASE|NAVAL_BASE|ARMY_BASE|NUCLEAR_SITE|COMMAND|INFRASTRUCTURE), geometry: {position: {lat, lng}}, status?, timestamp?, sourceEventId?, properties: {name, description?}}
+POST /map/assets: same schema as targets
+POST /map/threat-zones: {id, actor, priority, category, type (CLOSURE|PATROL|NFZ|THREAT_CORRIDOR), geometry: {coordinates: [[lat, lng], ...]}, timestamp?, sourceEventId?, properties: {name, color?}}
+POST /map/heat-points: {id, actor, priority, category, type, geometry: {position: {lat, lng}}, properties: {weight}}
+PUT /map/features/{featureId}: update any existing feature (partial)
+
+### Map story endpoints
+
+POST /map/stories: {id, title, tagline, iconName, category, narrative, viewState: {longitude, latitude, zoom}, timestamp, primaryEventId?, sourceEventIds?[], highlightStrikeIds?[], highlightMissileIds?[], highlightTargetIds?[], highlightAssetIds?[], keyFacts?[], events?: [{time, label, type}]}
+PUT /map/stories/{storyId}: update story (partial)
+POST /map/stories/{storyId}/events: append timeline events
+PUT /map/stories/{storyId}/events: replace all timeline events
 
 ## Product inspection
 
@@ -492,6 +517,10 @@ NOOP is the outcome of a thorough scan that found nothing to do — not a defaul
 True NOOP should be rare during an active conflict.
 
 Bare-skeleton artifacts (events without sources, responses, or map linkage) are equally wrong as fabricated content.
+
+IMPORTANT: Section 21 contains the complete API endpoint reference with schemas for every write endpoint.
+You MUST read section 21 before making any API calls. If you cannot find an endpoint, check section 21 before guessing.
+Do not skip the later sections of this manual.
 
 ---
 
@@ -907,9 +936,12 @@ Before declaring a cycle complete, verify:
 
 ---
 
-## 21. Key API schemas (quick reference)
+## 21. API endpoint reference (DO NOT SKIP)
 
-Enums:
+All paths below are relative to: /api/v1/admin/${ctx.conflictId}
+
+### Enums
+
 - Severity: CRITICAL | HIGH | STANDARD
 - EventType: MILITARY | DIPLOMATIC | INTELLIGENCE | ECONOMIC | HUMANITARIAN | POLITICAL
 - ActorResponseStance: SUPPORTING | OPPOSING | NEUTRAL | UNKNOWN
@@ -925,6 +957,8 @@ Enums:
 - ActionType: MILITARY | DIPLOMATIC | POLITICAL | ECONOMIC | INTELLIGENCE
 - ActionSignificance: HIGH | MEDIUM | LOW
 
+### Core write endpoints
+
 POST /events: {id, timestamp, severity, type, title, location, summary, fullContent, sources?[], actorResponses?[]}
 POST /events/{id}/sources: {sources: [{name, tier, reliability, url?}]}
 POST /days: {day, dayLabel, summary, escalation, keyFacts?[], economicNarrative?, casualties?[], economicChips?[], scenarios?[]}
@@ -933,9 +967,34 @@ POST /actors/{id}/snapshots: {day, activityLevel, activityScore, stance, saying,
 POST /actors/{id}/responses: {eventId, stance, type, statement}
 POST /actors/{id}/actions: {date, type, description, significance, verified?}
 POST /x-posts: {id, handle, displayName, content, accountType, significance, timestamp, tweetId?, postType?, eventId?, actorId?, pharosNote?}
-POST /map/strike-arcs: {id, actor, priority, category, type, geometry: {from, to}, status?, timestamp?, sourceEventId?, properties?}
-POST /map/stories: {id, title, tagline, iconName, category, narrative, viewState, timestamp, primaryEventId?, sourceEventIds?[], keyFacts?[], events?[]}
+POST /verify/search: find real tweet IDs before creating XPOST signals
 PUT /conflict: {status?, threatLevel?, escalation?, summary?, keyFacts?[], timezone?}
+
+### Map feature endpoints — use the correct one by feature type
+
+There is NO generic "POST /map/features" endpoint. Use these concrete routes:
+
+STRIKE_ARC     → POST /map/strike-arcs      (air/missile path between two points)
+MISSILE_TRACK  → POST /map/missile-tracks    (ballistic/cruise trajectory)
+TARGET         → POST /map/targets           (fixed location that was struck)
+ASSET          → POST /map/assets            (military installation or vessel)
+THREAT_ZONE    → POST /map/threat-zones      (area polygon — closure, NFZ, etc.)
+HEAT_POINT     → POST /map/heat-points       (intensity/concentration marker)
+
+POST /map/strike-arcs: {id, actor (MAP_ACTOR_KEY), priority (P1|P2|P3), category, type (AIRSTRIKE|NAVAL_STRIKE|BALLISTIC|CRUISE|DRONE), geometry: {from: {lat, lng}, to: {lat, lng}}, status?, timestamp?, sourceEventId?, properties?}
+POST /map/missile-tracks: same schema as strike-arcs
+POST /map/targets: {id, actor, priority, category, type (CARRIER|AIR_BASE|NAVAL_BASE|ARMY_BASE|NUCLEAR_SITE|COMMAND|INFRASTRUCTURE), geometry: {position: {lat, lng}}, status?, timestamp?, sourceEventId?, properties: {name, description?}}
+POST /map/assets: same schema as targets
+POST /map/threat-zones: {id, actor, priority, category, type (CLOSURE|PATROL|NFZ|THREAT_CORRIDOR), geometry: {coordinates: [[lat, lng], ...]}, timestamp?, sourceEventId?, properties: {name, color?}}
+POST /map/heat-points: {id, actor, priority, category, type, geometry: {position: {lat, lng}}, properties: {weight}}
+PUT /map/features/{featureId}: update any existing feature (partial)
+
+### Map story endpoints
+
+POST /map/stories: {id, title, tagline, iconName, category, narrative, viewState: {longitude, latitude, zoom}, timestamp, primaryEventId?, sourceEventIds?[], highlightStrikeIds?[], highlightMissileIds?[], highlightTargetIds?[], highlightAssetIds?[], keyFacts?[], events?: [{time, label, type}]}
+PUT /map/stories/{storyId}: update story (partial)
+POST /map/stories/{storyId}/events: append timeline events
+PUT /map/stories/{storyId}/events: replace all timeline events
 
 ---
 
